@@ -87,6 +87,7 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
 
   TextFormField _noteTitle() {
     return TextFormField(
+      key: Key('tieudeghichu'),
       maxLines: 1,
       style: TextStyle(
         fontWeight: FontWeight.bold,
@@ -102,6 +103,7 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
 
   TextFormField _noteContent() {
     return TextFormField(
+      key: Key('noidungghichu'),
       maxLines: 2,
       onSaved: (value) => _content = value,
       decoration: InputDecoration(
@@ -177,6 +179,7 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
       ),
       actions: <Widget>[
         FlatButton(
+          key: Key('ghichu_no'),
           child: Text(
             'Hủy bỏ',
             style: TextStyle(color: Colors.red),
@@ -185,7 +188,7 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
             pop(context);
           },
         ),
-        FlatButton(child: Text('Thêm mới'), onPressed: _actionThemGhiChu)
+        FlatButton(key: Key('ghichu_yes'),child: Text('Thêm mới'), onPressed: _actionThemGhiChu)
       ],
     );
   }

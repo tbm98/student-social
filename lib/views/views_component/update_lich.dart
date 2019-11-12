@@ -156,6 +156,7 @@ class _UpdateLichState extends State<UpdateLich> with DialogSupport{
 
   void _showChonKiHoc(data) {
     AlertDialog alertDialog = AlertDialog(
+      key: Key('dialog_chonky'),
       title: Text('Chọn kỳ học'),
       content: Container(
         width: MediaQuery.of(context).size.width * 0.6,
