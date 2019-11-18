@@ -29,6 +29,7 @@ void main() {
 
     test('tc1', () async {
       // Use the `driver.getText` method to verify the counter starts at 0.
+      await driver.waitFor(find.byValueKey('ahihi'));
       await tap(find.byValueKey('themghichu'));
       await tap(find.byValueKey('tieudeghichu'));
       await driver.enterText('Ghi chú mới');
@@ -36,6 +37,6 @@ void main() {
       await driver.enterText('abcxyz');
       await tap(find.byValueKey('ghichu_yes'));
       await Future.delayed(Duration(seconds: 1));
-    });
+    },timeout: Timeout(Duration(seconds: 40)));
   });
 }
