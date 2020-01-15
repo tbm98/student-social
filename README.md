@@ -1,4 +1,4 @@
-[![Codemagic build status](https://api.codemagic.io/apps/5dca8238332fd6000f3944ef/5dca8238332fd6000f3944ee/status_badge.svg)](https://codemagic.io/apps/5dca8238332fd6000f3944ef/5dca8238332fd6000f3944ee/latest_build)
+[![Codemagic build status](https://api.codemagic.io/apps/5d1342bd5a53b8000b7127f0/5d1342bd5a53b8000b7127ef/status_badge.svg)](https://codemagic.io/apps/5d1342bd5a53b8000b7127f0/5d1342bd5a53b8000b7127ef/latest_build)
 
 # Student Social - Ứng dụng xem lịch học cho sinh viên đại học Thái Nguyên
 

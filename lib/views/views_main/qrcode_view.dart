@@ -82,7 +82,6 @@ class _QRCodeViewState extends State<QRCodeView> {
                       child: Form(
                         key: formKey,
                         child: TextFormField(
-                          key: Key('inputqrcode'),
                           style: TextStyle(color: Colors.green),
                           validator: (value) {
                             if (value.isEmpty) {
@@ -99,9 +98,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                               hintText: 'Nhập nội dung cần tạo',
                               labelText: 'Tạo QR Code',
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                              suffixIcon: IconButton(
-                                key: Key('qrtao'),
-                                  icon: Icon(Icons.arrow_forward), onPressed: (){
+                              suffixIcon: IconButton(icon: Icon(Icons.arrow_forward), onPressed: (){
                                 if (formKey.currentState.validate()) {
                                   formKey.currentState.save();
                                 }
@@ -120,7 +117,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                   style: TextStyle(fontSize: 20),
                 ),
               ),
-              Text(_data, key: Key('qrketqua'),style: TextStyle(fontSize: 20))
+              Text(_data, style: TextStyle(fontSize: 20))
             ],
           ),
         ),

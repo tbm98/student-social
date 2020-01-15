@@ -51,8 +51,8 @@ android {
         targetSdkVersion 28
 //        versionCode flutterVersionCode.toInteger()
 //        versionName flutterVersionName
-        versionCode 43
-        versionName "3.1.1"
+        versionCode 45
+        versionName "3.2.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     //flutter build appbundle để build bundle

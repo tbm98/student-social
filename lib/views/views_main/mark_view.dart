@@ -39,7 +39,6 @@ class _MarkViewState extends State<MarkView> with DialogSupport{
         title: Text('Tra cứu điểm'),
         actions: <Widget>[
           IconButton(
-              key: Key('capnhatdiem'),
               icon: Icon(Icons.refresh),
               onPressed: () {
                 loading(context, 'Đang tải dữ liệu');

@@ -115,7 +115,6 @@ class MainPageState extends State<MainPage>
       drawer:
           SizedBox(width: _mainViewModel.getWidthDrawer, child: drawerWidget()),
       floatingActionButton: FloatingActionButton(
-        key: Key('themghichu'),
         onPressed: () {
           _showDialogAddGhiChu();
         },
@@ -127,7 +126,6 @@ class MainPageState extends State<MainPage>
   Widget _layoutRefesh() {
     if (_mainViewModel.getMSV != null && _mainViewModel.getMSV != 'guest') {
       return IconButton(
-          key: Key('capnhatlich'),
           icon: Icon(Icons.refresh), onPressed: _mainViewModel.updateSchedule);
     } else {
       return Container();
@@ -427,7 +425,6 @@ class MainPageState extends State<MainPage>
           title: Text('Bạn có muốn đăng xuất không?'),
           actions: <Widget>[
             FlatButton(
-              key: Key('logout_no'),
               child: Text(
                 'Huỷ',
                 style: TextStyle(color: Colors.red),
@@ -437,7 +434,6 @@ class MainPageState extends State<MainPage>
               },
             ),
             FlatButton(
-              key: Key('logout_yes'),
               child: Text('Đồng ý'),
               onPressed: () {
                 _mainViewModel.logOut();
@@ -480,7 +476,6 @@ class MainPageState extends State<MainPage>
 
   Widget _layoutLogin() {
     return ListTile(
-      key: Key('menu_login'),
       title: Text('Đăng nhập bằng tài khoản'),
       leading: Icon(
         Icons.access_time,
@@ -517,7 +512,6 @@ class MainPageState extends State<MainPage>
 
   Widget _layoutMarkView() {
     return ListTile(
-      key: Key('xemdiem'),
       title: Text('Tra cứu điểm'),
       leading: Icon(
         Icons.print,
@@ -537,7 +531,6 @@ class MainPageState extends State<MainPage>
 
   Widget _layoutDNK() {
     return ListTile(
-      key: Key('xemdnk'),
       title: Text('Tra cứu điểm ngoại khóa'),
       leading: Icon(
         Icons.score,
@@ -557,7 +550,6 @@ class MainPageState extends State<MainPage>
 
   Widget _layoutQRCode() {
     return ListTile(
-      key: Key('taoqrcode'),
       title: Text('Tạo QR CODE'),
       leading: Icon(
         Icons.blur_on,
@@ -610,7 +602,6 @@ class MainPageState extends State<MainPage>
 
   Widget _layoutLogout() {
     return ListTile(
-      key: Key('logout'),
       title: Text('Đăng xuất'),
       leading: Icon(
         Icons.exit_to_app,

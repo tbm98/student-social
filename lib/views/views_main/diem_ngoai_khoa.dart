@@ -182,7 +182,6 @@ class _DiemNgoaiKhoaState extends State<DiemNgoaiKhoa> {
                 children: <Widget>[
                   Text(
                     'Tổng điểm: $_tong',
-                    key: Key('tongdiem'),
                     style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
                   Text(

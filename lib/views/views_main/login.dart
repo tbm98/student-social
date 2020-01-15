@@ -42,7 +42,6 @@ class _LoginPageState extends State<LoginPage> with DialogSupport{
   );
 
   Widget email() => TextField(
-        key: Key('login_msv'),
         controller: _loginViewModel.getControllerMSV,
         autofocus: true,
         textCapitalization: TextCapitalization.characters,
@@ -64,7 +63,6 @@ class _LoginPageState extends State<LoginPage> with DialogSupport{
       );
 
   Widget password() => TextField(
-        key: Key('login_pass'),
         focusNode: textSecondFocusNode,
         controller: _loginViewModel.getControllerPassword,
         obscureText: true,
@@ -86,7 +84,6 @@ class _LoginPageState extends State<LoginPage> with DialogSupport{
       );
 
   Widget loginButton() => Container(
-        key: Key('login_dangnhap'),
         width: double.infinity,
         height: 44,
         padding: const EdgeInsets.all(0),
@@ -166,7 +163,6 @@ class _LoginPageState extends State<LoginPage> with DialogSupport{
 
   void _showAlertChonKyHoc(data) {
     AlertDialog alertDialog = AlertDialog(
-      key: Key('dialog_chonky'),
       title: Text('Chọn kỳ học'),
       content: Container(
         width: MediaQuery.of(context).size.width * 0.8,
