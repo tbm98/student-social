@@ -6,18 +6,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-
-    - name: install dependencies
-      uses: steebchen/flutter@v1.0.0
+    - uses: takuyaohashi/setup-flutter@v1
       with:
-        args: pub get
-
-    - name: run tests
-      uses: steebchen/flutter@v1.0.0
-      with:
-        args: test
-
-    - name: build apk
-      uses: steebchen/flutter@v1.0.0
-      with:
-        args: build apk --release
+        flutter-version: 'latest'
+        channel: 'stable'
+    - run: flutter test
