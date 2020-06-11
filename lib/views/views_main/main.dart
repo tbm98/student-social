@@ -476,7 +476,7 @@ class MainPageState extends State<MainPage>
 
   Widget _layoutLogin() {
     return ListTile(
-      title: Text('Đăng nhập bằng tài khoản'),
+      title: Text('Đăng nhập bằng tài khoản sinh viên'),
       leading: Icon(
         Icons.access_time,
         size: 30,
