@@ -329,7 +329,7 @@ class MainPageState extends State<MainPage>
                     await Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
                             ChangeNotifierProvider<LoginViewModel>(
-                              builder: (_) => LoginViewModel(),
+                              create: (_) => LoginViewModel(),
                               child: LoginPage(),
                             )));
                     _mainViewModel.loadCurrentMSV();
@@ -486,7 +486,7 @@ class MainPageState extends State<MainPage>
         Navigator.of(context).pop();
         await Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => ChangeNotifierProvider<LoginViewModel>(
-                  builder: (_) => LoginViewModel(),
+                  create: (_) => LoginViewModel(),
                   child: LoginPage(),
                 )));
         _mainViewModel.loadCurrentMSV();
@@ -522,7 +522,7 @@ class MainPageState extends State<MainPage>
         Navigator.of(context).pop();
         Navigator.of(context).push(MaterialPageRoute(
             builder: (_) => ChangeNotifierProvider<MarkViewModel>(
-                  builder: (_) => MarkViewModel(),
+                  create: (_) => MarkViewModel(),
                   child: MarkView(),
                 )));
       },

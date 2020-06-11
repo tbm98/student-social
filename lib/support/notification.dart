@@ -75,11 +75,9 @@ class Notification {
         'student_notifi_description',
         importance: Importance.Max,
         priority: Priority.High,
-        style: AndroidNotificationStyle.BigText,
         autoCancel: false,
         styleInformation: BigTextStyleInformation(body),
-        icon: '@mipmap/ic_logo',
-        largeIcon: '@mipmap/ic_logo');
+        icon: '@mipmap/ic_logo',);
 
     var iOSPlatformChannelSpecifics = IOSNotificationDetails();
 

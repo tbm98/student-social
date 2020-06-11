@@ -32,3 +32,5 @@
 }
 
 ##---------------End: proguard configuration for Gson  ----------
+# for local notification flutter
+-keep class com.dexterous.** { *; }

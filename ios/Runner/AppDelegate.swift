@@ -13,6 +13,18 @@ import RealmSwift
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
   ) -> Bool {
+    // config for flutter local notification
+    if #available(iOS 10.0, *) {
+      UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
+    }
+
+    if(!UserDefaults.standard.bool(forKey: "Notification")) {
+        UIApplication.shared.cancelAllLocalNotifications()
+        UserDefaults.standard.set(true, forKey: "Notification")
+    }
+
+    // config for flutter local notification done
+
     let config = Realm.Configuration(
         // Set the new schema version. This must be greater than the previously used
         // version (if you've never set a schema version before, the version is 0).
