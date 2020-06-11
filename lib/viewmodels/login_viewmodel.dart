@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
+import 'package:studentsocial/models/entities/login.dart';
+import 'package:studentsocial/models/entities/profile.dart';
 import 'package:studentsocial/models/login_model.dart';
-import 'package:studentsocial/models/object/profile.dart';
 import 'package:studentsocial/support/platform_channel.dart';
 
 enum LoginAction {
@@ -49,21 +50,27 @@ class LoginViewModel with ChangeNotifier {
     _inputAction().add({'type': LoginAction.loading, 'data': msg});
   }
 
-  void submit() {
-    _checkInternetConnectivity();
+  void submit() async{
+    final bool isOnline = await _checkInternetConnectivity();
+    if(!isOnline){
+      return;
+    }
+    _actionLogin();
   }
 
-  _checkInternetConnectivity() async {
+  Future<bool> _checkInternetConnectivity() async {
     var result = await Connectivity().checkConnectivity();
     if (result == ConnectivityResult.none) {
       _inputAction().add({
         'type': LoginAction.alert_with_message,
         'data': 'Không có kết nối mạng :('
       });
+      return false;
     } else if (result == ConnectivityResult.mobile ||
         result == ConnectivityResult.wifi) {
-      _actionLogin();
+      return true;
     }
+    return false;
   }
 
   _actionLogin() {
@@ -76,27 +83,18 @@ class LoginViewModel with ChangeNotifier {
       _loading('Đang đăng nhập...');
       var tk = _loginModel.getMSV;
       var mk = _loginModel.getPassword;
-
-      if(tk == "C" && mk == "c"){
-        tk = 'DTC165D4801030254';
-        mk = '05071999';
-      }
-      if(tk == "D" && mk == "d"){
-        tk = 'DTC16HD4802010001';
-        mk = 'Kh0ngc0dauem;';
-      }
       _login(tk, mk);
     }
   }
 
   void _login(msv, password) async {
+    final result = await _loginModel.login(msv, password);
     _loginModel.msv = msv;
-    var data = await _loginModel.getToken(msv, password);
-    if (data.isNotEmpty && data != 'false') {
-      _loginModel.token = data;
+    if (result.isSuccess()) {
+      _loginModel.token = (result as LoginSuccess).message.Token;
       _pop();
       _loading('Đang tải kỳ học');
-      _getSemester(data);
+      _getSemester(_loginModel.token);
     } else {
       _pop();
       _inputAction().add({
@@ -107,11 +105,12 @@ class LoginViewModel with ChangeNotifier {
   }
 
   void _getSemester(String token) async {
-    var data = await _loginModel.getSemester(token);
-    var jsonData = json.decode(data);
+//    print('token is $token');
+    final semesterResult = await _loginModel.getSemester(token);
+//    print('data is $data');
     _pop();
     _inputAction()
-        .add({'type': LoginAction.alert_chon_kyhoc, 'data': jsonData});
+        .add({'type': LoginAction.alert_chon_kyhoc, 'data': semesterResult});
   }
 
   void semesterClicked(data, kyTruoc) {
@@ -145,8 +144,9 @@ class LoginViewModel with ChangeNotifier {
   }
 
   void addSubjects(value) {
+    print('value addSubjects is $value');
     var jsonValue = json.decode(value);
-    var listSubjects = jsonValue['Subjects'];
+    var listSubjects = jsonValue['message']['Subjects'];
     for (var item in listSubjects) {
       _loginModel.addSubjectsName(item['MaMon'], item['TenMon']);
       _loginModel.addSubjectsSoTinChi(
@@ -159,21 +159,22 @@ class LoginViewModel with ChangeNotifier {
     addSubjects(_loginModel.lichHoc);
     addSubjects(_loginModel.lichThi);
     addSubjects(_loginModel.lichThiLai);
-    addSubjects(_loginModel.mark);
+    //TODO: add later
+//    addSubjects(_loginModel.mark);
     //validate profile
-    var jsonMark = json.decode(_loginModel.mark);
-    Profile profile = Profile.fromJson(json.decode(_loginModel.profile));
-    profile.setMoreDetail(
-        jsonMark['TongTC'],
-        jsonMark['STCTD'],
-        jsonMark['STCTLN'],
-        jsonMark['DTBC'],
-        jsonMark['DTBCQD'],
-        jsonMark['SoMonKhongDat'],
-        jsonMark['SoTCKhongDat'],
-        _loginModel.token);
+//    var jsonMark = json.decode(_loginModel.mark);
+//    Profile profile = Profile.fromJson(json.decode(_loginModel.profile));
+//    profile.setMoreDetail(
+//        jsonMark['TongTC'],
+//        jsonMark['STCTD'],
+//        jsonMark['STCTLN'],
+//        jsonMark['DTBC'],
+//        jsonMark['DTBCQD'],
+//        jsonMark['SoMonKhongDat'],
+//        jsonMark['SoTCKhongDat'],
+//        _loginModel.token);
     //validate diem
-    _loginModel.validateMark();
+//    _loginModel.validateMark();
     //validate lich hoc
     _loginModel.validateLichHoc();
     //validate lich thi

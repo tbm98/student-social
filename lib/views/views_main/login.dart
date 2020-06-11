@@ -1,6 +1,7 @@
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:studentsocial/models/entities/semester.dart';
 import 'package:studentsocial/support/dialog_support.dart';
 import 'package:studentsocial/viewmodels/login_viewmodel.dart';
 
@@ -137,20 +138,20 @@ class _LoginPageState extends State<LoginPage> with DialogSupport{
     );
   }
 
-  Widget _itemKyHoc(BuildContext context, data, kyTruoc) {
+  Widget _itemKyHoc(BuildContext context, Semester data, Semester kyTruoc) {
     return Container(
         margin: const EdgeInsets.only(bottom: 5),
         child: Column(
           children: <Widget>[
             ListTile(
               title: Text(
-                'Kỳ ${data["TenKy"].split('_')[0]} năm ${data["TenKy"].split('_')[1]}-${data["TenKy"].split('_')[2]}',
+                'Kỳ ${data.TenKy.split('_')[0]} năm ${data.TenKy.split('_')[1]}-${data.TenKy.split('_')[2]}',
                 style:
                     TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
               ),
               trailing: Icon(Icons.arrow_forward),
               onTap: () {
-                _loginViewModel.semesterClicked(data['MaKy'], kyTruoc['MaKy']);
+                _loginViewModel.semesterClicked(data.MaKy, kyTruoc.MaKy);
               },
               contentPadding: const EdgeInsets.all(0),
             ),
@@ -161,7 +162,7 @@ class _LoginPageState extends State<LoginPage> with DialogSupport{
         ));
   }
 
-  void _showAlertChonKyHoc(data) {
+  void _showAlertChonKyHoc(SemesterResult data) {
     AlertDialog alertDialog = AlertDialog(
       title: Text('Chọn kỳ học'),
       content: Container(
@@ -172,10 +173,10 @@ class _LoginPageState extends State<LoginPage> with DialogSupport{
           children: <Widget>[
             Expanded(
               child: ListView.builder(
-                itemCount: data.length,
+                itemCount: data.message.length,
                 itemBuilder: (BuildContext buildContext, int index) =>
-                    _itemKyHoc(context, data[index],
-                        index == data.length - 1 ? null : data[index + 1]),
+                    _itemKyHoc(context, data.message[index],
+                        index == data.message.length - 1 ? null : data.message[index + 1]),
                 shrinkWrap: true,
               ),
             ),

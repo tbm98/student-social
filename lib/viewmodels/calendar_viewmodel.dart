@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:studentsocial/models/calendar_model.dart';
-import 'package:studentsocial/models/object/calendar_day.dart';
+import 'package:studentsocial/models/entities/calendar_day.dart';
 import 'package:studentsocial/viewmodels/main_viewmodel.dart';
 
 class CalendarViewModel with ChangeNotifier {

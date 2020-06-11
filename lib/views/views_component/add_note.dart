@@ -3,7 +3,7 @@
  */
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:studentsocial/models/object/schedule.dart';
+import 'package:studentsocial/models/entities/schedule.dart';
 import 'package:studentsocial/support/dialog_support.dart';
 import 'package:studentsocial/support/platform_channel.dart';
 import 'package:studentsocial/viewmodels/main_viewmodel.dart';

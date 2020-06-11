@@ -1,5 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:studentsocial/models/object/schedule.dart';
+import 'package:studentsocial/models/entities/schedule.dart';
 import 'package:studentsocial/support/date.dart';
 
 class Notification {

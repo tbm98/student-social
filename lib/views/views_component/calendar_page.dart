@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:studentsocial/models/object/calendar_day.dart';
-import 'package:studentsocial/models/object/schedule.dart';
+import 'package:studentsocial/models/entities/calendar_day.dart';
+import 'package:studentsocial/models/entities/schedule.dart';
 import 'package:studentsocial/viewmodels/calendar_viewmodel.dart';
 import 'package:studentsocial/viewmodels/schedule_viewmodel.dart';
 import 'package:studentsocial/viewmodels/main_viewmodel.dart';

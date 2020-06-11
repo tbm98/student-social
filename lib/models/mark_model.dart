@@ -1,6 +1,6 @@
-import 'package:studentsocial/models/object/profile.dart';
 
-import 'object/mark.dart';
+import 'entities/mark.dart';
+import 'entities/profile.dart';
 
 class MarkModel{
 

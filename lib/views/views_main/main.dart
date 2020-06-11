@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:studentsocial/models/object/calendar_day.dart';
-import 'package:studentsocial/models/object/profile.dart';
+import 'package:studentsocial/models/entities/calendar_day.dart';
+import 'package:studentsocial/models/entities/profile.dart';
 import 'package:studentsocial/support/dialog_support.dart';
 import 'package:studentsocial/viewmodels/calendar_viewmodel.dart';
 import 'package:studentsocial/viewmodels/schedule_viewmodel.dart';
@@ -450,7 +450,7 @@ class MainPageState extends State<MainPage>
     if (_mainViewModel.getMSV == null || _mainViewModel.getMSV == 'guest') {
       //những menu này dành cho người chưa đăng nhập
       return [
-        Container(child: _layoutDrawerHeader()),
+        _layoutDrawerHeader(),
         _layoutLogin(),
         _layoutTimeTable(),
         _layoutQRCode(),
@@ -461,7 +461,7 @@ class MainPageState extends State<MainPage>
     } else {
       //menu dành cho người dùng đã đăng nhập
       return [
-        Container(child: _layoutDrawerHeader()),
+        _layoutDrawerHeader(),
         _layoutTimeTable(),
         _layoutMarkView(),
         _layoutDNK(), //Điểm ngoại khóa
@@ -478,7 +478,7 @@ class MainPageState extends State<MainPage>
     return ListTile(
       title: Text('Đăng nhập bằng tài khoản sinh viên'),
       leading: Icon(
-        Icons.access_time,
+        Icons.account_circle,
         size: 30,
         color: Colors.green,
       ),
@@ -573,7 +573,7 @@ class MainPageState extends State<MainPage>
     return ListTile(
       title: Text('Phản ánh lỗi, góp ý'),
       leading: Icon(
-        Icons.contact_phone,
+        Icons.error,
         size: 30,
         color: Colors.green,
       ),

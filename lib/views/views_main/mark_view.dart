@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:studentsocial/models/object/mark.dart';
+import 'package:studentsocial/models/entities/mark.dart';
 import 'package:studentsocial/support/dialog_support.dart';
 import 'package:studentsocial/support/networking.dart';
 import 'package:studentsocial/support/platform_channel.dart';

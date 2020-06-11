@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:studentsocial/models/object/diem_ngoai_khoa_obj.dart';
 import 'package:http/http.dart' as http;
+import 'package:studentsocial/models/entities/diem_ngoai_khoa_obj.dart';
 
 class DiemNgoaiKhoa extends StatefulWidget {
   final msv;

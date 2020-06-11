@@ -45,7 +45,6 @@ class _QRCodeViewState extends State<QRCodeView> {
         child: Container(
           child: Column(
             children: <Widget>[
-
               LayoutBuilder(
                 builder: (context, constraints) {
                   double widgetSize =
@@ -74,7 +73,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                 },
               ),
               Container(
-                padding: const EdgeInsets.only(top: 8,left: 16,right: 16),
+                padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -97,13 +96,16 @@ class _QRCodeViewState extends State<QRCodeView> {
                           decoration: InputDecoration(
                               hintText: 'Nhập nội dung cần tạo',
                               labelText: 'Tạo QR Code',
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                              suffixIcon: IconButton(icon: Icon(Icons.arrow_forward), onPressed: (){
-                                if (formKey.currentState.validate()) {
-                                  formKey.currentState.save();
-                                }
-                              })
-                          ),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              suffixIcon: IconButton(
+                                icon: Icon(Icons.check_circle,color: Colors.green,size: 32,),
+                                onPressed: (){
+                                  if (formKey.currentState.validate()) {
+                                    formKey.currentState.save();
+                                  }
+                                },
+                              )),
                         ),
                       ),
                     ),

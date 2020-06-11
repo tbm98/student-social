@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
+import 'package:studentsocial/models/entities/mark.dart';
+import 'package:studentsocial/models/entities/profile.dart';
 import 'package:studentsocial/models/mark_model.dart';
-import 'package:studentsocial/models/object/mark.dart';
-import 'package:studentsocial/models/object/profile.dart';
 import 'package:studentsocial/support/platform_channel.dart';
 
 class MarkViewModel with ChangeNotifier {

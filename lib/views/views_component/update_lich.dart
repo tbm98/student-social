@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:studentsocial/models/entities/semester.dart';
 import 'package:studentsocial/support/dialog_support.dart';
 import 'package:studentsocial/support/platform_channel.dart';
 import 'package:studentsocial/viewmodels/main_viewmodel.dart';
@@ -33,10 +34,9 @@ class _UpdateLichState extends State<UpdateLich> with DialogSupport{
   }
 
   void _loadSemester() async {
-    String value = await _netWorking.getSemester(_mainViewModel.getToken);
-    var jsonData = json.decode(value);
+    final SemesterResult result = await _netWorking.getSemester(_mainViewModel.getToken);
     Navigator.of(context).pop();
-    _showChonKiHoc(jsonData);
+    _showChonKiHoc(result);
   }
 
   void _alertWithMessage(String _msg) {
@@ -154,7 +154,7 @@ class _UpdateLichState extends State<UpdateLich> with DialogSupport{
         ));
   }
 
-  void _showChonKiHoc(data) {
+  void _showChonKiHoc(SemesterResult data) {
     AlertDialog alertDialog = AlertDialog(
       title: Text('Chọn kỳ học'),
       content: Container(
@@ -165,11 +165,11 @@ class _UpdateLichState extends State<UpdateLich> with DialogSupport{
           children: <Widget>[
             Expanded(
               child: ListView.builder(
-                itemCount: data.length,
+                itemCount: data.message.length,
                 itemBuilder: (BuildContext buildContext, int index) => _layoutItemSemester(
                     context,
-                    data[index],
-                    index < data.length - 1 ? data[index + 1] : null),
+                    data.message[index],
+                    index < data.message.length - 1 ? data.message[index + 1] : null),
                 shrinkWrap: true,
               ),
             ),

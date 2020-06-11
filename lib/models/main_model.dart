@@ -1,7 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:studentsocial/models/object/profile.dart';
-import 'object/schedule.dart';
+
+import 'entities/profile.dart';
+import 'entities/schedule.dart';
 
 class MainModel {
   double width = 0;

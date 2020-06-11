@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:studentsocial/models/object/calendar_day.dart';
+import 'package:studentsocial/models/entities/calendar_day.dart';
 import 'package:studentsocial/viewmodels/calendar_viewmodel.dart';
 
 class ScheduleViewModel with ChangeNotifier {

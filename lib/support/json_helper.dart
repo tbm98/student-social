@@ -1,7 +1,7 @@
 
 import 'dart:convert';
 
-import 'package:studentsocial/models/object/semester.dart';
+import 'package:studentsocial/models/entities/semester.dart';
 
 class JsonHelper{
 

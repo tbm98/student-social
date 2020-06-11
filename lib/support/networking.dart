@@ -1,25 +1,30 @@
+import 'dart:convert';
+
+import 'package:studentsocial/models/entities/login.dart';
+import 'package:studentsocial/models/entities/semester.dart';
+
 import 'url.dart';
 import 'package:http/http.dart' as http;
 
 class NetWorking {
-  Future<String> getToken(String msv, String password) async {
+  Future<LoginResult> login(String msv, String password) async {
     var res = await http
         .post(URL.LOGIN, body: {"username": msv, "password": password});
     if (res.statusCode == 200) {
-      var data = res.body.replaceAll("\"", "");
-      return data;
+      LoginResult result = LoginResult(jsonDecode(res.body));
+      return result;
     } else {
-      return '';
+      return null;
     }
   }
 
-  Future<String> getSemester(String token) async {
+  Future<SemesterResult> getSemester(String token) async {
     var res =
-        await http.post(URL.GET_SEMESTER, headers: {"access-token": token});
+        await http.post(URL.GET_SEMESTER, headers: {"token": token});
     if (res.statusCode == 200) {
-      return res.body;
+      return SemesterResult.fromJson(jsonDecode(res.body));
     } else {
-      return '';
+      return null;
     }
   }
 
@@ -44,7 +49,7 @@ class NetWorking {
 
   Future<String> getLichHoc(String token, String semester) async {
     var res = await http.post(URL.GET_LICHHOC,
-        headers: {"access-token": token}, body: {"semester": semester});
+        headers: {"token": token}, body: {"semester": semester});
     if (res.statusCode == 200) {
       return res.body;
     } else {
@@ -55,7 +60,7 @@ class NetWorking {
   //hàm này dùng cho cả getlichthilai vì đều là lịch thi (chỉ khác semester)
   Future<String> getLichThi(String token, String semester) async {
     var res = await http.post(URL.GET_LICHTHI,
-        headers: {"access-token": token}, body: {"semester": semester});
+        headers: {"token": token}, body: {"semester": semester});
     if (res.statusCode == 200) {
       return res.body;
     } else {

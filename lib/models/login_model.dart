@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:studentsocial/models/entities/login.dart';
+import 'package:studentsocial/models/entities/semester.dart';
 import 'package:studentsocial/support/networking.dart';
 import 'package:studentsocial/support/platform_channel.dart';
 
@@ -21,8 +23,8 @@ class LoginModel {
   MethodChannel saveProfile;
   MethodChannel saveDiem;
   MethodChannel saveLich;
-  final controllerEmail = TextEditingController();
-  final controllerPassword = TextEditingController();
+  final controllerEmail = TextEditingController(text: 'DTC165D4801030252');
+  final controllerPassword = TextEditingController(text: 'tbm01031998');
   NetWorking _netWorking;
 
   LoginModel() {
@@ -37,12 +39,15 @@ class LoginModel {
 
   get getPassword => controllerPassword.text.trim();
 
-  Future<String> getToken(msv, password) async {
-    this.msv = msv;
-    return await _netWorking.getToken(msv, password);
+  Future<LoginResult> login(msv, password) async {
+    final result =  await _netWorking.login(msv, password);
+    if(result.isSuccess()){
+      this.msv = (result as LoginSuccess).message.Profile.MaSinhVien;
+    }
+    return result;
   }
 
-  Future<String> getSemester(String token) async {
+  Future<SemesterResult> getSemester(String token) async {
     return await _netWorking.getSemester(token);
   }
 
