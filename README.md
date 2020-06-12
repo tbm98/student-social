@@ -1,9 +1,10 @@
-[![Codemagic build status](https://api.codemagic.io/apps/5d1342bd5a53b8000b7127f0/5d1342bd5a53b8000b7127ef/status_badge.svg)](https://codemagic.io/apps/5d1342bd5a53b8000b7127f0/5d1342bd5a53b8000b7127ef/latest_build)
+![build and test app](https://github.com/EagleTeam/student-social/workflows/build%20and%20test%20app/badge.svg?branch=new-version-and-refactor)
 
 # Student Social - Ứng dụng xem lịch học cho sinh viên đại học Thái Nguyên
 
+## Big update
+Phiên bản v2 này sẽ loại bỏ hoàn toàn code ở phần native, chuyển sang lưu dữ liệu bằng flutter, xoá bỏ widget trên android để sử dụng tính năng upload lịch lên Google Calendar thay thế và upgrade toàn bộ project, refactor code và clean code :D
 
-## Tạo nhánh phụ trước khi chỉnh sửa code để hạn chế lỗi
 
 ## Nhánh Master là phiên bản code ổn định nhất, đã check và kiểm tra lỗi
 
