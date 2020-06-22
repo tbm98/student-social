@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:studentsocial/support/date.dart';
+import 'package:studentsocial/helpers/date.dart';
 
 main() {
   test("test cac ham chuc nang trong dateSupport", (){

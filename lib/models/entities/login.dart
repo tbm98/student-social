@@ -79,7 +79,7 @@ class LoginFail implements LoginResult {
 abstract class LoginResult {
   bool isSuccess();
 
-  factory LoginResult(Map<String, dynamic> json) {
+  factory LoginResult.fromJson(Map<String, dynamic> json) {
     if (json['status'] == 'success') {
       return LoginSuccess.fromJson(json);
     } else {

@@ -3,10 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:studentsocial/models/calendar_model.dart';
 import 'package:studentsocial/models/entities/calendar_day.dart';
-import 'package:studentsocial/viewmodels/main_viewmodel.dart';
+import 'package:studentsocial/presentation/screens/main/main_notifier.dart';
 
 class CalendarViewModel with ChangeNotifier {
-  MainViewModel _mainViewModel;
+  MainNotifier _mainViewModel;
   Map<int, CalendarModel> _calendarModels;
   PageController pageViewController =
       new PageController(initialPage: 12, viewportFraction: 0.99);
@@ -21,7 +21,7 @@ class CalendarViewModel with ChangeNotifier {
 
   get getPageViewController => pageViewController;
 
-  void addMainViewModel(MainViewModel mainViewModel) {
+  void addMainViewModel(MainNotifier mainViewModel) {
     _mainViewModel = mainViewModel;
   }
 

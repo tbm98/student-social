@@ -1,5 +1,29 @@
-class Schedule {
-  final String ID;
+import 'dart:convert';
+
+import 'package:json_annotation/json_annotation.dart';
+import 'package:studentsocial/models/entities/db_parseable.dart';
+
+part 'schedule.g.dart';
+
+@JsonSerializable()
+class Schedule extends DBParseable {
+  static const table = 'Schedule';
+  static const createQuery = '''CREATE TABLE IF NOT EXISTS Schedule (
+  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  MaSinhVien TEXT,
+  MaMon TEXT,
+  TenMon TEXT,
+  ThoiGian TEXT,
+  Ngay TEXT,
+  DiaDiem TEXT,
+  HinhThuc TEXT,
+  GiaoVien TEXT,
+  LoaiLich TEXT,
+  SoBaoDanh TEXT,
+  SoTinChi TEXT
+  )''';
+  static const dropQuery = 'DROP TABLE IF EXISTS Schedule;';
+  final int ID;
 
   final String MaSinhVien;
 
@@ -37,32 +61,26 @@ class Schedule {
       this.SoBaoDanh,
       this.SoTinChi});
 
-  factory Schedule.fromJson(Map<String, dynamic> json) {
-    return Schedule(
-      ID: json['ID'].toString(),
-      MaSinhVien: json['MaSinhVien'],
-      MaMon: json['MaMon'],
-      TenMon: json['TenMon'],
-      ThoiGian: json['ThoiGian'],
-      Ngay: json['Ngay'],
-      DiaDiem: json['DiaDiem'],
-      HinhThuc: json['HinhThuc'],
-      GiaoVien: json['GiaoVien'],
-      LoaiLich: json['LoaiLich'],
-      SoBaoDanh: json['SoBaoDanh'].toString(),
-      SoTinChi: json['SoTinChi'].toString(),
-    );
-  }
+  factory Schedule.fromJson(Map<String, dynamic> json) =>
+      _$ScheduleFromJson(json);
 
-  //sinh chuỗi để tạo 1 note mới
-  static String forNote(
+  Map<String, dynamic> toJson() => _$ScheduleToJson(this);
+  Map<String, dynamic> toMap() => _$ScheduleToJson(this);
+
+  factory Schedule.forNote(
       String msv, String tieuDe, String noiDung, String ngay) {
-    return "{\"MaSinhVien\":\"$msv\",\"MaMon\":\"$tieuDe\",\"ThoiGian\":\"$noiDung\",\"Ngay\":\"$ngay\",\"LoaiLich\":\"Note\"}";
+    return Schedule(
+        MaSinhVien: msv,
+        MaMon: tieuDe,
+        ThoiGian: noiDung,
+        Ngay: ngay,
+        LoaiLich: 'Note');
   }
 
   //sinh chuỗi để tạo note từ object hiện có
   String toStringForNote() {
-    return "{\"ID\":\"$ID\",\"MaSinhVien\":\"$MaSinhVien\",\"MaMon\":\"$MaMon\",\"TenMon\":\"$TenMon\",\"ThoiGian\":\"$ThoiGian\",\"Ngay\":\"$Ngay\",\"DiaDiem\":\"$DiaDiem\",\"HinhThuc\":\"$HinhThuc\",\"GiaoVien\":\"$GiaoVien\",\"LoaiLich\":\"$LoaiLich\",\"SoBaoDanh\":\"$SoBaoDanh\",\"SoTinChi\":\"$SoTinChi\"}";
+    return jsonEncode(this);
+//    return "{\"ID\":\"$ID\",\"MaSinhVien\":\"$MaSinhVien\",\"MaMon\":\"$MaMon\",\"TenMon\":\"$TenMon\",\"ThoiGian\":\"$ThoiGian\",\"Ngay\":\"$Ngay\",\"DiaDiem\":\"$DiaDiem\",\"HinhThuc\":\"$HinhThuc\",\"GiaoVien\":\"$GiaoVien\",\"LoaiLich\":\"$LoaiLich\",\"SoBaoDanh\":\"$SoBaoDanh\",\"SoTinChi\":\"$SoTinChi\"}";
   }
 
   bool equals(Schedule schedule) {
@@ -78,4 +96,7 @@ class Schedule {
         SoBaoDanh == schedule.SoBaoDanh &&
         SoTinChi == schedule.SoTinChi;
   }
+
+  @override
+  String get tableName => 'Schedule';
 }

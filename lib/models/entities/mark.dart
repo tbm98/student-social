@@ -1,5 +1,25 @@
-class Mark {
-  final String ID;
+import 'package:json_annotation/json_annotation.dart';
+import 'package:studentsocial/models/entities/db_parseable.dart';
+
+part 'mark.g.dart';
+
+@JsonSerializable()
+class Mark extends DBParseable {
+  static const table = 'Mark';
+  static const createQuery = '''CREATE TABLE IF NOT EXISTS Mark (
+  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  MaSinhVien TEXT,
+  MaMon TEXT,
+  TenMon TEXT,
+  SoTinChi TEXT,
+  CC TEXT,
+  KT TEXT,
+  THI TEXT,
+  TKHP TEXT,
+  DIEMCHU TEXT
+  )''';
+  static const dropQuery = 'DROP TABLE IF EXISTS Mark;';
+  final int ID;
   final String MaSinhVien;
   final String MaMon;
   final String TenMon;
@@ -22,17 +42,10 @@ class Mark {
       this.TKHP,
       this.DiemChu});
 
-  factory Mark.fromJson(Map<String, dynamic> json) {
-    return Mark(
-        ID: json['ID'].toString(),
-        MaSinhVien: json['MaSinhVien'],
-        MaMon: json['MaMon'],
-        TenMon: json['TenMon'],
-        SoTinChi: json['SoTinChi'].toString(),
-        CC: json['CC'].toString(),
-        KT: json['KT'].toString(),
-        THI: json['THI'].toString(),
-        TKHP: json['TKHP'].toString(),
-        DiemChu: json['DiemChu'].toString());
-  }
+  factory Mark.fromJson(Map<String, dynamic> json) => _$MarkFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MarkToJson(this);
+
+  @override
+  String get tableName => 'Mark';
 }

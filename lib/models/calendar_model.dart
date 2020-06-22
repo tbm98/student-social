@@ -1,7 +1,6 @@
-import 'package:studentsocial/support/date.dart';
+import 'package:studentsocial/helpers/date.dart';
 
 import 'entities/calendar_day.dart';
-
 
 class CalendarModel {
   final DateSupport dateSupport = DateSupport();

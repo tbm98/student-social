@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:json_annotation/json_annotation.dart';
 
 part 'semester.g.dart';
@@ -14,6 +16,9 @@ class Semester {
       _$SemesterFromJson(json);
 
   Map<String, dynamic> toJson() => _$SemesterToJson(this);
+
+  factory Semester.fromString(String value) =>
+      Semester.fromJson(jsonDecode(value));
 }
 
 @JsonSerializable()

@@ -1,4 +1,29 @@
-class Profile {
+import 'package:json_annotation/json_annotation.dart';
+import 'package:studentsocial/models/entities/db_parseable.dart';
+
+part 'profile.g.dart';
+
+@JsonSerializable()
+class Profile extends DBParseable {
+  static const table = 'Profile';
+  static const createQuery = '''CREATE TABLE IF NOT EXISTS Profile (
+  MaSinhVien TEXT PRIMARY KEY,
+  HoTen TEXT,
+  NienKhoa TEXT,
+  Lop TEXT,
+  Nganh TEXT,
+  Truong TEXT,
+  HeDaoTao TEXT,
+  TongTC TEXT,
+  STCTD TEXT,
+  STCTLN TEXT,
+  DTBC TEXT,
+  DTBCQD TEXT,
+  SoMonKhongDat TEXT,
+  SoTCKhongDat TEXT,
+  Token TEXT
+  )''';
+  static const dropQuery = 'DROP TABLE IF EXISTS Profile;';
   final String MaSinhVien;
   final String HoTen;
   final String NienKhoa;
@@ -25,7 +50,7 @@ class Profile {
       this.HeDaoTao});
 
   void setMoreDetail(
-      tongtc, stctd, stctln, dtbc, dtbcqd, somonkhongdat, sotckhongdat,token) {
+      tongtc, stctd, stctln, dtbc, dtbcqd, somonkhongdat, sotckhongdat, token) {
     this.TongTC = tongtc.toString();
     this.STCTD = stctd.toString();
     this.STCTLN = stctln.toString();
@@ -35,7 +60,8 @@ class Profile {
     this.SoTCKhongDat = sotckhongdat.toString();
     this.Token = token;
   }
-  void setMoreDetailByJson(Map<String,dynamic> json) {
+
+  void setMoreDetailByJson(Map<String, dynamic> json) {
     this.TongTC = json['TongTC'].toString();
     this.STCTD = json['STCTD'].toString();
     this.STCTLN = json['STCTLN'].toString();
@@ -46,37 +72,15 @@ class Profile {
     this.Token = json['Token'].toString();
   }
 
-  factory Profile.fromJson(Map<String, dynamic> json) {
-    return Profile(
-        MaSinhVien: json['MaSinhVien'].toString(),
-        HoTen: json['HoTen'].toString(),
-        NienKhoa: json['NienKhoa'].toString(),
-        Lop: json['Lop'].toString(),
-        Nganh: json['Nganh'].toString(),
-        Truong: json['Truong'].toString(),
-        HeDaoTao: json['HeDaoTao'].toString());
+  factory Profile.guest() {
+    return Profile(MaSinhVien: 'guest', HoTen: 'Người dùng thông thường');
   }
-  static String toGuest(){
-//    return Profile(MaSinhVien: "guest",HoTen: "Người dùng thông thường",NienKhoa: "",Lop: "",Nganh: "",Truong: "",HeDaoTao: "");
-    return '{"MaSinhVien":"guest","HoTen":"Người dùng thông thường","NienKhoa":"","Lop":"","Nganh":"","Truong":"","HeDaoTao":"","TongTC":"","STCTD":"","STCTLN":"","DTBC":"","DTBCQD":"","SoMonKhongDat":"","SoTCKhongDat":"","Token":""}';
-  }
-  toJson(){
-    return {
-      'Token':Token,
-      'TongTC':TongTC,
-      'STCTD':STCTD,
-      'STCTLN':STCTLN,
-      'DTBC':DTBC,
-      'DTBCQD':DTBCQD,
-      'SoMonKhongDat':SoMonKhongDat,
-      'SoTCKhongDat':SoTCKhongDat,
-      'MaSinhVien':MaSinhVien,
-      'HoTen':HoTen,
-      'NienKhoa':NienKhoa,
-      'Lop':Lop,
-      'Nganh':Nganh,
-      'Truong':Truong,
-      'HeDaoTao':HeDaoTao
-    };
-  }
+
+  factory Profile.fromJson(Map<String, dynamic> json) =>
+      _$ProfileFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProfileToJson(this);
+
+  @override
+  String get tableName => 'Profile';
 }

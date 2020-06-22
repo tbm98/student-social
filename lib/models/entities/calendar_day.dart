@@ -1,42 +1,41 @@
-import 'package:studentsocial/support/viet_calendar.dart';
+import 'package:studentsocial/helpers/viet_calendar.dart';
 
-enum DayType{
-  normal,current,click
-}
-class CalendarDay{
+enum DayType { normal, current, click }
+
+class CalendarDay {
   final int day;
   final int month;
   final int year;
 
   List<int> lichAm = List<int>();
-  CalendarDay({this.day,this.month,this.year}){
+  CalendarDay({this.day, this.month, this.year}) {
     _initLichAm();
   }
 
-  factory CalendarDay.now(){
+  factory CalendarDay.now() {
     DateTime date = DateTime.now();
-    return CalendarDay(day: date.day,month: date.month,year: date.year);
+    return CalendarDay(day: date.day, month: date.month, year: date.year);
   }
-  factory CalendarDay.empty(){
-    return CalendarDay(day: 0,month: 0,year: 0);
+  factory CalendarDay.empty() {
+    return CalendarDay(day: 0, month: 0, year: 0);
   }
-  factory CalendarDay.fromDateTime(DateTime date){
-    return CalendarDay(day: date.day,month: date.month,year: date.year);
-  }
-
-  DateTime toDateTime(){
-    return DateTime(year,month,day);
+  factory CalendarDay.fromDateTime(DateTime date) {
+    return CalendarDay(day: date.day, month: date.month, year: date.year);
   }
 
-  _initLichAm(){
+  DateTime toDateTime() {
+    return DateTime(year, month, day);
+  }
+
+  _initLichAm() {
     lichAm = VietCalendar.getInstance().lichAm(day, month, year);
   }
 
-  bool equal(CalendarDay day2){
+  bool equal(CalendarDay day2) {
     return day2.day == day && day2.month == month && day2.year == year;
   }
 
-  bool isEmpty(){
+  bool isEmpty() {
     return day == 0 && month == 0 && year == 0;
   }
 }
