@@ -1,4 +1,4 @@
-include: package:pedantic/analysis_options.yaml
+#include: package:pedantic/analysis_options.yaml
 #  - package:effective_dart/analysis_options.1.2.0.yaml
 analyzer:
 #  strong-mode:
@@ -27,7 +27,7 @@ linter:
     - always_put_control_body_on_new_line
 #    - always_put_required_named_parameters_first
     - always_require_non_null_named_parameters
-#    - always_specify_types
+    - always_specify_types
     - annotate_overrides
 #    - avoid_annotating_with_dynamic
     # - avoid_as
