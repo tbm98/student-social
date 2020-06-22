@@ -3,17 +3,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lazy_code/lazy_code.dart';
 import 'package:provider/provider.dart';
-import 'package:studentsocial/helpers/dialog_support.dart';
-import 'package:studentsocial/models/entities/calendar_day.dart';
-import 'package:studentsocial/presentation/common_widgets/add_note.dart';
-import 'package:studentsocial/presentation/common_widgets/calendar_page.dart';
-import 'package:studentsocial/presentation/common_widgets/list_schedule.dart';
-import 'package:studentsocial/presentation/common_widgets/update_lich.dart';
-import 'package:studentsocial/presentation/screens/main/button_current_day.dart';
-import 'package:studentsocial/presentation/screens/main/drawer.dart';
-import 'package:studentsocial/presentation/screens/main/main_notifier.dart';
-import 'package:studentsocial/viewmodels/calendar_viewmodel.dart';
-import 'package:studentsocial/viewmodels/schedule_viewmodel.dart';
+
+import '../../../helpers/dialog_support.dart';
+import '../../../models/entities/calendar_day.dart';
+import '../../../viewmodels/calendar_viewmodel.dart';
+import '../../../viewmodels/schedule_viewmodel.dart';
+import '../../common_widgets/add_note.dart';
+import '../../common_widgets/calendar_page.dart';
+import '../../common_widgets/list_schedule.dart';
+import '../../common_widgets/update_lich.dart';
+import 'button_current_day.dart';
+import 'drawer.dart';
+import 'main_notifier.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -23,13 +24,13 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin, DialogSupport {
   MainNotifier _mainNotifier;
-  CalendarViewModel _calendarViewModel = CalendarViewModel();
-  ScheduleViewModel _scheduleViewModel = ScheduleViewModel();
+  final CalendarViewModel _calendarViewModel = CalendarViewModel();
+  final ScheduleViewModel _scheduleViewModel = ScheduleViewModel();
   Animation<double> animation;
   AnimationController animationController;
   bool listened = false;
 
-  _initViewModel() {
+  void _initViewModel() {
     _mainNotifier = context.read<MainNotifier>();
     _mainNotifier.initSize(MediaQuery.of(context).size);
     if (!listened) {
@@ -99,7 +100,7 @@ class MainScreenState extends State<MainScreen>
         onPressed: () {
           _showDialogAddGhiChu();
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -107,9 +108,10 @@ class MainScreenState extends State<MainScreen>
   Widget get _layoutRefesh {
     if (_mainNotifier.getMSV != null && _mainNotifier.getMSV != 'guest') {
       return IconButton(
-          icon: Icon(Icons.refresh), onPressed: _mainNotifier.updateSchedule);
+          icon: const Icon(Icons.refresh),
+          onPressed: _mainNotifier.updateSchedule);
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
   }
 

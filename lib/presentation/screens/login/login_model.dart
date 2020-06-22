@@ -7,30 +7,33 @@ import 'package:studentsocial/models/entities/semester.dart';
 import 'package:studentsocial/rest_api/rest_client.dart';
 
 class LoginModel {
+  LoginModel();
+
   String semester, semesterKyTruoc, token, mark, msv;
   bool lichthilai = true;
   Profile profile;
   List<Schedule> lichHoc;
   List<Schedule> lichThi;
   List<Schedule> lichThiLai;
-  Map<String, String> subjectsName = Map<String, String>();
-  Map<String, String> subjectsSoTinChi = Map<String, String>();
-  RestClient _client = RestClient.create();
-  final controllerEmail = TextEditingController(text: 'DTC165D4801030252');
-  final controllerPassword = TextEditingController(text: 'tbm01031998');
+  Map<String, String> subjectsName = <String, String>{};
+  Map<String, String> subjectsSoTinChi = <String, String>{};
+  final RestClient _client = RestClient.create();
+  final TextEditingController controllerEmail =
+      TextEditingController(text: 'DTC165D4801030252');
 
-  LoginModel() {}
+  final TextEditingController controllerPassword =
+      TextEditingController(text: 'tbm01031998');
 
   bool get dataIsInvalid =>
       controllerEmail.text.trim().isEmpty ||
       controllerPassword.text.trim().isEmpty;
 
-  get getMSV => controllerEmail.text.trim().toUpperCase();
+  String get getMSV => controllerEmail.text.trim().toUpperCase();
 
-  get getPassword => controllerPassword.text.trim();
+  String get getPassword => controllerPassword.text.trim();
 
-  Future<LoginResult> login(msv, password) async {
-    final result = await _client.login(msv, password);
+  Future<LoginResult> login(String msv, String password) async {
+    final LoginResult result = await _client.login(msv, password);
     if (result.isSuccess()) {
       this.msv = (result as LoginSuccess).message.Profile.MaSinhVien;
     }
@@ -65,7 +68,8 @@ class LoginModel {
     subjectsSoTinChi[maMon] = soTinChi;
   }
 
-  Future saveMarkToDB() async {
+  Future<void> saveMarkToDB() async {
+    //TODO: save mark to db
 //    var res = await PlatformChannel().saveMarkToDB(
 //        mark, json.encode(subjectsName), json.encode(subjectsSoTinChi), msv);
 //    print('saveMarkToDB: $res');

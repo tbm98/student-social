@@ -1,4 +1,4 @@
-class Note{
+class Note {
   final String tieuDe;
   final String noiDung;
   final String date;
@@ -7,13 +7,11 @@ class Note{
 
   factory Note.fromJson(Map<String, dynamic> json) {
     return Note(
-        tieuDe: json['tieuDe'].toString(), noiDung: json['noiDung'].toString(), date: json['date'].toString());
+        tieuDe: json['tieuDe'].toString(),
+        noiDung: json['noiDung'].toString(),
+        date: json['date'].toString());
   }
-  toJson(){
-    return {
-      'tieuDe':tieuDe,
-      'noiDung':noiDung,
-      'date':date
-    };
+  Map<String, String> toJson() {
+    return {'tieuDe': tieuDe, 'noiDung': noiDung, 'date': date};
   }
 }

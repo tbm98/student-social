@@ -10,12 +10,10 @@ class _SettingScrenState extends State<SettingScren> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cài đặt ứng dụng'),
+        title: const Text('Cài đặt ứng dụng'),
       ),
-      body: Container(
-        child: Center(
-          child: Text('Đang trong quá trình xây dựng'),
-        ),
+      body: const Center(
+        child: Text('Đang trong quá trình xây dựng'),
       ),
     );
   }

@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/http.dart';
-import 'package:studentsocial/models/entities/login.dart';
-import 'package:studentsocial/models/entities/schedule.dart';
-import 'package:studentsocial/models/entities/semester.dart';
+
+import '../models/entities/login.dart';
+import '../models/entities/schedule.dart';
+import '../models/entities/semester.dart';
 
 part 'rest_client.g.dart';
 
@@ -11,7 +12,7 @@ abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 
   factory RestClient.create() {
-    final dio = Dio();
+    final Dio dio = Dio();
     return RestClient(dio);
   }
 

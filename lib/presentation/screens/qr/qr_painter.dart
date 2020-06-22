@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'dart:core';
 import 'dart:ui' as ui;
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qr/qr.dart';
-import 'dart:core';
 
 typedef void QrError(dynamic error);
 
@@ -19,12 +19,12 @@ class QrPainter extends CustomPainter {
 
   QrPainter(
       {@required String data,
-        @required this.version,
-        this.errorCorrectionLevel = QrErrorCorrectLevel.L,
-        this.color = const Color(0xFF999999),
-        this.emptyColor,
-        this.onError,
-        this.gapless = false})
+      @required this.version,
+      this.errorCorrectionLevel = QrErrorCorrectLevel.L,
+      this.color = const Color(0xFF999999),
+      this.emptyColor,
+      this.onError,
+      this.gapless = false})
       : this._qr = new QrCode(version, errorCorrectionLevel) {
     _p.color = this.color;
     // configure and make the QR code data
@@ -80,15 +80,16 @@ class QrPainter extends CustomPainter {
   }
 
   ui.Picture toPicture(double size) {
-    ui.PictureRecorder recorder = new ui.PictureRecorder();
-    Canvas canvas = new Canvas(recorder);
+    final ui.PictureRecorder recorder = ui.PictureRecorder();
+    final Canvas canvas = Canvas(recorder);
     paint(canvas, Size(size, size));
     return recorder.endRecording();
   }
 
   Future<ByteData> toImageData(double size,
       {ui.ImageByteFormat format = ui.ImageByteFormat.png}) async {
-    final uiImage = await toPicture(size).toImage(size.toInt(), size.toInt());
+    final ui.Image uiImage =
+        await toPicture(size).toImage(size.toInt(), size.toInt());
     return await uiImage.toByteData(format: format);
   }
 }

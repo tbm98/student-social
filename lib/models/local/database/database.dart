@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:studentsocial/helpers/logging.dart';
-import 'package:studentsocial/models/entities/db_parseable.dart';
-import 'package:studentsocial/models/entities/mark.dart';
-import 'package:studentsocial/models/entities/profile.dart';
-import 'package:studentsocial/models/entities/schedule.dart';
-import 'package:studentsocial/models/entities/schedule.dart';
+
+import '../../../helpers/logging.dart';
+import '../../entities/db_parseable.dart';
+import '../../entities/mark.dart';
+import '../../entities/profile.dart';
+import '../../entities/schedule.dart';
 
 ///******************** MyDatabase *****************///
 
@@ -21,7 +21,7 @@ class MyDatabase {
     return _instance;
   }
 
-  static const dbName = 'student_social.db';
+  static const String dbName = 'student_social.db';
   Database _db;
 
   Future<Database> get database async {
@@ -39,8 +39,10 @@ class MyDatabase {
 
   Future<int> count(String table) async {
     _db = await database;
-    final result = await _db.rawQuery('SELECT COUNT(*) FROM $table');
-    print('result count is $result');
+    final List<Map<String, dynamic>> result =
+        await _db.rawQuery('SELECT COUNT(*) FROM $table');
+    logs('result count is $result');
+    //TODO: check lai logic count
   }
 
   Future<int> insert(DBParseable data) async {
@@ -54,7 +56,7 @@ class MyDatabase {
 
   Future<Profile> getProfileByMSV(String msv) async {
     _db = await database;
-    final maps = await _db
+    final List<Map<String, dynamic>> maps = await _db
         .query(Profile.table, where: 'MaSinhVien = ?', whereArgs: [msv]);
     if (maps.isEmpty) {
       return null;
@@ -65,11 +67,11 @@ class MyDatabase {
 
   Future<List<Profile>> getAllProfile([String msv]) async {
     _db = await database;
-    final maps = msv == null
+    final List<Map<String, dynamic>> maps = msv == null
         ? await _db.query(Profile.table)
         : await _db
             .query(Profile.table, where: 'MaSinhVien = ?', whereArgs: [msv]);
-    return List.generate(maps.length, (i) {
+    return List.generate(maps.length, (int i) {
       return Profile.fromJson(maps[i]);
     });
   }
@@ -81,14 +83,14 @@ class MyDatabase {
         ? await _db.query(Schedule.table)
         : await _db.query(Schedule.table,
             where: 'MaSinhVien = ? and Ngay == ?', whereArgs: [msv, date]);
-    return List.generate(maps.length, (i) {
+    return List.generate(maps.length, (int i) {
       return Schedule.fromJson(maps[i]);
     });
   }
 
   Future<List<Schedule>> getAllSchedule([String msv]) async {
     _db = await database;
-    final maps = msv == null
+    final List<Map<String, dynamic>> maps = msv == null
         ? await _db.query(Schedule.table)
         : await _db
             .query(Schedule.table, where: 'MaSinhVien = ?', whereArgs: [msv]);
@@ -102,7 +104,7 @@ class MyDatabase {
 
   Future<List<Mark>> getAllMark([String msv]) async {
     _db = await database;
-    final maps = msv == null
+    final List<Map<String, dynamic>> maps = msv == null
         ? await _db.query(Mark.table)
         : await _db
             .query(Mark.table, where: 'MaSinhVien = ?', whereArgs: [msv]);

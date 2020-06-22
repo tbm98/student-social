@@ -4,33 +4,36 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:studentsocial/helpers/dialog_support.dart';
-import 'package:studentsocial/models/entities/schedule.dart';
-import 'package:studentsocial/presentation/screens/main/main_notifier.dart';
+
+import '../../helpers/dialog_support.dart';
+import '../../helpers/logging.dart';
+import '../../models/entities/schedule.dart';
+import '../screens/main/main_notifier.dart';
 
 class AddNote extends StatefulWidget {
-  final DateTime date;
-  final BuildContext context;
+  const AddNote({this.date, this.context});
 
-  AddNote({this.date, this.context});
+  final DateTime date;
+
+  final BuildContext context;
 
   @override
   _AddNoteState createState() => _AddNoteState();
 }
 
 class _AddNoteState extends State<AddNote> with DialogSupport {
-  final dateFormat = DateFormat("yyyy-MM-dd");
+  final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
   DateTime _date;
 
   //khai bao bien formkey de quan li,validate from them ghi chu
-  final formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   //khai bao bien cho phan ghi chu
   String _title = '', _content = '';
 
   MainNotifier _mainViewModel;
 
-  _initViewModel() {
+  void _initViewModel() {
     _mainViewModel = Provider.of<MainNotifier>(widget.context);
   }
 
@@ -43,21 +46,22 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
   /*
    * xu ly su kien khi bam them ghi chu
    */
-  void _actionThemGhiChu() async {
+  Future<void> _actionThemGhiChu() async {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
-      final note = Schedule.forNote(
+      final Schedule note = Schedule.forNote(
           _mainViewModel.getMSV,
           _title == '' ? 'Tiêu đề' : _title,
           _content == '' ? 'Nội dung' : _content,
           dateFormat.format(_date));
       try {
+        //TODO: Add note
 //        String value = await PlatformChannel.database.invokeMethod(
 //            PlatformChannel.addNote, <String, String>{'note': schedule});
 //        print('add note :$value');
         _mainViewModel.loadCurrentMSV();
       } catch (e) {
-        print('add note: $e');
+        logs('add note: $e');
       }
       pop(context);
     }
@@ -66,14 +70,14 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
   /*
    * show picker time
    */
-  Future<Null> _pickerTime() async {
+  Future<void> _pickerTime() async {
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: _date,
         firstDate: DateTime(2000),
         lastDate: DateTime(9999));
     if (picked != null && picked != _date) {
-      print('date selected is ${_date.toString()}');
+      logs('date selected is ${_date.toString()}');
       setState(() {
         _date = picked;
       });
@@ -87,11 +91,9 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
   TextFormField _noteTitle() {
     return TextFormField(
       maxLines: 1,
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-      ),
-      onSaved: (value) => _title = value,
-      decoration: InputDecoration(
+      style: const TextStyle(fontWeight: FontWeight.bold),
+      onSaved: (String value) => _title = value,
+      decoration: const InputDecoration(
           hintText: 'Tiêu đề (không bắt buộc)',
           labelText: 'Tiêu đề (không bắt buộc)',
           border: OutlineInputBorder(
@@ -102,8 +104,8 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
   TextFormField _noteContent() {
     return TextFormField(
       maxLines: 2,
-      onSaved: (value) => _content = value,
-      decoration: InputDecoration(
+      onSaved: (String value) => _content = value,
+      decoration: const InputDecoration(
           hintText: 'Nội dung (không bắt buộc)',
           labelText: 'Nội dung (không bắt buộc)',
           border: OutlineInputBorder(
@@ -115,29 +117,29 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
     return Wrap(
       children: <Widget>[
         RaisedButton(
-          child: Text(
-            dateFormat.format(_date),
-            style: TextStyle(color: Colors.white),
-          ),
           onPressed: null,
           color: Colors.blue,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(16))),
+          child: Text(
+            dateFormat.format(_date),
+            style: const TextStyle(color: Colors.white),
+          ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
         RaisedButton(
-          child: Text(
-            'Chọn ngày',
-            style: TextStyle(color: Colors.white),
-          ),
           onPressed: () {
             _pickerTime();
           },
           color: Colors.blue,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(16))),
+          child: const Text(
+            'Chọn ngày',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ],
     );
@@ -148,7 +150,7 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
     _initViewModel();
 
     return AlertDialog(
-      title: Text('Thêm lịch cá nhân'),
+      title: const Text('Thêm lịch cá nhân'),
       content: Form(
         key: formKey,
         child: SingleChildScrollView(
@@ -162,12 +164,12 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
                     padding: const EdgeInsets.only(top: 8),
                     child: _noteTitle(),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8),
+                  const Padding(
+                    padding: EdgeInsets.all(8),
                   ),
                   _noteContent(),
-                  Padding(
-                    padding: const EdgeInsets.all(8),
+                  const Padding(
+                    padding: EdgeInsets.all(8),
                   ),
                   _datePicker()
                 ]),
@@ -176,15 +178,18 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
       ),
       actions: <Widget>[
         FlatButton(
-          child: Text(
-            'Hủy bỏ',
-            style: TextStyle(color: Colors.red),
-          ),
           onPressed: () {
             pop(context);
           },
+          child: const Text(
+            'Hủy bỏ',
+            style: TextStyle(color: Colors.red),
+          ),
         ),
-        FlatButton(child: Text('Thêm mới'), onPressed: _actionThemGhiChu)
+        FlatButton(
+          onPressed: _actionThemGhiChu,
+          child: const Text('Thêm mới'),
+        )
       ],
     );
   }

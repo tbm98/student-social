@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:studentsocial/models/entities/calendar_day.dart';
-import 'package:studentsocial/models/entities/schedule.dart';
-import 'package:studentsocial/viewmodels/calendar_viewmodel.dart';
-import 'package:studentsocial/viewmodels/schedule_viewmodel.dart';
-import 'package:studentsocial/presentation/screens/main/main_notifier.dart';
-import 'calendar_tile.dart';
+
+import '../../models/entities/calendar_day.dart';
+import '../../models/entities/schedule.dart';
+import '../../viewmodels/calendar_viewmodel.dart';
+import '../../viewmodels/schedule_viewmodel.dart';
+import '../screens/main/main_notifier.dart';
 import 'calendar_views.dart';
 
 class Calendar extends StatefulWidget {
@@ -18,7 +18,7 @@ class _CalendarState extends State<Calendar> with CalendarViews {
   CalendarViewModel _calendarViewModel;
   ScheduleViewModel _listScheduleViewModel;
 
-  _initViewModel() {
+  void _initViewModel() {
     _mainViewModel = Provider.of<MainNotifier>(context);
     _calendarViewModel = Provider.of<CalendarViewModel>(context);
     _calendarViewModel.addMainViewModel(_mainViewModel);
@@ -28,25 +28,23 @@ class _CalendarState extends State<Calendar> with CalendarViews {
   @override
   Widget build(BuildContext context) {
     _initViewModel();
-    return Container(
-      child: PageView.builder(
-        physics: AlwaysScrollableScrollPhysics(),
-        itemCount: 24,
-        controller: _calendarViewModel.getPageViewController,
-        itemBuilder: (BuildContext context, int index) {
-          return _layoutItemCalendar(index);
-        },
-        onPageChanged: (int index) {
-          _calendarViewModel.setIndexPageByChanged(index);
-        },
-      ),
+    return PageView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemCount: 24,
+      controller: _calendarViewModel.getPageViewController,
+      itemBuilder: (BuildContext context, int index) {
+        return _layoutItemCalendar(index);
+      },
+      onPageChanged: (int index) {
+        _calendarViewModel.setIndexPageByChanged(index);
+      },
     );
   }
 
   Widget _layoutItemCalendar(int indexPage) {
     _calendarViewModel.setIndexPage(indexPage);
     return Container(
-      margin: EdgeInsets.only(left: 4, right: 4),
+      margin: const EdgeInsets.only(left: 4, right: 4),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8), color: Colors.white),
       child: Column(
@@ -57,7 +55,7 @@ class _CalendarState extends State<Calendar> with CalendarViews {
             width: _mainViewModel.getWidth,
             height: _calendarViewModel.getTableHeight,
             child: GridView(
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 7,
                   childAspectRatio: _mainViewModel.getItemWidth /
@@ -80,7 +78,7 @@ class _CalendarState extends State<Calendar> with CalendarViews {
   }
 
   List<Widget> _getListItemDay(int indexPage) {
-    List<Widget> _items = List<Widget>();
+    final List<Widget> _items = <Widget>[];
     for (int i = 0; i < 42; i++) {
       _items.add(Center(child: layoutOfDay(indexPage, i)));
     }
@@ -96,7 +94,7 @@ class _CalendarState extends State<Calendar> with CalendarViews {
   }
 
   Widget layoutDayByType(int indexPage, int index) {
-    CalendarDay calendarDay =
+    final CalendarDay calendarDay =
         _calendarViewModel.getListCalendarDay(indexPage)[index];
     if (calendarDay.equal(_calendarViewModel.currentDay)) {
 //      return CalendarTile();
@@ -109,7 +107,7 @@ class _CalendarState extends State<Calendar> with CalendarViews {
   }
 
   Widget currentDay(int indexPage, int index) {
-    CalendarDay calendarDay =
+    final CalendarDay calendarDay =
         _calendarViewModel.getListCalendarDay(indexPage)[index];
     return InkResponse(
       enableFeedback: true,
@@ -130,7 +128,7 @@ class _CalendarState extends State<Calendar> with CalendarViews {
   }
 
   Widget currentDayByClick(int indexPage, int index) {
-    CalendarDay calendarDay =
+    final CalendarDay calendarDay =
         _calendarViewModel.getListCalendarDay(indexPage)[index];
     return InkResponse(
       enableFeedback: true,
@@ -151,7 +149,7 @@ class _CalendarState extends State<Calendar> with CalendarViews {
   }
 
   Widget normalDay(int indexPage, int index) {
-    CalendarDay calendarDay =
+    final CalendarDay calendarDay =
         _calendarViewModel.getListCalendarDay(indexPage)[index];
     return InkResponse(
       enableFeedback: true,
@@ -171,13 +169,13 @@ class _CalendarState extends State<Calendar> with CalendarViews {
   }
 
   Widget layoutNumberSchedule(int indexPage, int index) {
-    CalendarDay calendarDay =
+    final CalendarDay calendarDay =
         _calendarViewModel.getListCalendarDay(indexPage)[index];
     //• 1 cham the thien 1 lich
-    String keyOfEntri = _calendarViewModel.getKeyOfEntri(
+    final String keyOfEntri = _calendarViewModel.getKeyOfEntri(
         calendarDay.month, calendarDay.day, indexPage);
     if (_mainViewModel.getEntriesOfDay != null) {
-      List<Schedule> entries = _mainViewModel.getEntriesOfDay[keyOfEntri];
+      final List<Schedule> entries = _mainViewModel.getEntriesOfDay[keyOfEntri];
 //      //lọc những tiết bị trùng
 //      if(entries != null && entries.isNotEmpty)
 //        for(int i=0;i<entries.length - 1;i++){
@@ -188,7 +186,7 @@ class _CalendarState extends State<Calendar> with CalendarViews {
 //            }
 //          }
 //        }
-      var numberSchedules =
+      final List<int> numberSchedules =
           _calendarViewModel.calculateNumberSchedules(entries);
       if (numberSchedules[0] == 0 &&
           numberSchedules[1] == 0 &&
@@ -203,7 +201,7 @@ class _CalendarState extends State<Calendar> with CalendarViews {
 
   Widget getLayoutNumberSchedule(int lichThi, int lichHoc, int note) {
     if (lichThi + lichHoc + note >= 6) {
-      var listNumber =
+      final List<int> listNumber =
           _calendarViewModel.getNumberSchedules(lichThi, lichHoc, note);
       return layoutRichTextNumberSchedule(
           listNumber[0], listNumber[1], listNumber[2], true);

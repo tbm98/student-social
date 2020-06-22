@@ -1,3 +1,3 @@
-class Strings{
-  static const titleApp = 'Student Social';
+class Strings {
+  static const String titleApp = 'Student Social';
 }

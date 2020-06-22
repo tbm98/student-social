@@ -1,33 +1,33 @@
-import 'package:studentsocial/helpers/viet_calendar.dart';
+import '../../helpers/viet_calendar.dart';
 
 enum DayType { normal, current, click }
 
 class CalendarDay {
-  final int day;
-  final int month;
-  final int year;
-
-  List<int> lichAm = List<int>();
   CalendarDay({this.day, this.month, this.year}) {
     _initLichAm();
   }
-
   factory CalendarDay.now() {
-    DateTime date = DateTime.now();
+    final DateTime date = DateTime.now();
     return CalendarDay(day: date.day, month: date.month, year: date.year);
   }
   factory CalendarDay.empty() {
     return CalendarDay(day: 0, month: 0, year: 0);
   }
+
   factory CalendarDay.fromDateTime(DateTime date) {
     return CalendarDay(day: date.day, month: date.month, year: date.year);
   }
+  final int day;
+
+  final int month;
+  final int year;
+  List<int> lichAm = <int>[];
 
   DateTime toDateTime() {
     return DateTime(year, month, day);
   }
 
-  _initLichAm() {
+  void _initLichAm() {
     lichAm = VietCalendar.getInstance().lichAm(day, month, year);
   }
 

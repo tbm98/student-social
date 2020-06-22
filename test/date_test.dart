@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:studentsocial/helpers/date.dart';
 
-main() {
-  test("test cac ham chuc nang trong dateSupport", (){
-    var date = DateSupport();
+void main() {
+  test('test cac ham chuc nang trong dateSupport', () {
+    final DateSupport date = DateSupport();
     //expect(date.getTiet('DTN'), 11);
-    expect(1+1,2);
+    expect(1 + 1, 2);
   });
 }

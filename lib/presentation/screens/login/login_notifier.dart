@@ -3,13 +3,15 @@ import 'dart:convert';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
-import 'package:studentsocial/models/entities/login.dart';
-import 'package:studentsocial/models/entities/profile.dart';
-import 'package:studentsocial/models/local/database/database.dart';
-import 'package:studentsocial/models/local/repository/profile_repository.dart';
-import 'package:studentsocial/models/local/repository/schedule_repository.dart';
-import 'package:studentsocial/models/local/shared_prefs.dart';
-import 'package:studentsocial/presentation/screens/login/login_model.dart';
+import 'package:flutter/src/widgets/editable_text.dart';
+import '../../../helpers/logging.dart';
+import '../../../models/entities/login.dart';
+import '../../../models/entities/profile.dart';
+import '../../../models/local/database/database.dart';
+import '../../../models/local/repository/profile_repository.dart';
+import '../../../models/local/repository/schedule_repository.dart';
+import '../../../models/local/shared_prefs.dart';
+import 'login_model.dart';
 
 enum LoginAction {
   alert_with_message,
@@ -20,12 +22,6 @@ enum LoginAction {
 }
 
 class LoginNotifier with ChangeNotifier {
-  LoginModel _loginModel;
-  StreamController _streamController;
-  ProfileRepository _profileRepository;
-  ScheduleRepository _scheduleRepository;
-  SharedPrefs _sharedPrefs;
-
   LoginNotifier(MyDatabase database) {
     _sharedPrefs = SharedPrefs();
     _profileRepository = ProfileRepository(database);
@@ -33,6 +29,12 @@ class LoginNotifier with ChangeNotifier {
     _loginModel = LoginModel();
     _streamController = StreamController();
   }
+  LoginModel _loginModel;
+  StreamController _streamController;
+  ProfileRepository _profileRepository;
+  ScheduleRepository _scheduleRepository;
+
+  SharedPrefs _sharedPrefs;
 
   @override
   void dispose() {
@@ -40,9 +42,10 @@ class LoginNotifier with ChangeNotifier {
     super.dispose();
   }
 
-  get getControllerMSV => _loginModel.controllerEmail;
+  TextEditingController get getControllerMSV => _loginModel.controllerEmail;
 
-  get getControllerPassword => _loginModel.controllerPassword;
+  TextEditingController get getControllerPassword =>
+      _loginModel.controllerPassword;
 
   Sink _inputAction() {
     return _streamController.sink;
@@ -52,15 +55,15 @@ class LoginNotifier with ChangeNotifier {
     return _streamController.stream;
   }
 
-  _pop() {
+  void _pop() {
     _inputAction().add({'type': LoginAction.pop});
   }
 
-  _loading(String msg) {
+  void _loading(String msg) {
     _inputAction().add({'type': LoginAction.loading, 'data': msg});
   }
 
-  void submit() async {
+  Future<void> submit() async {
     final bool isOnline = await _checkInternetConnectivity();
     if (!isOnline) {
       return;
@@ -69,7 +72,7 @@ class LoginNotifier with ChangeNotifier {
   }
 
   Future<bool> _checkInternetConnectivity() async {
-    var result = await Connectivity().checkConnectivity();
+    final ConnectivityResult result = await Connectivity().checkConnectivity();
     if (result == ConnectivityResult.none) {
       _inputAction().add({
         'type': LoginAction.alert_with_message,
@@ -83,7 +86,7 @@ class LoginNotifier with ChangeNotifier {
     return false;
   }
 
-  _actionLogin() {
+  void _actionLogin() {
     if (_loginModel.dataIsInvalid) {
       _inputAction().add({
         'type': LoginAction.alert_with_message,
@@ -91,14 +94,14 @@ class LoginNotifier with ChangeNotifier {
       });
     } else {
       _loading('Đang đăng nhập...');
-      var tk = _loginModel.getMSV;
-      var mk = _loginModel.getPassword;
+      final String tk = _loginModel.getMSV;
+      final String mk = _loginModel.getPassword;
       _login(tk, mk);
     }
   }
 
-  void _login(msv, password) async {
-    final result = await _loginModel.login(msv, password);
+  Future<void> _login(String msv, String password) async {
+    final LoginResult result = await _loginModel.login(msv, password);
     _loginModel.msv = msv;
     if (result.isSuccess()) {
       _loginModel.profile =
@@ -116,16 +119,18 @@ class LoginNotifier with ChangeNotifier {
     }
   }
 
-  void _getSemester(String token) async {
-//    print('token is $token');
+  Future<void> _getSemester(String token) async {
+    logs('token is $token');
     final semesterResult = await _loginModel.getSemester(token);
-    print('semesterResult is $semesterResult');
+    logs('semesterResult is ${semesterResult.toJson()}');
     _pop();
     _inputAction()
         .add({'type': LoginAction.alert_chon_kyhoc, 'data': semesterResult});
   }
 
-  void semesterClicked(data, kyTruoc) {
+  void semesterClicked(String data, String kyTruoc) {
+    logs('data is $data');
+    logs('kyTruoc is $kyTruoc');
     _pop();
     _loginModel.semester = data;
     if (kyTruoc != null) {
@@ -134,7 +139,7 @@ class LoginNotifier with ChangeNotifier {
     _loadData(_loginModel.semester, _loginModel.semesterKyTruoc);
   }
 
-  void _loadData(String semester, String semesterKyTruoc) async {
+  Future<void> _loadData(String semester, String semesterKyTruoc) async {
     _loading('Đang lấy thông tin điểm');
     await _loginModel.getDiem();
     _pop();
@@ -153,17 +158,17 @@ class LoginNotifier with ChangeNotifier {
   }
 
   void addSubjects(value) {
-    print('value addSubjects is $value');
-    var jsonValue = json.decode(value);
-    var listSubjects = jsonValue['message']['Subjects'];
-    for (var item in listSubjects) {
+    logs('value addSubjects is $value');
+    final jsonValue = json.decode(value);
+    final listSubjects = jsonValue['message']['Subjects'];
+    for (final item in listSubjects) {
       _loginModel.addSubjectsName(item['MaMon'], item['TenMon']);
       _loginModel.addSubjectsSoTinChi(
           item['MaMon'], item['SoTinChi'].toString());
     }
   }
 
-  void _saveInfo() async {
+  Future<void> _saveInfo() async {
     //tách và lấy ra tất cả tên và số tín chỉ của từng môn học
     addSubjects(_loginModel.lichHoc);
     addSubjects(_loginModel.lichThi);
@@ -183,12 +188,13 @@ class LoginNotifier with ChangeNotifier {
 //        _loginModel.token);
 
     _loading('Đang lưu thông tin người dùng');
-    var resProfile =
+    final int resProfile =
         await _profileRepository.insertOnlyUser(_loginModel.profile);
     _pop();
-    print('saveProfileToDB: $resProfile');
-    var resCurrentMSV = await _sharedPrefs.setCurrentMSV(_loginModel.msv);
-    print('saveCurrentMSV:$resCurrentMSV');
+    logs('saveProfileToDB: $resProfile');
+    final bool resCurrentMSV =
+        await _sharedPrefs.setCurrentMSV(_loginModel.msv);
+    logs('saveCurrentMSV:$resCurrentMSV');
     _loading('Đang lưu điểm và lịch cá nhân');
     await _loginModel.saveMarkToDB();
     await _scheduleRepository.insertListSchedules(_loginModel.lichHoc);

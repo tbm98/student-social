@@ -1,7 +1,5 @@
-import 'package:studentsocial/helpers/logging.dart';
-import 'package:studentsocial/models/entities/schedule.dart';
-
-import '../../entities/profile.dart';
+import '../../../helpers/logging.dart';
+import '../../entities/schedule.dart';
 import 'database.dart';
 
 class ScheduleDao {
@@ -10,7 +8,7 @@ class ScheduleDao {
 
   Future<int> insertListSchedules(List<Schedule> listSchedules) async {
     logs('listSchedules is $listSchedules');
-    for (var i = 0; i < listSchedules.length; i++) {
+    for (int i = 0; i < listSchedules.length; i++) {
       await database.insert(listSchedules[i]);
     }
     //TODO: edit value return
@@ -37,7 +35,7 @@ class ScheduleDao {
     return await database.deleteAll(Schedule.table);
   }
 
-  void countSchedules() async {
+  Future<void> countSchedules() async {
     await database.count(Schedule.table);
   }
 

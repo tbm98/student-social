@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:studentsocial/models/entities/db_parseable.dart';
+import 'db_parseable.dart';
 
 part 'schedule.g.dart';
 
@@ -22,7 +22,7 @@ class Schedule extends DBParseable {
   SoBaoDanh TEXT,
   SoTinChi TEXT
   )''';
-  static const dropQuery = 'DROP TABLE IF EXISTS Schedule;';
+  static const String dropQuery = 'DROP TABLE IF EXISTS Schedule;';
   final int ID;
 
   final String MaSinhVien;

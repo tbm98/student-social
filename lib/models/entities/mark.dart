@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:studentsocial/models/entities/db_parseable.dart';
+import 'db_parseable.dart';
 
 part 'mark.g.dart';
 

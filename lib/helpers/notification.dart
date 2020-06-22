@@ -72,8 +72,9 @@ class Notification {
 
   Future<void> scheduleOneNotifi(DateTime scheduledNotificationDateTime,
       DateTime dateTimeForGetData, int id, List<Schedule> entriesOfDay) async {
-    final body = getBody(entriesOfDay);
-    final androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    final String body = getBody(entriesOfDay);
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
       'student_notifi_id',
       'student_notifi_name',
       'student_notifi_description',
@@ -98,7 +99,7 @@ class Notification {
         platformChannelSpecifics);
   }
 
-  Future onSelectNotification(String payload) async {
+  Future<void> onSelectNotification(String payload) async {
     if (payload != null) {
       logs('notification payload: $payload');
     }
@@ -120,10 +121,12 @@ class Notification {
     if (entriesOfDay == null || entriesOfDay.isEmpty) {
       return 'Ngày mai bạn rảnh ^_^';
     }
-    var msg = '';
+    String msg = '';
     for (int i = 0; i < entriesOfDay.length; i++) {
       msg += getContentByEntri(entriesOfDay[i]);
-      if (i != entriesOfDay.length - 1) msg += '\n•\n';
+      if (i != entriesOfDay.length - 1) {
+        msg += '\n•\n';
+      }
     }
     return msg;
   }

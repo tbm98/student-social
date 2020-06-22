@@ -1,12 +1,11 @@
-import 'package:studentsocial/helpers/date.dart';
-
+import '../helpers/date.dart';
 import 'entities/calendar_day.dart';
 
 class CalendarModel {
   final DateSupport dateSupport = DateSupport();
   int indexPage;
 
-  List<CalendarDay> listCalendarDays = List<CalendarDay>();
+  List<CalendarDay> listCalendarDays = <CalendarDay>[];
 
   //
 
@@ -45,7 +44,7 @@ class CalendarModel {
   }
 
   int getDay(int index) {
-    return (maxDay - ((indexDayOfWeek - 1 - 1 + maxDay) - (index)));
+    return maxDay - ((indexDayOfWeek - 1 - 1 + maxDay) - index);
   }
 
   void setIndexPage(int indexPage) {
@@ -54,7 +53,7 @@ class CalendarModel {
     for (int i = 0; i < 42; i++) {
       if (isDayInScope(i)) {
         //ngày này trong phạm vi hiển thị của tháng
-        int day = getDay(i);
+        final int day = getDay(i);
         listCalendarDays.add(CalendarDay(day: day, month: month, year: year));
       } else {
         listCalendarDays.add(CalendarDay.empty());

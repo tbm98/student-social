@@ -2,17 +2,19 @@ import 'dart:convert';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
-import 'package:studentsocial/models/entities/mark.dart';
-import 'package:studentsocial/models/entities/profile.dart';
-import 'package:studentsocial/presentation/screens/mark/mark_model.dart';
+import 'package:studentsocial/helpers/logging.dart';
+
+import '../../../models/entities/mark.dart';
+import '../../../models/entities/profile.dart';
+import 'mark_model.dart';
 
 class MarkNotifier with ChangeNotifier {
-  MarkModel _markModel;
-
   MarkNotifier() {
     _markModel = MarkModel();
     loadCurrentMSV();
   }
+
+  MarkModel _markModel;
 
   String get getMSV => _markModel.msv;
 
@@ -22,28 +24,28 @@ class MarkNotifier with ChangeNotifier {
     if (_markModel.filterType == 'ALL') {
       return _markModel.listMark;
     }
-    _markModel.listMarkFilter = List<Mark>();
+    _markModel.listMarkFilter = <Mark>[];
     _markModel.listMarkFilter.addAll(_markModel.listMark);
     _markModel.listMarkFilter
-        .removeWhere((mark) => mark.DiemChu != _markModel.filterType);
+        .removeWhere((Mark mark) => mark.DiemChu != _markModel.filterType);
     return _markModel.listMarkFilter;
   }
 
-  get getTongTC => _markModel.profile.TongTC;
+  String get getTongTC => _markModel.profile.TongTC;
 
-  get getSTCTD => _markModel.profile.STCTD;
+  String get getSTCTD => _markModel.profile.STCTD;
 
-  get getDTBC => _markModel.profile.DTBC;
+  String get getDTBC => _markModel.profile.DTBC;
 
-  get getDTBCQD => _markModel.profile.DTBCQD;
+  String get getDTBCQD => _markModel.profile.DTBCQD;
 
-  get getSTCTLN => _markModel.profile.STCTLN;
+  String get getSTCTLN => _markModel.profile.STCTLN;
 
-  get getSoMonKhongDat => _markModel.profile.SoMonKhongDat;
+  String get getSoMonKhongDat => _markModel.profile.SoMonKhongDat;
 
-  get getSoTCKhongDat => _markModel.profile.SoTCKhongDat;
+  String get getSoTCKhongDat => _markModel.profile.SoTCKhongDat;
 
-  void loadCurrentMSV() async {
+  Future<void> loadCurrentMSV() async {
 //    String value = await PlatformChannel.database
 //        .invokeMethod(PlatformChannel.getCurrentMSV);
 //    _markModel.msv = value;
@@ -53,7 +55,7 @@ class MarkNotifier with ChangeNotifier {
 //    }
   }
 
-  void loadProfile() async {
+  Future<void> loadProfile() async {
     try {
 //      String value = await PlatformChannel.database.invokeMethod(
 //          PlatformChannel.getProfile,
@@ -66,7 +68,7 @@ class MarkNotifier with ChangeNotifier {
     }
   }
 
-  void loadMarks() async {
+  Future<void> loadMarks() async {
     try {
 //      String value = await PlatformChannel.database.invokeMethod(
 //          PlatformChannel.getMark,
@@ -81,8 +83,8 @@ class MarkNotifier with ChangeNotifier {
 
   void _initMarks(String value) {
     if (value.isNotEmpty) {
-      _markModel.listMark = List<Mark>();
-      var jsonData = json.decode(value);
+      _markModel.listMark = <Mark>[];
+      final jsonData = json.decode(value);
       for (var item in jsonData) {
         _markModel.listMark.add(Mark.fromJson(item));
       }
@@ -93,11 +95,11 @@ class MarkNotifier with ChangeNotifier {
 
   void _initProfile(String value) {
     if (value.isNotEmpty) {
-      var jsonData = json.decode(value);
+      final jsonData = json.decode(value);
       _markModel.profile = Profile.fromJson(jsonData);
       _markModel.profile.setMoreDetailByJson(jsonData);
     } else {
-      print('value profile is empty');
+      logs('value profile is empty');
     }
   }
 
@@ -114,7 +116,7 @@ class MarkNotifier with ChangeNotifier {
 //    }
   }
 
-  actionFilter(String type) {
+  void actionFilter(String type) {
     _markModel.filterType = type;
     notifyListeners();
   }

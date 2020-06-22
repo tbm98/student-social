@@ -2,14 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:studentsocial/helpers/dialog_support.dart';
-import 'package:studentsocial/models/entities/semester.dart';
-import 'package:studentsocial/presentation/screens/main/main_notifier.dart';
+
+import '../../helpers/dialog_support.dart';
+import '../../models/entities/semester.dart';
+import '../screens/main/main_notifier.dart';
 
 class UpdateLich extends StatefulWidget {
-  final BuildContext mcontext;
+  const UpdateLich({this.mcontext});
 
-  UpdateLich({this.mcontext});
+  final BuildContext mcontext;
 
   @override
   _UpdateLichState createState() => _UpdateLichState();
@@ -17,11 +18,12 @@ class UpdateLich extends StatefulWidget {
 
 class _UpdateLichState extends State<UpdateLich> with DialogSupport {
   MainNotifier _mainViewModel;
+
 //  NetWorking _netWorking;
   String lichHoc, lichThi, lichThiLai;
 
-  Map<String, String> subjectsName = Map<String, String>();
-  Map<String, String> subjectsSoTinChi = Map<String, String>();
+  Map<String, String> subjectsName = <String, String>{};
+  Map<String, String> subjectsSoTinChi = <String, String>{};
 
   @override
   void initState() {
@@ -31,28 +33,28 @@ class _UpdateLichState extends State<UpdateLich> with DialogSupport {
     _loadSemester();
   }
 
-  void _loadSemester() async {
+  Future<void> _loadSemester() async {
 //    final SemesterResult result = await _netWorking.getSemester(_mainViewModel.getToken);
     Navigator.of(context).pop();
 //    _showChonKiHoc(result);
   }
 
   void _alertWithMessage(String _msg) {
-    AlertDialog dialog = new AlertDialog(
+    final AlertDialog dialog = AlertDialog(
       content: Text(_msg),
       actions: <Widget>[
         FlatButton(
-          child: Text('Ok'),
           onPressed: () {
             Navigator.of(context).pop();
           },
+          child: const Text('Ok'),
         ),
       ],
     );
     showDialog(context: context, builder: (_) => dialog);
   }
 
-  void loadData(String semester, String semester2) async {
+  Future<void> loadData(String semester, String semester2) async {
     loading(widget.mcontext, 'Đang lấy lịch học');
 //    lichHoc = await _netWorking.getLichHoc(_mainViewModel.getToken,semester);
     pop(widget.mcontext);
@@ -67,7 +69,7 @@ class _UpdateLichState extends State<UpdateLich> with DialogSupport {
     _saveInfo();
   }
 
-  void _saveInfo() async {
+  Future<void> _saveInfo() async {
     //tách và lấy ra tất cả tên và số tín chỉ của từng môn học
     addSubjects(lichHoc);
     addSubjects(lichThi);
@@ -85,11 +87,13 @@ class _UpdateLichState extends State<UpdateLich> with DialogSupport {
     _mainViewModel.loadCurrentMSV();
   }
 
-  Future removeScheduleOld() async {
+  Future<void> removeScheduleOld() async {
+    //TODO: remove schedule old
 //    var res = await PlatformChannel().deleteScheduleByMSVWithOutNote(_mainViewModel.getMSV);
   }
 
-  Future saveScheduleToDB() async {
+  Future<void> saveScheduleToDB() async {
+    //TODO: save schedule to db
 //    var res = await PlatformChannel().saveScheduleToDB(
 //        lichHoc, lichThi, lichThiLai, _mainViewModel.getMSV, json.encode(subjectsName));
   }
@@ -110,9 +114,9 @@ class _UpdateLichState extends State<UpdateLich> with DialogSupport {
   }
 
   void addSubjects(value) {
-    var jsonValue = json.decode(value);
-    var listSubjects = jsonValue['Subjects'];
-    for (var item in listSubjects) {
+    final jsonValue = json.decode(value);
+    final listSubjects = jsonValue['Subjects'];
+    for (final item in listSubjects) {
       addSubjectsName(item['MaMon'], item['TenMon']);
       addSubjectsSoTinChi(item['MaMon'], item['SoTinChi'].toString());
     }
@@ -133,30 +137,28 @@ class _UpdateLichState extends State<UpdateLich> with DialogSupport {
           children: <Widget>[
             ListTile(
               title: Text(
-                'Kỳ ${data["TenKy"].split('_')[0]} năm ${data["TenKy"].split('_')[1]}-${data["TenKy"].split('_')[2]}',
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                'Kỳ ${data['TenKy'].split('_')[0]} năm ${data['TenKy'].split('_')[1]}-${data['TenKy'].split('_')[2]}',
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.green),
               ),
-              trailing: Icon(Icons.arrow_forward),
+              trailing: const Icon(Icons.arrow_forward),
               onTap: () {
                 if (data2 != null) {
                   //co du lieu data2 => co lich thi lai
                 }
                 Navigator.of(widget.mcontext).pop();
-                loadData(data["MaKy"], data2["MaKy"]);
+                loadData(data['MaKy'], data2['MaKy']);
               },
               contentPadding: const EdgeInsets.all(0),
             ),
-            Divider(
-              height: 1,
-            )
+            const Divider(height: 1)
           ],
         ));
   }
 
   void _showChonKiHoc(SemesterResult data) {
-    AlertDialog alertDialog = AlertDialog(
-      title: Text('Chọn kỳ học'),
+    final AlertDialog alertDialog = AlertDialog(
+      title: const Text('Chọn kỳ học'),
       content: Container(
         width: MediaQuery.of(context).size.width * 0.6,
         height: MediaQuery.of(context).size.height * 0.5,
@@ -193,9 +195,9 @@ class _UpdateLichState extends State<UpdateLich> with DialogSupport {
           Container(
               width: 30,
               height: 30,
-              child: Center(child: CircularProgressIndicator())),
-          Padding(
-            padding: const EdgeInsets.only(left: 16),
+              child: const Center(child: CircularProgressIndicator())),
+          const Padding(
+            padding: EdgeInsets.only(left: 16),
             child: Text('Đang lấy danh sách kỳ học'),
           )
         ],

@@ -1,25 +1,28 @@
 import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:studentsocial/models/calendar_model.dart';
-import 'package:studentsocial/models/entities/calendar_day.dart';
-import 'package:studentsocial/presentation/screens/main/main_notifier.dart';
+
+import '../models/calendar_model.dart';
+import '../models/entities/calendar_day.dart';
+import '../models/entities/schedule.dart';
+import '../presentation/screens/main/main_notifier.dart';
 
 class CalendarViewModel with ChangeNotifier {
+  CalendarViewModel() {
+    _calendarModels = <int, CalendarModel>{};
+  }
   MainNotifier _mainViewModel;
   Map<int, CalendarModel> _calendarModels;
   PageController pageViewController =
-      new PageController(initialPage: 12, viewportFraction: 0.99);
+      PageController(initialPage: 12, viewportFraction: 0.99);
   final double tableHeight = 250;
+
   int currentPage = 12;
 
-  CalendarViewModel() {
-    _calendarModels = Map<int, CalendarModel>();
-  }
+  double get getTableHeight => tableHeight;
 
-  get getTableHeight => tableHeight;
-
-  get getPageViewController => pageViewController;
+  PageController get getPageViewController => pageViewController;
 
   void addMainViewModel(MainNotifier mainViewModel) {
     _mainViewModel = mainViewModel;
@@ -35,7 +38,7 @@ class CalendarViewModel with ChangeNotifier {
     return calendar.year * 12 + calendar.month;
   }
 
-  onClickDay(CalendarDay day) {
+  void onClickDay(CalendarDay day) {
     indexPageByClickDay =
         currentPage; // nếu click vào ngày ở trên calendarview thì cập nhật lại indexpage = current page, coi như reset trạng thái của indexpage
     clickDay = day;
@@ -45,9 +48,9 @@ class CalendarViewModel with ChangeNotifier {
 
   void listSchedulePageFinish(CalendarDay calendarDay) {}
 
-  listSchedulePageChange(CalendarDay day) {
-    int numberDay = getNumberOfMonth(day);
-    int numberClickDay = getNumberOfMonth(clickDay);
+  void listSchedulePageChange(CalendarDay day) {
+    final int numberDay = getNumberOfMonth(day);
+    final int numberClickDay = getNumberOfMonth(clickDay);
     //nếu là vuốt thì cự li thay đổi của tháng chỉ là 1 nên chỉ cần check tháng và tăng hoặc giảm 1 là dc
     if (numberDay > numberClickDay) {
       //nhảy sang tháng tiếp theo
@@ -89,7 +92,7 @@ class CalendarViewModel with ChangeNotifier {
 
   void setIndexPageByChanged(int index) {
     currentPage = index;
-      //người dùng vuốt sang trang khác => hiện thị nút hiện tại cho người ta quay về
+    //người dùng vuốt sang trang khác => hiện thị nút hiện tại cho người ta quay về
     _mainViewModel.calendarPageChanged(index);
   }
 
@@ -141,20 +144,21 @@ class CalendarViewModel with ChangeNotifier {
     return [lt, lh, nt];
   }
 
-  List<int> calculateNumberSchedules(entries) {
+  List<int> calculateNumberSchedules(List<Schedule> entries) {
     int lichHoc = 0, lichThi = 0, note = 0;
-    if (entries != null)
-      entries.forEach((entri) {
-        if (entri.LoaiLich == "LichHoc") {
+    if (entries != null) {
+      entries.forEach((Schedule entri) {
+        if (entri.LoaiLich == 'LichHoc') {
           lichHoc++;
         }
-        if (entri.LoaiLich == "LichThi") {
+        if (entri.LoaiLich == 'LichThi') {
           lichThi++;
         }
-        if (entri.LoaiLich == "Note") {
+        if (entri.LoaiLich == 'Note') {
           note++;
         }
       });
+    }
     return [lichThi, lichHoc, note];
   }
 

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:studentsocial/models/entities/diem_ngoai_khoa_obj.dart';
+import '../../../helpers/logging.dart';
+import '../../../models/entities/diem_ngoai_khoa_obj.dart';
 
 // Màn hình điểm ngoại khoá
 class ExtracurricularScreen extends StatefulWidget {
-  final msv;
+  const ExtracurricularScreen({this.msv});
 
-  ExtracurricularScreen({this.msv});
+  final String msv;
 
   @override
   _ExtracurricularScreenState createState() => _ExtracurricularScreenState();
@@ -24,18 +25,18 @@ class _ExtracurricularScreenState extends State<ExtracurricularScreen> {
   }
 
   Future<List<DiemNgoaiKhoaObj>> getDiem() async {
-    _list = List<DiemNgoaiKhoaObj>();
+    _list = <DiemNgoaiKhoaObj>[];
     if (widget.msv.startsWith('DTC') || widget.msv.startsWith('DTE')) {
     } else {
-      return List<DiemNgoaiKhoaObj>(); //empty => truong khong ho tro
+      return <DiemNgoaiKhoaObj>[]; //empty => truong khong ho tro
     }
 //    var post = await http.get(
 //        'https://studentsocial.shipx.vn/ngoaikhoa/dnk.php?msv=${widget.msv}');
-    print('done');
+    logs('done');
     if (_update) {
       Navigator.of(context).pop();
       _dialogUpdateSuccess();
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       Navigator.of(context).pop();
       _update = false;
     }
@@ -56,10 +57,10 @@ class _ExtracurricularScreenState extends State<ExtracurricularScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hoạt động ngoại khoá'),
+        title: const Text('Hoạt động ngoại khoá'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: () {
               reload();
             },
@@ -68,47 +69,43 @@ class _ExtracurricularScreenState extends State<ExtracurricularScreen> {
       ),
       body: FutureBuilder(
           future: _future,
-          builder: (context, snapshot) {
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (!snapshot.hasData) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             } else {
               if (snapshot.data == null) {
-                return Center(
+                return const Center(
                   child: Text('Trường của bạn chưa hỗ trợ tính năng này ^_^'),
                 );
               } else {
-                return Container(
-                  child: CustomScrollView(
-                    slivers: <Widget>[
-                      SliverAppBar(
-                        floating: true,
-                        snap: true,
-                        automaticallyImplyLeading: false,
-                        expandedHeight: 170,
-                        flexibleSpace: FlexibleSpaceBar(
-                          background: headLayout(),
-                        ),
+                return CustomScrollView(
+                  slivers: <Widget>[
+                    SliverAppBar(
+                      floating: true,
+                      snap: true,
+                      automaticallyImplyLeading: false,
+                      expandedHeight: 170,
+                      flexibleSpace: FlexibleSpaceBar(
+                        background: headLayout(),
                       ),
-                      SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                        return Column(
-                          children: <Widget>[
-                            layoutItem((snapshot.data
-                                as List<DiemNgoaiKhoaObj>)[index]),
-                            Divider(
-                              color: Colors.grey,
-                            )
-                          ],
-                        );
-                      },
-                              childCount:
-                                  (snapshot.data as List<DiemNgoaiKhoaObj>)
-                                      .length))
-                    ],
-                  ),
+                    ),
+                    SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                            (BuildContext context, int index) {
+                      return Column(
+                        children: <Widget>[
+                          layoutItem(
+                              (snapshot.data as List<DiemNgoaiKhoaObj>)[index]),
+                          const Divider(color: Colors.grey)
+                        ],
+                      );
+                    },
+                            childCount:
+                                (snapshot.data as List<DiemNgoaiKhoaObj>)
+                                    .length))
+                  ],
                 );
               }
             }
@@ -121,7 +118,7 @@ class _ExtracurricularScreenState extends State<ExtracurricularScreen> {
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return Center(
+        return const Center(
           child: CircularProgressIndicator(),
         );
       },
@@ -135,8 +132,8 @@ class _ExtracurricularScreenState extends State<ExtracurricularScreen> {
         return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
-          contentPadding: EdgeInsets.all(6),
-          content: ListTile(
+          contentPadding: const EdgeInsets.all(6),
+          content: const ListTile(
               title: Text('Cập nhật thành công !'),
               leading: CircleAvatar(
                 child: Icon(Icons.check),
@@ -165,12 +162,10 @@ class _ExtracurricularScreenState extends State<ExtracurricularScreen> {
           //day la head(avatar)
           Row(
             children: <Widget>[
-              Container(
-                child: CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.amber,
-                  child: Text('E.T'),
-                ),
+              const CircleAvatar(
+                radius: 30,
+                backgroundColor: Colors.amber,
+                child: Text('E.T'),
               ),
               Container(
                 width: 10,
@@ -180,11 +175,11 @@ class _ExtracurricularScreenState extends State<ExtracurricularScreen> {
                 children: <Widget>[
                   Text(
                     'Tổng điểm: $_tong',
-                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    style: const TextStyle(fontSize: 20, color: Colors.white),
                   ),
                   Text(
                     'Đang chờ: $_choduyet',
-                    style: TextStyle(color: Colors.white, fontSize: 15),
+                    style: const TextStyle(color: Colors.white, fontSize: 15),
                   )
                 ],
               )
@@ -194,17 +189,17 @@ class _ExtracurricularScreenState extends State<ExtracurricularScreen> {
             height: 16,
           ),
           Text('Họ tên: $_name',
-              style: TextStyle(
+              style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold)),
           Text('MSV: ${widget.msv}',
-              style: TextStyle(
+              style: const TextStyle(
                   color: Colors.white,
                   fontSize: 17,
                   fontWeight: FontWeight.bold)),
           Text(_lop,
-              style: TextStyle(
+              style: const TextStyle(
                   color: Colors.white,
                   fontSize: 17,
                   fontWeight: FontWeight.bold)),
@@ -218,13 +213,11 @@ class _ExtracurricularScreenState extends State<ExtracurricularScreen> {
       color: Colors.white,
       child: ListView.builder(
           itemCount: list.length,
-          itemBuilder: (context, index) {
+          itemBuilder: (BuildContext context, int index) {
             return Column(
               children: <Widget>[
                 layoutItem(list[index]),
-                Divider(
-                  color: Colors.black,
-                )
+                const Divider(color: Colors.black)
               ],
             );
           }),
@@ -241,30 +234,26 @@ class _ExtracurricularScreenState extends State<ExtracurricularScreen> {
               child: ListTile(
                   title: Text(
                 obj.title,
-                style: TextStyle(color: Colors.black87),
+                style: const TextStyle(color: Colors.black87),
               ))),
-          Divider(
-            color: Colors.black,
-          ),
+          const Divider(color: Colors.black),
           Flexible(
               flex: 1,
               child: Center(
                   child: Text(
                 obj.score == 'false' ? 'Chờ' : '${obj.score}đ',
-                style: TextStyle(color: Colors.black87),
+                style: const TextStyle(color: Colors.black87),
               ))),
-          Divider(
-            color: Colors.black,
-          ),
+          const Divider(color: Colors.black),
           Flexible(
               flex: 1,
               child: Center(
                   child: obj.status == 'ok'
-                      ? Icon(
+                      ? const Icon(
                           Icons.done_outline,
                           color: Colors.green,
                         )
-                      : Icon(Icons.timelapse, color: Colors.red)))
+                      : const Icon(Icons.timelapse, color: Colors.red)))
         ],
       ),
     );

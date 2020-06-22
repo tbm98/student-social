@@ -1,5 +1,7 @@
 import 'dart:math' as Math;
 
+import 'package:studentsocial/helpers/logging.dart';
+
 class VietCalendar {
   static const double PI = Math.pi;
 
@@ -200,8 +202,8 @@ class VietCalendar {
     return [lunarDay, lunarMonth, lunarYear, lunarLeap];
   }
 
-  List<int> convertLunar2Solar(int lunarDay, int lunarMonth,
-      int lunarYear, int lunarLeap, double timeZone) {
+  List<int> convertLunar2Solar(int lunarDay, int lunarMonth, int lunarYear,
+      int lunarLeap, double timeZone) {
     int a11, b11;
     if (lunarMonth < 11) {
       a11 = getLunarMonth11(lunarYear - 1, timeZone);
@@ -222,22 +224,20 @@ class VietCalendar {
         leapMonth += 12;
       }
       if (lunarLeap != 0 && lunarMonth != leapMonth) {
-        print("Invalid input!");
+        logs('Invalid input!');
         return [0, 0, 0];
       } else if (lunarLeap != 0 || off >= leapOff) {
         off += 1;
       }
     }
-    int monthStart = getNewMoonDay(k + off, timeZone);
+    final monthStart = getNewMoonDay(k + off, timeZone);
     return jdToDate(monthStart + lunarDay - 1);
   }
 
   static VietCalendar _instance;
 
-  static VietCalendar getInstance(){
-    if(_instance == null){
-      _instance = VietCalendar();
-    }
+  static VietCalendar getInstance() {
+    _instance ??= VietCalendar();
     return _instance;
   }
 
@@ -254,11 +254,11 @@ class VietCalendar {
       if (s[0] == s2[0] && s[1] == s2[1] && s[2] == s2[2]) {
 //        print(
 //            "OK! ${s[0]}/${s[1]}/${s[2]} -> ${l[0]}/${l[1]}/${l[2]} ${(l[3] == 0 ? "" : " leap")}");
-        return [l[0],l[1],l[2]];
+        return [l[0], l[1], l[2]];
       } else {
         print(
             "ERROR! ${s[0]}/${s[1]}/${s[2]} -> ${l[0]}/${l[1]}/${l[2]} ${(l[3] == 0 ? "" : " leap")}");
-        return [0,0,0];
+        return [0, 0, 0];
       }
     }
   }

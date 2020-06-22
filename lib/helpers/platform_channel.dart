@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 
 class PlatformChannel {
-  static const database =
+  static const MethodChannel database =
       const MethodChannel('eagleteam.studentsocial/database');
   static const setSchedule = 'setSchedule';
   static const getSchedule = 'getSchedule';
@@ -41,7 +41,7 @@ class PlatformChannel {
 
   Future<String> saveCurrentMSV(String msv) async {
     try {
-      String result = await PlatformChannel.database.invokeMethod(
+      final String result = await PlatformChannel.database.invokeMethod(
           PlatformChannel.setCurrentMSV, <String, String>{'msv': msv});
       return result;
     } on PlatformException catch (e) {
@@ -51,7 +51,7 @@ class PlatformChannel {
 
   Future<String> loadCurrentMSV(String msv) async {
     try {
-      String result = await PlatformChannel.database
+      final String result = await PlatformChannel.database
           .invokeMethod(PlatformChannel.getCurrentMSV);
       return result;
     } on PlatformException catch (e) {
@@ -61,7 +61,7 @@ class PlatformChannel {
 
   Future<String> saveProfileToDB(String data) async {
     try {
-      String result = await PlatformChannel.database.invokeMethod(
+      final String result = await PlatformChannel.database.invokeMethod(
           PlatformChannel.setProfile, <String, String>{'data': data});
       return result;
     } on PlatformException catch (e) {
@@ -72,7 +72,7 @@ class PlatformChannel {
   Future<String> saveMarkToDB(
       String data, String name, String stc, String msv) async {
     try {
-      String result = await PlatformChannel.database.invokeMethod(
+      final String result = await PlatformChannel.database.invokeMethod(
           PlatformChannel.setMark,
           <String, String>{'data': data, 'name': name, 'stc': stc, 'msv': msv});
       return 'SUCCESS: $result';
@@ -84,7 +84,7 @@ class PlatformChannel {
   Future<String> saveScheduleToDB(String LichHoc, String LichThi,
       String LichThiLai, String msv, String tenmon) async {
     try {
-      String result = await PlatformChannel.database
+      final String result = await PlatformChannel.database
           .invokeMethod(PlatformChannel.setSchedule, <String, String>{
         'lichhoc': LichHoc,
         'lichthi': LichThi,
@@ -104,9 +104,8 @@ class PlatformChannel {
   }
 
   Future<String> deleteScheduleByMSVWithOutNote(String getMSV) async {
-    return await PlatformChannel.database.invokeMethod(PlatformChannel.removeScheduleByMSV,<String,String>{
-      'msv':getMSV,
-      'type':'note'
-    });
+    return await PlatformChannel.database.invokeMethod(
+        PlatformChannel.removeScheduleByMSV,
+        <String, String>{'msv': getMSV, 'type': 'note'});
   }
 }

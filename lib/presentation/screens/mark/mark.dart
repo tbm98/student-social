@@ -3,9 +3,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:studentsocial/helpers/dialog_support.dart';
-import 'package:studentsocial/models/entities/mark.dart';
-import 'package:studentsocial/presentation/screens/mark/mark_notifier.dart';
+
+import '../../../helpers/dialog_support.dart';
+import '../../../models/entities/mark.dart';
+import 'mark_notifier.dart';
 
 class MarkScreen extends StatefulWidget {
   @override
@@ -14,10 +15,11 @@ class MarkScreen extends StatefulWidget {
 
 class _MarkScreenState extends State<MarkScreen> with DialogSupport {
   MarkNotifier _markViewModel;
+
 //  NetWorking _netWorking;
   String mark;
-  Map<String, String> subjectsName = Map<String, String>();
-  Map<String, String> subjectsSoTinChi = Map<String, String>();
+  Map<String, String> subjectsName = <String, String>{};
+  Map<String, String> subjectsSoTinChi = <String, String>{};
 
   @override
   void initState() {
@@ -25,7 +27,7 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
 //    _netWorking = NetWorking();
   }
 
-  _initViewModel() {
+  void _initViewModel() {
     _markViewModel = Provider.of<MarkNotifier>(context);
   }
 
@@ -35,10 +37,10 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tra cứu điểm'),
+        title: const Text('Tra cứu điểm'),
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.refresh),
+              icon: const Icon(Icons.refresh),
               onPressed: () {
 //                loading(context, 'Đang tải dữ liệu');
                 _updateMark();
@@ -50,16 +52,16 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
         onPressed: () {
           _showDialogLocDiem();
         },
-        child: Text('Lọc'),
+        child: const Text('Lọc'),
       ),
     );
   }
 
   Widget _layoutItemMark(int index) {
-    Mark mark = _markViewModel.getListMark()[index];
+    final Mark mark = _markViewModel.getListMark()[index];
     return Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.only(top: 8, bottom: 8),
+      padding: const EdgeInsets.only(top: 8, bottom: 8),
       color: Colors.white,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -69,7 +71,7 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
             padding: const EdgeInsets.only(top: 8, left: 16, bottom: 8),
             child: Text(
               '${mark.TenMon} (${mark.SoTinChi}TC)',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           Padding(
@@ -81,13 +83,13 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
                 Expanded(
                   child: Column(
                     children: <Widget>[
-                      Text('CC'),
-                      SizedBox(
+                      const Text('CC'),
+                      const SizedBox(
                         height: 4,
                       ),
                       Text(
                         mark.CC.isNotEmpty ? mark.CC : '  ',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       )
                     ],
                   ),
@@ -95,37 +97,35 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
                 Expanded(
                   child: Column(
                     children: <Widget>[
-                      Text('THI'),
-                      SizedBox(
+                      const Text('THI'),
+                      const SizedBox(
                         height: 4,
                       ),
                       Text(mark.THI.isNotEmpty ? mark.THI : '   ',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
                 Expanded(
                   child: Column(
                     children: <Widget>[
-                      Text('TKHP'),
-                      SizedBox(
-                        height: 4,
-                      ),
+                      const Text('TKHP'),
+                      const SizedBox(height: 4),
                       Text(mark.TKHP.isNotEmpty ? mark.TKHP : '    ',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
                 Expanded(
                   child: Column(
                     children: <Widget>[
-                      Text('XL'),
+                      const Text('XL'),
                       CircleAvatar(
                           radius: 14,
                           backgroundColor: _getColorDiemChu(mark.DiemChu),
                           child: Text(
                               mark.DiemChu.isNotEmpty ? mark.DiemChu : '  ',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white)))
                     ],
@@ -186,19 +186,17 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text('Tổng TC: ${_markViewModel.getTongTC}',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.white, fontSize: 18)),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 16),
-                              ),
+                              const Padding(padding: EdgeInsets.only(left: 16)),
                               Text('STCTD: ${_markViewModel.getSTCTD}',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.white, fontSize: 18)),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 16),
+                              const Padding(
+                                padding: EdgeInsets.only(left: 16),
                               ),
                               Text('STCTLN: ${_markViewModel.getSTCTLN}',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.white, fontSize: 18))
                             ],
                           ),
@@ -209,13 +207,13 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Text('ĐTB HS10: ${_markViewModel.getDTBC}',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.white, fontSize: 18)),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 16),
+                              const Padding(
+                                padding: EdgeInsets.only(left: 16),
                               ),
                               Text('ĐTB HS4: ${_markViewModel.getDTBCQD}',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.white, fontSize: 18))
                             ],
                           ),
@@ -224,15 +222,15 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
                               'Số môn không đạt: ${_markViewModel.getSoMonKhongDat}',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 18)),
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 18)),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
                               'Số tín chỉ không đạt: ${_markViewModel.getSoTCKhongDat}',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 18)),
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 18)),
                         ),
                       ],
                     ),
@@ -243,7 +241,8 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
           ),
         ),
         SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
+            delegate:
+                SliverChildBuilderDelegate((BuildContext context, int index) {
           return Container(
               padding: const EdgeInsets.only(bottom: 1),
               child: _layoutItemMark(index));
@@ -253,18 +252,14 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
   }
 
   Widget layoutTrong() {
-    return Container(
-      child: Center(
-        child: Text('Không có dữ liệu :('),
-      ),
-    );
+    return const Center(child: Text('Không có dữ liệu :('));
   }
 
   Widget _mainView() {
     //chon man hinh hien thi tuy theo du lieu
     if (_markViewModel.getListMark == null) {
       //mac dinh
-      return Center(
+      return const Center(
         child: CircularProgressIndicator(),
       );
     } else if (_markViewModel.getListMark() != null &&
@@ -287,8 +282,8 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
   }
 
   void addSubjects(value) {
-    var jsonValue = json.decode(value);
-    var listSubjects = jsonValue['Subjects'];
+    final jsonValue = json.decode(value);
+    final listSubjects = jsonValue['Subjects'];
     for (var item in listSubjects) {
       addSubjectsName(item['MaMon'], item['TenMon']);
       addSubjectsSoTinChi(item['MaMon'], item['SoTinChi'].toString());
@@ -308,7 +303,8 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
     mark = mark.substring(0, mark.indexOf(']') + 1);
   }
 
-  Future saveMarkToDB() async {
+  Future<void> saveMarkToDB() async {
+    //TODO: save mark to db
 //    var res = await PlatformChannel().saveMarkToDB(
 //        mark,
 //        json.encode(subjectsName),
@@ -318,81 +314,69 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
   }
 
   void _showDialogLocDiem() {
-    AlertDialog alertDialog = AlertDialog(
-      title: Text('Lọc điểm'),
+    final AlertDialog alertDialog = AlertDialog(
+      title: const Text('Lọc điểm'),
       contentPadding: const EdgeInsets.all(8),
       content: Container(
         height: 200,
         child: SingleChildScrollView(
-          child: Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ListTile(
-                    title: Text('Tất cả'),
-                    onTap: () {
-                      _markViewModel.actionFilter('ALL');
-                      Navigator.of(context).pop();
-                    }),
-                Divider(
-                  height: 4,
-                ),
-                ListTile(
-                  title: Text('Xếp loại A'),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ListTile(
+                  title: const Text('Tất cả'),
                   onTap: () {
-                    _markViewModel.actionFilter('A');
+                    _markViewModel.actionFilter('ALL');
                     Navigator.of(context).pop();
-                  },
-                ),
-                Divider(
-                  height: 4,
-                ),
-                ListTile(
-                  title: Text('Xếp loại B'),
-                  onTap: () {
-                    _markViewModel.actionFilter('B');
-                    Navigator.of(context).pop();
-                  },
-                ),
-                Divider(
-                  height: 4,
-                ),
-                ListTile(
-                  title: Text('Xếp loại C'),
-                  onTap: () {
-                    _markViewModel.actionFilter('C');
-                    Navigator.of(context).pop();
-                  },
-                ),
-                Divider(
-                  height: 4,
-                ),
-                ListTile(
-                  title: Text('Xếp loại D'),
-                  onTap: () {
-                    _markViewModel.actionFilter('D');
-                    Navigator.of(context).pop();
-                  },
-                ),
-                Divider(
-                  height: 4,
-                ),
-                ListTile(
-                  title: Text('Xếp loại F'),
-                  onTap: () {
-                    _markViewModel.actionFilter('F');
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            ),
+                  }),
+              const Divider(height: 4),
+              ListTile(
+                title: const Text('Xếp loại A'),
+                onTap: () {
+                  _markViewModel.actionFilter('A');
+                  Navigator.of(context).pop();
+                },
+              ),
+              const Divider(height: 4),
+              ListTile(
+                title: const Text('Xếp loại B'),
+                onTap: () {
+                  _markViewModel.actionFilter('B');
+                  Navigator.of(context).pop();
+                },
+              ),
+              const Divider(height: 4),
+              ListTile(
+                title: const Text('Xếp loại C'),
+                onTap: () {
+                  _markViewModel.actionFilter('C');
+                  Navigator.of(context).pop();
+                },
+              ),
+              const Divider(height: 4),
+              ListTile(
+                title: const Text('Xếp loại D'),
+                onTap: () {
+                  _markViewModel.actionFilter('D');
+                  Navigator.of(context).pop();
+                },
+              ),
+              const Divider(height: 4),
+              ListTile(
+                title: const Text('Xếp loại F'),
+                onTap: () {
+                  _markViewModel.actionFilter('F');
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
           ),
         ),
       ),
       actions: <Widget>[
         FlatButton(
-          child: Text('HUỶ BỎ'),
           onPressed: () => Navigator.of(context).pop(),
+          child: const Text('HUỶ BỎ'),
         )
       ],
     );

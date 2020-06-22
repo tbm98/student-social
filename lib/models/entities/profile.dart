@@ -1,12 +1,12 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:studentsocial/models/entities/db_parseable.dart';
+import 'db_parseable.dart';
 
 part 'profile.g.dart';
 
 @JsonSerializable()
 class Profile extends DBParseable {
-  static const table = 'Profile';
-  static const createQuery = '''CREATE TABLE IF NOT EXISTS Profile (
+  static const String table = 'Profile';
+  static const String createQuery = '''CREATE TABLE IF NOT EXISTS Profile (
   MaSinhVien TEXT PRIMARY KEY,
   HoTen TEXT,
   NienKhoa TEXT,

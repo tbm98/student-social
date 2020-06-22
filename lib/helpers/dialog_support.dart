@@ -16,7 +16,8 @@ mixin DialogSupport {
               Container(
                   width: 30,
                   height: 30,
-                  child: Center(child: const CircularProgressIndicator())),
+                  child:
+                      const Center(child: const CircularProgressIndicator())),
               Padding(
                 padding: const EdgeInsets.only(left: 16),
                 child: Text(msg),

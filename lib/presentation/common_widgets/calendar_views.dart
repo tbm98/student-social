@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:studentsocial/helpers/string.dart';
+import '../../helpers/string.dart';
 
 class CalendarViews {
   final StringSupport _stringSupport = StringSupport();
@@ -7,17 +7,25 @@ class CalendarViews {
   Widget layoutTitleCalendar(String content) {
     return Center(
       child: Container(
-          margin: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+          margin: const EdgeInsets.only(top: 8, bottom: 8),
           child: Text(
             content,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           )),
     );
   }
 
-  List<String> _nameDayOfWeek = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+  final List<String> _nameDayOfWeek = [
+    'T2',
+    'T3',
+    'T4',
+    'T5',
+    'T6',
+    'T7',
+    'CN'
+  ];
 
-  String getNameDayOfWeek(index) {
+  String getNameDayOfWeek(int index) {
     return _nameDayOfWeek[index];
   }
 
@@ -25,10 +33,10 @@ class CalendarViews {
     return GridView.count(
       crossAxisCount: 7,
       childAspectRatio: childAspectRatio,
-      children: List.generate(7, (index) {
+      children: List.generate(7, (int index) {
         return Text(
           getNameDayOfWeek(index),
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         );
       }),
@@ -77,7 +85,7 @@ class CalendarViews {
               borderRadius: BorderRadius.circular(5), color: Colors.green),
           child: Text(
             lichAm,
-            style: TextStyle(fontSize: 8, color: Colors.white),
+            style: const TextStyle(fontSize: 8, color: Colors.white),
           ),
         ),
       ),
@@ -92,7 +100,7 @@ class CalendarViews {
   }
 
   TextSpan textSpanPlus() {
-    return TextSpan(
+    return const TextSpan(
         text: '+',
         style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue));
   }
@@ -100,20 +108,22 @@ class CalendarViews {
   TextSpan textSpanNote(int count) {
     return TextSpan(
         text: _stringSupport.getDot(count),
-        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple));
+        style:
+            const TextStyle(fontWeight: FontWeight.bold, color: Colors.purple));
   }
 
   TextSpan textSpanHoc(int count) {
     return TextSpan(
         text: _stringSupport.getDot(count),
-        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue));
+        style:
+            const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue));
   }
 
   TextSpan textSpanThi(int count) {
     return TextSpan(
         text: _stringSupport.getDot(count),
-        style: TextStyle(
-          fontSize: 14.0,
+        style: const TextStyle(
+          fontSize: 14,
           color: Colors.red,
         ));
   }
@@ -128,7 +138,7 @@ class CalendarViews {
           textSpanThi(lt),
           textSpanHoc(lh),
           textSpanNote(nt),
-          hasPlus ? textSpanPlus() : TextSpan(),
+          if (hasPlus) textSpanPlus() else const TextSpan(),
         ],
       ),
     );

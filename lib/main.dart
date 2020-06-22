@@ -21,7 +21,8 @@ void main() {
       create: (_) => RestClient.create(),
     ),
     ChangeNotifierProvider<MainNotifier>(
-      create: (ct) => MainNotifier(Provider.of<MyDatabase>(ct, listen: false)),
+      create: (BuildContext ct) =>
+          MainNotifier(Provider.of<MyDatabase>(ct, listen: false)),
     )
   ], child: MyApp()));
 }

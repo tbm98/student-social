@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:studentsocial/helpers/dialog_support.dart';
-import 'package:studentsocial/models/entities/semester.dart';
-import 'package:studentsocial/presentation/screens/login/login_notifier.dart';
+
+import '../../../helpers/dialog_support.dart';
+import '../../../models/entities/semester.dart';
+import 'login_notifier.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
-  _LoginScreenState createState() => new _LoginScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> with DialogSupport {
@@ -15,7 +16,7 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
   FocusNode textSecondFocusNode = FocusNode();
   bool listened = false;
 
-  _initViewModel() {
+  void _initViewModel() {
     _loginViewModel = Provider.of<LoginNotifier>(context);
     if (!listened) {
       _loginViewModel.getActionStream().listen((value) async {
@@ -36,30 +37,30 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
     }
   }
 
-  Widget logo = CircleAvatar(
-    backgroundColor: Colors.transparent,
-    radius: 80,
-    backgroundImage: AssetImage('image/Logo.png'),
-  );
+  Widget get logo => const CircleAvatar(
+        backgroundColor: Colors.transparent,
+        radius: 80,
+        backgroundImage: AssetImage('image/Logo.png'),
+      );
 
   Widget email() => TextField(
         controller: _loginViewModel.getControllerMSV,
         autofocus: true,
         textCapitalization: TextCapitalization.characters,
-        onSubmitted: (value) {
+        onSubmitted: (String value) {
           FocusScope.of(context).requestFocus(textSecondFocusNode);
         },
         decoration: InputDecoration(
           hintText: 'Mã sinh viên',
           labelText: 'Mã sinh viên',
-          prefixIcon: Icon(Icons.account_circle),
+          prefixIcon: const Icon(Icons.account_circle),
           suffixIcon: IconButton(
-              icon: Icon(Icons.arrow_forward),
+              icon: const Icon(Icons.arrow_forward),
               onPressed: () {
                 FocusScope.of(context).requestFocus(textSecondFocusNode);
               }),
-          contentPadding: EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 12.0),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+          contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         ),
       );
 
@@ -67,20 +68,20 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
         focusNode: textSecondFocusNode,
         controller: _loginViewModel.getControllerPassword,
         obscureText: true,
-        onSubmitted: (value) {
+        onSubmitted: (String value) {
           _loginViewModel.submit();
         },
         decoration: InputDecoration(
           hintText: 'Mật khẩu',
           labelText: 'Mật khẩu',
-          prefixIcon: Icon(Icons.lock),
+          prefixIcon: const Icon(Icons.lock),
           suffixIcon: IconButton(
-              icon: Icon(Icons.check),
+              icon: const Icon(Icons.check),
               onPressed: () {
                 _loginViewModel.submit();
               }),
-          contentPadding: EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 12.0),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+          contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         ),
       );
 
@@ -89,12 +90,12 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
         height: 44,
         padding: const EdgeInsets.all(0),
         child: RaisedButton(
-          child: Text('ĐĂNG NHẬP', style: TextStyle(color: Colors.white)),
           onPressed: () {
             _loginViewModel.submit();
           },
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           color: Colors.green,
+          child: const Text('ĐĂNG NHẬP', style: TextStyle(color: Colors.white)),
         ),
       );
 
@@ -111,24 +112,14 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 logo,
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                ),
-                Text(
-                  'Student Social',
-                  style: TextStyle(color: Colors.black, fontSize: 40),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 48),
-                ),
+                const Padding(padding: EdgeInsets.only(top: 16)),
+                const Text('Student Social',
+                    style: TextStyle(color: Colors.black, fontSize: 40)),
+                const Padding(padding: EdgeInsets.only(top: 48)),
                 email(),
-                Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                ),
+                const Padding(padding: EdgeInsets.only(top: 12)),
                 password(),
-                Padding(
-                  padding: const EdgeInsets.only(top: 24),
-                ),
+                const Padding(padding: EdgeInsets.only(top: 24)),
                 loginButton(),
               ],
             ),
@@ -146,8 +137,8 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
             ListTile(
               title: Text(
                 'Kỳ ${data.TenKy.split('_')[0]} năm ${data.TenKy.split('_')[1]}-${data.TenKy.split('_')[2]}',
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.green),
               ),
               trailing: const Icon(Icons.arrow_forward),
               onTap: () {
@@ -163,8 +154,8 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
   }
 
   void _showAlertChonKyHoc(SemesterResult data) {
-    AlertDialog alertDialog = AlertDialog(
-      title: Text('Chọn kỳ học'),
+    final AlertDialog alertDialog = AlertDialog(
+      title: const Text('Chọn kỳ học'),
       content: Container(
         width: MediaQuery.of(context).size.width * 0.8,
         height: MediaQuery.of(context).size.height * 0.5,

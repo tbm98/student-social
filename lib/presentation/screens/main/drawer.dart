@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lazy_code/lazy_code.dart';
 import 'package:provider/provider.dart';
-import 'package:studentsocial/models/local/database/database.dart';
 
 import '../../../models/entities/profile.dart';
+import '../../../models/local/database/database.dart';
 import '../extracurricular/extracurricular.dart';
 import '../login/login.dart';
 import '../login/login_notifier.dart';
@@ -32,7 +32,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
       ),
       onTap: () async {
         context.pop();
-        await context.push((context) => ChangeNotifierProvider<LoginNotifier>(
+        await context.push((BuildContext context) =>
+            ChangeNotifierProvider<LoginNotifier>(
               create: (_) => LoginNotifier(Provider.of<MyDatabase>(context)),
               child: LoginScreen(),
             ));
@@ -253,7 +254,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   width: MediaQuery.of(context).size.width * 0.7,
                   child: ListView.builder(
                       itemCount: _mainNotifier.getAllProfile.length,
-                      itemBuilder: (context, index) {
+                      itemBuilder: (BuildContext context, int index) {
                         return _layoutItemAccount(index);
                       }),
                 ),
@@ -305,7 +306,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
         backgroundColor: _mainNotifier.getRandomColor(),
         //TODO: sua lai key ho ten
 //        child: Text(profile?.HoTen?.substring(0, 1).toUpperCase()),
-        child: Text('T'),
+        child: const Text('T'),
       ),
       title: Text(
         profile.HoTen ?? 'Họ Tên',

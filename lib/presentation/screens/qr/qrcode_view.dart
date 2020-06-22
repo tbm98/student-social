@@ -27,7 +27,7 @@ class QRCodeScreen extends StatefulWidget {
 
 class _QRCodeScreenState extends State<QRCodeScreen> {
   String _data;
-  final formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -45,7 +45,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
         child: Column(
           children: <Widget>[
             LayoutBuilder(
-              builder: (context, constraints) {
+              builder: (BuildContext context, BoxConstraints constraints) {
                 double widgetSize =
                     widget.size ?? constraints.biggest.shortestSide;
                 double w = MediaQuery.of(context).size.width;
@@ -80,14 +80,14 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                     child: Form(
                       key: formKey,
                       child: TextFormField(
-                        style: TextStyle(color: Colors.green),
-                        validator: (value) {
+                        style: const TextStyle(color: Colors.green),
+                        validator: (String value) {
                           if (value.isEmpty) {
                             return 'Trống';
                           }
                           return null;
                         },
-                        onSaved: (value) {
+                        onSaved: (String value) {
                           setState(() {
                             _data = value;
                           });

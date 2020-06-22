@@ -1,7 +1,8 @@
 import 'package:intl/intl.dart';
-import 'package:studentsocial/models/entities/schedule.dart';
-import 'package:studentsocial/models/local/database/database.dart';
-import 'package:studentsocial/models/local/database/schedule_dao.dart';
+
+import '../../entities/schedule.dart';
+import '../database/database.dart';
+import '../database/schedule_dao.dart';
 
 class ScheduleRepository {
   ScheduleRepository(MyDatabase database) {
@@ -48,7 +49,7 @@ class ScheduleRepository {
 
   Future<List<Schedule>> getListScheduleByDateAndMSV(
       DateTime date, String msv) async {
-    final strDate = DateFormat('yyyy-MM-dd').format(date);
+    final String strDate = DateFormat('yyyy-MM-dd').format(date);
     return await dao.getAllScheduleFromDate(msv, strDate);
   }
 }

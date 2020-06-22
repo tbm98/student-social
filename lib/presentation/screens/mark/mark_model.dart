@@ -1,9 +1,7 @@
-
 import '../../../models/entities/mark.dart';
 import '../../../models/entities/profile.dart';
 
-class MarkModel{
-
+class MarkModel {
   List<Mark> listMark;
   List<Mark> listMarkFilter;
 
@@ -16,5 +14,4 @@ class MarkModel{
   String filterType = 'ALL';
 
   String msv;
-
 }
