@@ -11,6 +11,13 @@ analyzer:
     missing_return: warning
     # allow having TODOs in the code
     todo: ignore
+  exclude:
+    - "lib/helpers/viet_calendar.dart"
+#    - "bin/cache/**"
+    # the following two are relative to the stocks example and the flutter package respectively
+    # see https://github.com/dart-lang/sdk/issues/28463
+#    - "lib/i18n/messages_*.dart"
+#    - "lib/src/http/**"
 linter:
   rules:
     # these rules are documented on and in the same order as
@@ -62,7 +69,7 @@ linter:
     - camel_case_extensions
     - camel_case_types
     - cancel_subscriptions
-    - cascade_invocations
+#    - cascade_invocations
     - close_sinks
     - comment_references
     - constant_identifier_names
@@ -79,7 +86,7 @@ linter:
     - implementation_imports
     - invariant_booleans
     - iterable_contains_unrelated_type
-    - join_return_with_assignment
+#    - join_return_with_assignment
     - library_names
     - library_prefixes
 #    - lines_longer_than_80_chars
@@ -89,7 +96,7 @@ linter:
     - no_duplicate_case_values
     - non_constant_identifier_names
     - null_closures
-    #    - omit_local_variable_types
+    # - omit_local_variable_types
     - one_member_abstracts
     - only_throw_errors
     - overridden_fields
@@ -176,5 +183,5 @@ linter:
     # - diagnostic_describe_all_properties # not yet tested
     - directives_ordering
     # - file_names # not yet tested
-    - flutter_style_todos
+#    - flutter_style_todos
     - unnecessary_string_interpolations
