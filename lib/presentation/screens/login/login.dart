@@ -29,8 +29,7 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
         } else if (value['type'] == LoginAction.alert_chon_kyhoc) {
           _showAlertChonKyHoc(value['data']);
         } else if (value['type'] == LoginAction.save_success) {
-          await showSuccess(context, 'Đăng nhập hoàn tất');
-          pop(context);
+          showSuccess(context, 'Đăng nhập hoàn tất');
         }
       });
       listened = true;
@@ -64,40 +63,44 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
         ),
       );
 
-  Widget password() => TextField(
-        focusNode: textSecondFocusNode,
-        controller: _loginViewModel.getControllerPassword,
-        obscureText: true,
-        onSubmitted: (String value) {
+  Widget password() {
+    return TextField(
+      focusNode: textSecondFocusNode,
+      controller: _loginViewModel.getControllerPassword,
+      obscureText: true,
+      onSubmitted: (String value) {
+        _loginViewModel.submit();
+      },
+      decoration: InputDecoration(
+        hintText: 'Mật khẩu',
+        labelText: 'Mật khẩu',
+        prefixIcon: const Icon(Icons.lock),
+        suffixIcon: IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: () {
+              _loginViewModel.submit();
+            }),
+        contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
+  Widget loginButton() {
+    return Container(
+      width: double.infinity,
+      height: 44,
+      padding: const EdgeInsets.all(0),
+      child: RaisedButton(
+        onPressed: () {
           _loginViewModel.submit();
         },
-        decoration: InputDecoration(
-          hintText: 'Mật khẩu',
-          labelText: 'Mật khẩu',
-          prefixIcon: const Icon(Icons.lock),
-          suffixIcon: IconButton(
-              icon: const Icon(Icons.check),
-              onPressed: () {
-                _loginViewModel.submit();
-              }),
-          contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-      );
-
-  Widget loginButton() => Container(
-        width: double.infinity,
-        height: 44,
-        padding: const EdgeInsets.all(0),
-        child: RaisedButton(
-          onPressed: () {
-            _loginViewModel.submit();
-          },
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          color: Colors.green,
-          child: const Text('ĐĂNG NHẬP', style: TextStyle(color: Colors.white)),
-        ),
-      );
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        color: Colors.green,
+        child: const Text('ĐĂNG NHẬP', style: TextStyle(color: Colors.white)),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
     );
   }
 
-  Widget _itemKyHoc(BuildContext context, Semester data, Semester kyTruoc) {
+  Widget _itemKyHoc(BuildContext context, Semester data) {
     return Container(
         margin: const EdgeInsets.only(bottom: 5),
         child: Column(
@@ -142,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
               ),
               trailing: const Icon(Icons.arrow_forward),
               onTap: () {
-                _loginViewModel.semesterClicked(data.MaKy, kyTruoc.MaKy);
+                _loginViewModel.semesterClicked(data.MaKy);
               },
               contentPadding: const EdgeInsets.all(0),
             ),
@@ -166,12 +169,7 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
               child: ListView.builder(
                 itemCount: data.message.length,
                 itemBuilder: (BuildContext buildContext, int index) =>
-                    _itemKyHoc(
-                        context,
-                        data.message[index],
-                        index == data.message.length - 1
-                            ? null
-                            : data.message[index + 1]),
+                    _itemKyHoc(context, data.message[index]),
                 shrinkWrap: true,
               ),
             ),

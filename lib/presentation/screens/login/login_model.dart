@@ -9,14 +9,10 @@ import 'package:studentsocial/rest_api/rest_client.dart';
 class LoginModel {
   LoginModel();
 
-  String semester, semesterKyTruoc, token, mark, msv;
-  bool lichthilai = true;
+  String semester, token, mark, msv;
   Profile profile;
-  List<Schedule> lichHoc;
-  List<Schedule> lichThi;
-  List<Schedule> lichThiLai;
-  Map<String, String> subjectsName = <String, String>{};
-  Map<String, String> subjectsSoTinChi = <String, String>{};
+  ScheduleResult lichHoc;
+  ScheduleResult lichThi;
   final RestClient _client = RestClient.create();
   final TextEditingController controllerEmail =
       TextEditingController(text: 'DTC165D4801030252');
@@ -50,22 +46,6 @@ class LoginModel {
 
   Future<void> getLichThi(String semester) async {
     lichThi = await _client.getLichThi(token, semester);
-  }
-
-  Future<void> getLichThiLai(String semester) async {
-    lichThiLai = await _client.getLichThi(token, semester);
-  }
-
-  Future<void> getDiem() async {
-//    mark = await _netWorking.getMark(token);
-  }
-
-  void addSubjectsName(maMon, tenMon) {
-    subjectsName[maMon] = tenMon;
-  }
-
-  void addSubjectsSoTinChi(maMon, String soTinChi) {
-    subjectsSoTinChi[maMon] = soTinChi;
   }
 
   Future<void> saveMarkToDB() async {

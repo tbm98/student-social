@@ -152,7 +152,7 @@ class MainNotifier with ChangeNotifier {
     final List<Schedule> schedule =
         await _scheduleRepository.getListSchedules(_mainModel.msv);
     _mainModel.schedules = schedule;
-    logs('schedule is $schedule');
+    logs('schedule is ${schedule.length}');
     logs('msv is ${_mainModel.msv}');
     _initEntries(schedule);
   }
@@ -177,7 +177,7 @@ class MainNotifier with ChangeNotifier {
     Schedule schedule;
     for (int i = 0; i < len; i++) {
       schedule = schedules[i];
-      _mainModel.initEntriesIfNeed(schedule.Ngay);
+      _mainModel.initEntriesIfNeed(schedule.getNgay);
       _mainModel.addScheduleToEntriesOfDay(schedule);
     }
 
@@ -272,63 +272,52 @@ class MainNotifier with ChangeNotifier {
   }
 
   Future<void> logOut() async {
-    //kiểm tra xem còn thằng profile nào không, nếu còn thì mặc định nó lấy luôn thằng profile đầu tiên để sử dụng tiếp
+    //kiểm tra xem còn profile nào không, nếu còn thì mặc định nó lấy luôn thằng profile đầu tiên để sử dụng tiếp
     // nếu không còn thằng profile nào thì set currentmsv = '',
     //xoá hết lịch,điểm,profile của thằng msv hiện tại
 
-//    try {
-//      String value = await PlatformChannel.database
-//          .invokeMethod(PlatformChannel.getAllProfile);
-//      var jsonData = json.decode(value);
-//      List<Profile> list = List<Profile>();
-//      for (var item in jsonData) {
-//        list.add(Profile.fromJson(item));
-//      }
+    try {
+      List<Profile> profiles = await _profileRepository.getAllUsers();
 
-    //lấy ra toàn bộ user có trong máy
-//      list.removeWhere((profile) =>
-//          profile.MaSinhVien ==
-//          _mainModel.msv); // xoá đi user hiện tại muốn đăng xuất
-    //kiểm tra nếu list vẫn còn user thì gán vào shared msv của thằng đầu tiên luôn
-    //nếu không còn thằng nào thì gán vào shared '' (empty)
-//      if (list.isNotEmpty) {
-//        await PlatformChannel.database.invokeMethod(
-//            PlatformChannel.setCurrentMSV,
-//            <String, String>{'msv': list[0].MaSinhVien});
-//      } else {
-    //không còn thằng nào :((
-//        await PlatformChannel.database.invokeMethod(
-//            PlatformChannel.setCurrentMSV, <String, String>{'msv': ''});
-//      }
-    //Xoá profile
-//      await PlatformChannel.database.invokeMethod(
-//          PlatformChannel.removeProfileByMSV,
-//          <String, String>{'msv': _mainModel.msv});
-    //Xoá điểm
+      //lấy ra toàn bộ user có trong máy
+      profiles.removeWhere((profile) =>
+          profile.MaSinhVien ==
+          _mainModel.msv); // xoá đi user hiện tại muốn đăng xuất
+      //kiểm tra nếu list vẫn còn user thì gán vào shared msv của thằng đầu tiên luôn
+      //nếu không còn thằng nào thì gán vào shared '' (empty)
+      if (profiles.isNotEmpty) {
+        await _sharedPrefs.setCurrentMSV(profiles[0].MaSinhVien);
+      } else {
+        //không còn thằng nào :((
+        await _sharedPrefs.setCurrentMSV('');
+      }
+      //Xoá profile
+      await _profileRepository.deleteUserByMSV(_mainModel.msv);
+      //Xoá điểm
+      //TODO: Xoa diem
 //      await PlatformChannel.database.invokeMethod(
 //          PlatformChannel.removeMarkByMSV,
 //          <String, String>{'msv': _mainModel.msv});
-    //Xoá lịch
-//      await PlatformChannel.database.invokeMethod(
-//          PlatformChannel.removeScheduleByMSV,
-//          <String, String>{'msv': _mainModel.msv});
-    //reset data
-    _mainModel.resetData();
-    notifyListeners();
-    loadCurrentMSV();
-    inputAction.add({
-      'type': MainAction.alert_with_message,
-      'data': 'Đăng xuất thành công'
-    });
-//    } catch (e) {
-//      print('error is:$e');
-    _mainModel.resetData();
-    notifyListeners();
-    loadCurrentMSV();
-    inputAction.add({
-      'type': MainAction.alert_with_message,
-      'data': 'Đăng xuất bị lỗi: $e'
-    });
+      //Xoá lịch
+      await _scheduleRepository.deleteScheduleByMSV(_mainModel.msv);
+      //reset data
+      _mainModel.resetData();
+      notifyListeners();
+      loadCurrentMSV();
+      inputAction.add({
+        'type': MainAction.alert_with_message,
+        'data': 'Đăng xuất thành công'
+      });
+    } catch (e) {
+      logs('error is:$e');
+      _mainModel.resetData();
+      notifyListeners();
+      loadCurrentMSV();
+      inputAction.add({
+        'type': MainAction.alert_with_message,
+        'data': 'Đăng xuất bị lỗi: $e'
+      });
+    }
   }
 
   Future<void> switchToProfile(Profile profile) async {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:studentsocial/helpers/logging.dart';
 
 import '../../helpers/date.dart';
 import '../../helpers/dialog_support.dart';
@@ -67,7 +68,7 @@ class _ListScheduleState extends State<ListSchedule> with DialogSupport {
                       topLeft: Radius.circular(8),
                       topRight: Radius.circular(8))),
               child: Text(
-                entri.TenMon,
+                entri.HocPhan,
                 style: const TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.white),
               ),
@@ -75,7 +76,7 @@ class _ListScheduleState extends State<ListSchedule> with DialogSupport {
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
               child: Text(
-                  '• Thời gian: ${entri.ThoiGian} ${dateSupport.getThoiGian(entri.ThoiGian, _mainViewModel.getMSV)}'),
+                  '• Thời gian: ${entri.TietHoc} ${dateSupport.getThoiGian(entri.TietHoc, _mainViewModel.getMSV)}'),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
@@ -102,7 +103,7 @@ class _ListScheduleState extends State<ListSchedule> with DialogSupport {
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8), topRight: Radius.circular(8))),
             child: Text(
-              entri.TenMon,
+              entri.HocPhan,
               style: const TextStyle(
                   fontWeight: FontWeight.bold, color: Colors.white),
             ),
@@ -110,7 +111,7 @@ class _ListScheduleState extends State<ListSchedule> with DialogSupport {
           Padding(
             padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
             child: Text(
-                '• Thời gian: ${entri.ThoiGian} ${this.dateSupport.getThoiGian(entri.ThoiGian, _mainViewModel.getMSV)}'),
+                '• Thời gian: ${entri.TietHoc} ${this.dateSupport.getThoiGian(entri.TietHoc, _mainViewModel.getMSV)}'),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
@@ -141,7 +142,7 @@ class _ListScheduleState extends State<ListSchedule> with DialogSupport {
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(8), topRight: Radius.circular(8))),
           child: Text(
-            entri.TenMon,
+            entri.HocPhan,
             style: const TextStyle(
                 fontWeight: FontWeight.bold, color: Colors.white),
           ),
@@ -155,7 +156,7 @@ class _ListScheduleState extends State<ListSchedule> with DialogSupport {
         Padding(
           padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
           child: Text(
-            '• Thời gian: ${entri.ThoiGian}',
+            '• Thời gian: ${entri.TietHoc.replaceAll('\n', ' ')}',
           ),
         ),
         Padding(
@@ -401,6 +402,7 @@ class _ListScheduleState extends State<ListSchedule> with DialogSupport {
   }
 
   Widget ngayHoc(List<Schedule> entries) {
+    logs(entries);
     return Padding(
       padding: const EdgeInsets.all(2),
       child: ListView.builder(
@@ -445,21 +447,21 @@ class _ListScheduleState extends State<ListSchedule> with DialogSupport {
     final DateTime dateTime = delta < 0
         ? DateTime.now().subtract(Duration(days: -delta))
         : DateTime.now().add(Duration(days: delta));
-    final String key = DateFormat('yyyy-MM-dd').format(dateTime);
+    final String key = DateFormat('dd/MM/yyyy').format(dateTime);
     final List<Schedule> entries = _mainViewModel.getEntriesOfDay[key];
 
     if (entries == null) {
       return listSchedule(<Schedule>[]);
     }
-//    //lọc những tiết bị trùng
-//    for(int i=0;i<entries.length - 1;i++){
-//      for(int j=i+1;j<entries.length;j++){
-//        if(entries[j].equals(entries[i])){
-//          entries.removeAt(j);
-//          j--;
-//        }
-//      }
-//    }
+    //lọc những tiết bị trùng
+    for (int i = 0; i < entries.length - 1; i++) {
+      for (int j = i + 1; j < entries.length; j++) {
+        if (entries[j].equals(entries[i])) {
+          entries.removeAt(j);
+          j--;
+        }
+      }
+    }
     entries.sort((Schedule a, Schedule b) => a.ThoiGian.compareTo(b.ThoiGian));
     return listSchedule(entries);
   }

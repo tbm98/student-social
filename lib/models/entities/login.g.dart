@@ -10,11 +10,12 @@ ProfileInfor _$ProfileInforFromJson(Map<String, dynamic> json) {
   return ProfileInfor(
     Id: json['Id'] as String,
     MaSinhVien: json['MaSinhVien'] as String,
-    Ten: json['Ten'] as String,
+    HoTen: json['HoTen'] as String,
     Lop: json['Lop'] as String,
     Nganh: json['Nganh'] as String,
-    NamHoc: json['NamHoc'] as String,
+    NienKhoa: json['NienKhoa'] as String,
     HeDaoTao: json['HeDaoTao'] as String,
+    Truong: json['Truong'] as String,
   );
 }
 
@@ -22,11 +23,12 @@ Map<String, dynamic> _$ProfileInforToJson(ProfileInfor instance) =>
     <String, dynamic>{
       'Id': instance.Id,
       'MaSinhVien': instance.MaSinhVien,
-      'Ten': instance.Ten,
+      'HoTen': instance.HoTen,
       'Lop': instance.Lop,
       'Nganh': instance.Nganh,
-      'NamHoc': instance.NamHoc,
+      'NienKhoa': instance.NienKhoa,
       'HeDaoTao': instance.HeDaoTao,
+      'Truong': instance.Truong,
     };
 
 MessageResult _$MessageResultFromJson(Map<String, dynamic> json) {

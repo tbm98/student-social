@@ -61,7 +61,8 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = {'semester': semester};
-    final Response<List<dynamic>> _result = await _dio.request('time-table',
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        'time-table',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
@@ -69,9 +70,7 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    var value = _result.data
-        .map((dynamic i) => Schedule.fromJson(i as Map<String, dynamic>))
-        .toList();
+    final value = ScheduleResult.fromJson(_result.data);
     return value;
   }
 
@@ -82,7 +81,8 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = {'semester': semester};
-    final Response<List<dynamic>> _result = await _dio.request('exam-table',
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        'exam-table',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
@@ -90,9 +90,7 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    var value = _result.data
-        .map((dynamic i) => Schedule.fromJson(i as Map<String, dynamic>))
-        .toList();
+    final value = ScheduleResult.fromJson(_result.data);
     return value;
   }
 }

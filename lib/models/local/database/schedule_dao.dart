@@ -9,7 +9,8 @@ class ScheduleDao {
   Future<int> insertListSchedules(List<Schedule> listSchedules) async {
     logs('listSchedules is $listSchedules');
     for (int i = 0; i < listSchedules.length; i++) {
-      await database.insert(listSchedules[i]);
+      final int result = await database.insert(listSchedules[i]);
+      logs('result insert ${listSchedules[i].toJson()} is $result');
     }
     //TODO: edit value return
     return 0;

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/src/widgets/editable_text.dart';
+import 'package:studentsocial/models/entities/semester.dart';
 import '../../../helpers/logging.dart';
 import '../../../models/entities/login.dart';
 import '../../../models/entities/profile.dart';
@@ -12,6 +13,7 @@ import '../../../models/local/repository/profile_repository.dart';
 import '../../../models/local/repository/schedule_repository.dart';
 import '../../../models/local/shared_prefs.dart';
 import 'login_model.dart';
+import '../../../models/entities/schedule.dart';
 
 enum LoginAction {
   alert_with_message,
@@ -121,72 +123,32 @@ class LoginNotifier with ChangeNotifier {
 
   Future<void> _getSemester(String token) async {
     logs('token is $token');
-    final semesterResult = await _loginModel.getSemester(token);
+    final SemesterResult semesterResult = await _loginModel.getSemester(token);
     logs('semesterResult is ${semesterResult.toJson()}');
     _pop();
     _inputAction()
         .add({'type': LoginAction.alert_chon_kyhoc, 'data': semesterResult});
   }
 
-  void semesterClicked(String data, String kyTruoc) {
+  void semesterClicked(String data) {
     logs('data is $data');
-    logs('kyTruoc is $kyTruoc');
     _pop();
     _loginModel.semester = data;
-    if (kyTruoc != null) {
-      _loginModel.semesterKyTruoc = kyTruoc;
-    }
-    _loadData(_loginModel.semester, _loginModel.semesterKyTruoc);
+    _loadData(_loginModel.semester);
   }
 
-  Future<void> _loadData(String semester, String semesterKyTruoc) async {
-    _loading('Đang lấy thông tin điểm');
-    await _loginModel.getDiem();
-    _pop();
+  Future<void> _loadData(String semester) async {
     _loading('Đang lấy lịch học');
     await _loginModel.getLichHoc(semester);
     _pop();
     _loading('Đang lấy lịch thi');
     await _loginModel.getLichThi(semester);
     _pop();
-    if (semesterKyTruoc.isNotEmpty) {
-      _loading('Đang lấy lịch thi lại');
-      await _loginModel.getLichThiLai(semesterKyTruoc);
-      _pop();
-    }
     _saveInfo();
   }
 
-  void addSubjects(value) {
-    logs('value addSubjects is $value');
-    final jsonValue = json.decode(value);
-    final listSubjects = jsonValue['message']['Subjects'];
-    for (final item in listSubjects) {
-      _loginModel.addSubjectsName(item['MaMon'], item['TenMon']);
-      _loginModel.addSubjectsSoTinChi(
-          item['MaMon'], item['SoTinChi'].toString());
-    }
-  }
-
   Future<void> _saveInfo() async {
-    //tách và lấy ra tất cả tên và số tín chỉ của từng môn học
-    addSubjects(_loginModel.lichHoc);
-    addSubjects(_loginModel.lichThi);
-    addSubjects(_loginModel.lichThiLai);
     //TODO: add later
-//    addSubjects(_loginModel.mark);
-    //validate profile
-//    var jsonMark = json.decode(_loginModel.mark);
-//    profile.setMoreDetail(
-//        jsonMark['TongTC'],
-//        jsonMark['STCTD'],
-//        jsonMark['STCTLN'],
-//        jsonMark['DTBC'],
-//        jsonMark['DTBCQD'],
-//        jsonMark['SoMonKhongDat'],
-//        jsonMark['SoTCKhongDat'],
-//        _loginModel.token);
-
     _loading('Đang lưu thông tin người dùng');
     final int resProfile =
         await _profileRepository.insertOnlyUser(_loginModel.profile);
@@ -197,10 +159,19 @@ class LoginNotifier with ChangeNotifier {
     logs('saveCurrentMSV:$resCurrentMSV');
     _loading('Đang lưu điểm và lịch cá nhân');
     await _loginModel.saveMarkToDB();
-    await _scheduleRepository.insertListSchedules(_loginModel.lichHoc);
-    await _scheduleRepository.insertListSchedules(_loginModel.lichThi);
-    await _scheduleRepository.insertListSchedules(_loginModel.lichThiLai);
+    if (_loginModel.lichHoc.isSuccess()) {
+      (_loginModel.lichHoc as ScheduleSuccess).message.addMSV(_loginModel.msv);
+      await _scheduleRepository.insertListSchedules(
+          (_loginModel.lichHoc as ScheduleSuccess).message.Entries);
+    }
+    if (_loginModel.lichThi.isSuccess()) {
+      (_loginModel.lichThi as ScheduleSuccess).message.addMSV(_loginModel.msv);
+      await _scheduleRepository.insertListSchedules(
+          (_loginModel.lichThi as ScheduleSuccess).message.Entries);
+    }
     _pop();
     _inputAction().add({'type': LoginAction.save_success});
+    await Future.delayed(Duration(milliseconds: 800));
+    _pop();
   }
 }

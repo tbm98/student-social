@@ -68,7 +68,7 @@ class CalendarViews {
         alignment: Alignment.topRight,
         child: Text(
           lichAm,
-          style: TextStyle(fontSize: 8, color: Colors.grey),
+          style: const TextStyle(fontSize: 8, color: Colors.grey),
         ),
       ),
     );

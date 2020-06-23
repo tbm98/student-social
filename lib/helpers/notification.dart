@@ -133,9 +133,9 @@ class Notification {
 
   String getContentByEntri(Schedule entri) {
     if (entri.LoaiLich == 'LichHoc') {
-      return 'Môn học: ${entri.TenMon}\nThời gian: ${entri.ThoiGian} ${_dateSupport.getThoiGian(entri.ThoiGian, msv)}\nĐịa điểm: ${entri.DiaDiem}\nGiảng viên: ${entri.GiaoVien}';
+      return 'Môn học: ${entri.HocPhan}\nThời gian: ${entri.TietHoc} ${_dateSupport.getThoiGian(entri.TietHoc, msv)}\nĐịa điểm: ${entri.DiaDiem}\nGiảng viên: ${entri.GiaoVien}';
     } else if (entri.LoaiLich == 'LichThi') {
-      return 'Môn thi: ${entri.TenMon}\nSố báo danh: ${entri.SoBaoDanh}\nThời gian: ${entri.ThoiGian}\nĐịa điểm: ${entri.DiaDiem}\nHình thức: ${entri.HinhThuc}';
+      return 'Môn thi: ${entri.HocPhan}\nSố báo danh: ${entri.SoBaoDanh}\nThời gian: ${entri.TietHoc}\nĐịa điểm: ${entri.DiaDiem}\nHình thức: ${entri.HinhThuc}';
     } else if (entri.LoaiLich == 'Note') {
       return 'Tiêu đề: ${entri.MaMon}\nNội dung: ${entri.ThoiGian}';
     }

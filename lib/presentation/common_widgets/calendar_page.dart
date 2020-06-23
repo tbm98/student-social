@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:studentsocial/helpers/logging.dart';
 
 import '../../models/entities/calendar_day.dart';
 import '../../models/entities/schedule.dart';
@@ -176,11 +177,11 @@ class _CalendarState extends State<Calendar> with CalendarViews {
         calendarDay.month, calendarDay.day, indexPage);
     if (_mainViewModel.getEntriesOfDay != null) {
       final List<Schedule> entries = _mainViewModel.getEntriesOfDay[keyOfEntri];
-//      //lọc những tiết bị trùng
-//      if(entries != null && entries.isNotEmpty)
-//        for(int i=0;i<entries.length - 1;i++){
-//          for(int j=i+1;j<entries.length;j++){
-//            if(entries[j].equals(entries[i])){
+//    lọc những tiết bị trùng
+//      if (entries != null && entries.isNotEmpty)
+//        for (int i = 0; i < entries.length - 1; i++) {
+//          for (int j = i + 1; j < entries.length; j++) {
+//            if (entries[j].equals(entries[i])) {
 //              entries.removeAt(j);
 //              j--;
 //            }
@@ -193,6 +194,7 @@ class _CalendarState extends State<Calendar> with CalendarViews {
           numberSchedules[2] == 0) {
         return Container();
       }
+
       return getLayoutNumberSchedule(
           numberSchedules[0], numberSchedules[1], numberSchedules[2]);
     }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:studentsocial/helpers/logging.dart';
 import 'db_parseable.dart';
 
 part 'schedule.g.dart';
@@ -12,8 +13,9 @@ class Schedule extends DBParseable {
   ID INTEGER PRIMARY KEY AUTOINCREMENT,
   MaSinhVien TEXT,
   MaMon TEXT,
-  TenMon TEXT,
+  HocPhan TEXT,
   ThoiGian TEXT,
+  TietHoc TEXT,
   Ngay TEXT,
   DiaDiem TEXT,
   HinhThuc TEXT,
@@ -25,13 +27,15 @@ class Schedule extends DBParseable {
   static const String dropQuery = 'DROP TABLE IF EXISTS Schedule;';
   final int ID;
 
-  final String MaSinhVien;
+  String MaSinhVien;
 
   String MaMon;
 
-  final String TenMon;
+  final String HocPhan;
 
   String ThoiGian;
+
+  final String TietHoc;
 
   final String Ngay;
 
@@ -51,9 +55,10 @@ class Schedule extends DBParseable {
       {this.ID,
       this.MaSinhVien,
       this.MaMon,
-      this.TenMon,
+      this.HocPhan,
       this.ThoiGian,
       this.Ngay,
+      this.TietHoc,
       this.DiaDiem,
       this.HinhThuc,
       this.GiaoVien,
@@ -67,6 +72,20 @@ class Schedule extends DBParseable {
   Map<String, dynamic> toJson() => _$ScheduleToJson(this);
   Map<String, dynamic> toMap() => _$ScheduleToJson(this);
 
+  String get getNgay {
+    // ket qua cuoi cung mong muon = dd/mm/yyyy
+    if (ThoiGian.contains('/')) {
+      // no se co dang dd/mm/yyyy
+      return ThoiGian;
+    } else {
+      // no se co dang yyyy-mm-ddXXXXXXXXXX
+      final List<String> varsDate =
+          ThoiGian.substring(0, 10).replaceAll('-', '/').split('/');
+//      logs('getNgay is ${varsDate[2]}/${varsDate[1]}/${varsDate[0]}');
+      return '${varsDate[2]}/${varsDate[1]}/${varsDate[0]}';
+    }
+  }
+
   factory Schedule.forNote(
       String msv, String tieuDe, String noiDung, String ngay) {
     return Schedule(
@@ -75,6 +94,10 @@ class Schedule extends DBParseable {
         ThoiGian: noiDung,
         Ngay: ngay,
         LoaiLich: 'Note');
+  }
+
+  void addMSV(String msv) {
+    MaSinhVien = msv;
   }
 
   //sinh chuỗi để tạo note từ object hiện có
@@ -86,7 +109,7 @@ class Schedule extends DBParseable {
   bool equals(Schedule schedule) {
     return MaSinhVien == schedule.MaSinhVien &&
         MaMon == schedule.MaMon &&
-        TenMon == schedule.TenMon &&
+        HocPhan == schedule.HocPhan &&
         ThoiGian == schedule.ThoiGian &&
         Ngay == schedule.Ngay &&
         DiaDiem == schedule.DiaDiem &&
@@ -99,4 +122,69 @@ class Schedule extends DBParseable {
 
   @override
   String get tableName => 'Schedule';
+}
+
+@JsonSerializable()
+class ScheduleMessage {
+  ScheduleMessage({this.Entries});
+  List<Schedule> Entries;
+
+  factory ScheduleMessage.fromJson(Map<String, dynamic> json) =>
+      _$ScheduleMessageFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ScheduleMessageToJson(this);
+
+  void addMSV(String msv) {
+    for (final Schedule entry in Entries) {
+      entry.addMSV(msv);
+    }
+  }
+}
+
+@JsonSerializable()
+class ScheduleSuccess implements ScheduleResult {
+  factory ScheduleSuccess.fromJson(Map<String, dynamic> json) =>
+      _$ScheduleSuccessFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ScheduleSuccessToJson(this);
+
+  ScheduleSuccess({
+    this.status,
+    this.message,
+  });
+
+  String status;
+  ScheduleMessage message;
+
+  @override
+  bool isSuccess() {
+    return status == 'success';
+  }
+}
+
+@JsonSerializable()
+class ScheduleFail implements ScheduleResult {
+  factory ScheduleFail.fromJson(Map<String, dynamic> json) =>
+      _$ScheduleFailFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ScheduleFailToJson(this);
+  ScheduleFail({this.status, this.message});
+  String status;
+  String message;
+
+  @override
+  bool isSuccess() {
+    return status != 'success';
+  }
+}
+
+abstract class ScheduleResult {
+  factory ScheduleResult.fromJson(Map<String, dynamic> json) {
+    if (json['status'] == 'success') {
+      return ScheduleSuccess.fromJson(json);
+    } else {
+      return ScheduleFail.fromJson(json);
+    }
+  }
+  bool isSuccess();
 }

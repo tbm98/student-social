@@ -304,9 +304,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: _mainNotifier.getRandomColor(),
-        //TODO: sua lai key ho ten
-//        child: Text(profile?.HoTen?.substring(0, 1).toUpperCase()),
-        child: const Text('T'),
+        child: Text(profile?.HoTen?.substring(0, 1)?.toUpperCase()),
       ),
       title: Text(
         profile.HoTen ?? 'Họ Tên',

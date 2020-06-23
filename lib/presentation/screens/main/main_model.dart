@@ -87,7 +87,7 @@ class MainModel {
   }
 
   void addScheduleToEntriesOfDay(Schedule lich) {
-    entriesOfDay[lich.Ngay].add(lich);
+    entriesOfDay[lich.getNgay].add(lich);
   }
 
   DateTime get getDateCurrentClick => DateTime(clickYear, clickMonth, clickDay);

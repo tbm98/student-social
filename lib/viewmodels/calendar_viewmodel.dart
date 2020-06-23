@@ -80,7 +80,8 @@ class CalendarViewModel with ChangeNotifier {
   }
 
   String getKeyOfEntri(int month, int day, int indexPage) {
-    return '${_calendarModels[indexPage].year}-${getStringForKey(month)}-${getStringForKey(day)}';
+    // return with format dd/mm/yyyy
+    return '${getStringForKey(day)}/${getStringForKey(month)}/${_calendarModels[indexPage].year}';
   }
 
   String getStringForKey(int i) {

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/http.dart';
+import 'package:studentsocial/helpers/logging.dart';
 
 import '../models/entities/login.dart';
 import '../models/entities/schedule.dart';
@@ -13,6 +14,12 @@ abstract class RestClient {
 
   factory RestClient.create() {
     final Dio dio = Dio();
+    dio.interceptors.add(LogInterceptor(
+        responseBody: true,
+        requestHeader: false,
+        requestBody: false,
+        request: false));
+
     return RestClient(dio);
   }
 
@@ -42,11 +49,11 @@ abstract class RestClient {
 //  }
 
   @POST('time-table')
-  Future<List<Schedule>> getLichHoc(
+  Future<ScheduleResult> getLichHoc(
       @Header('token') String token, @Field() String semester);
 
   //hàm này dùng cho cả get lichthilai vì đều là lịch thi (chỉ khác semester)
   @POST('exam-table')
-  Future<List<Schedule>> getLichThi(
+  Future<ScheduleResult> getLichThi(
       @Header('token') String token, @Field() String semester);
 }

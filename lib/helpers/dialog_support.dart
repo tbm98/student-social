@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studentsocial/helpers/logging.dart';
 
 mixin DialogSupport {
   Future<void> loading(BuildContext context, String msg) {
@@ -34,7 +35,7 @@ mixin DialogSupport {
   }
 
   Future<void> showSuccess(BuildContext context, String msg) async {
-    final dialog = AlertDialog(
+    final AlertDialog dialog = AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
       contentPadding: const EdgeInsets.all(16),
       content: Row(
@@ -54,7 +55,7 @@ mixin DialogSupport {
     );
     await showDialog(context: context, builder: (_) => dialog);
     await Future.delayed(const Duration(milliseconds: 800));
-    pop(context);
+    logs('hihi dang nhap hoan tat');
   }
 
   Future<void> showAlertMessage(BuildContext context, String msg) async {
