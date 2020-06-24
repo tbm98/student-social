@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import '../../helpers/dialog_support.dart';
 import '../../helpers/logging.dart';
 import '../../models/entities/schedule.dart';
-import '../screens/main/main_notifier.dart';
+import '../screens/main/main_state_notifier.dart';
 
 class AddNote extends StatefulWidget {
   const AddNote({this.date, this.context});
@@ -31,10 +31,10 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
   //khai bao bien cho phan ghi chu
   String _title = '', _content = '';
 
-  MainNotifier _mainViewModel;
+  MainStateNotifier _mainViewModel;
 
   void _initViewModel() {
-    _mainViewModel = Provider.of<MainNotifier>(widget.context);
+    _mainViewModel = Provider.of<MainStateNotifier>(widget.context);
   }
 
   @override

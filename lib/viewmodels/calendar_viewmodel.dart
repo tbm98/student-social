@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 import '../models/calendar_model.dart';
 import '../models/entities/calendar_day.dart';
 import '../models/entities/schedule.dart';
-import '../presentation/screens/main/main_notifier.dart';
+import '../presentation/screens/main/main_state_notifier.dart';
 
 class CalendarViewModel with ChangeNotifier {
   CalendarViewModel() {
     _calendarModels = <int, CalendarModel>{};
   }
-  MainNotifier _mainViewModel;
+  MainStateNotifier _mainViewModel;
   Map<int, CalendarModel> _calendarModels;
   PageController pageViewController =
       PageController(initialPage: 12, viewportFraction: 0.99);
@@ -24,7 +24,7 @@ class CalendarViewModel with ChangeNotifier {
 
   PageController get getPageViewController => pageViewController;
 
-  void addMainViewModel(MainNotifier mainViewModel) {
+  void addMainViewModel(MainStateNotifier mainViewModel) {
     _mainViewModel = mainViewModel;
   }
 

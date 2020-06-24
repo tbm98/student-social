@@ -6,7 +6,7 @@ import '../../models/entities/calendar_day.dart';
 import '../../models/entities/schedule.dart';
 import '../../viewmodels/calendar_viewmodel.dart';
 import '../../viewmodels/schedule_viewmodel.dart';
-import '../screens/main/main_notifier.dart';
+import '../screens/main/main_state_notifier.dart';
 import 'calendar_views.dart';
 
 class Calendar extends StatefulWidget {
@@ -15,12 +15,12 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> with CalendarViews {
-  MainNotifier _mainViewModel;
+  MainStateNotifier _mainViewModel;
   CalendarViewModel _calendarViewModel;
   ScheduleViewModel _listScheduleViewModel;
 
   void _initViewModel() {
-    _mainViewModel = Provider.of<MainNotifier>(context);
+    _mainViewModel = Provider.of<MainStateNotifier>(context);
     _calendarViewModel = Provider.of<CalendarViewModel>(context);
     _calendarViewModel.addMainViewModel(_mainViewModel);
     _listScheduleViewModel = Provider.of<ScheduleViewModel>(context);

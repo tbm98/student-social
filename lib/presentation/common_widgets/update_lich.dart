@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../helpers/dialog_support.dart';
 import '../../models/entities/semester.dart';
-import '../screens/main/main_notifier.dart';
+import '../screens/main/main_state_notifier.dart';
 
 class UpdateLich extends StatefulWidget {
   const UpdateLich({this.mcontext});
@@ -17,7 +17,7 @@ class UpdateLich extends StatefulWidget {
 }
 
 class _UpdateLichState extends State<UpdateLich> with DialogSupport {
-  MainNotifier _mainViewModel;
+  MainStateNotifier _mainViewModel;
 
 //  NetWorking _netWorking;
   String lichHoc, lichThi, lichThiLai;
@@ -28,7 +28,7 @@ class _UpdateLichState extends State<UpdateLich> with DialogSupport {
   @override
   void initState() {
     super.initState();
-    _mainViewModel = Provider.of<MainNotifier>(widget.mcontext);
+    _mainViewModel = Provider.of<MainStateNotifier>(widget.mcontext);
 //    _netWorking = NetWorking();
     _loadSemester();
   }

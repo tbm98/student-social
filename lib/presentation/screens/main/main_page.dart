@@ -14,7 +14,7 @@ import '../../common_widgets/list_schedule.dart';
 import '../../common_widgets/update_lich.dart';
 import 'button_current_day.dart';
 import 'drawer.dart';
-import 'main_notifier.dart';
+import 'main_state_notifier.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -23,7 +23,7 @@ class MainScreen extends StatefulWidget {
 
 class MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin, DialogSupport {
-  MainNotifier _mainNotifier;
+  MainStateNotifier _mainNotifier;
   final CalendarViewModel _calendarViewModel = CalendarViewModel();
   final ScheduleViewModel _scheduleViewModel = ScheduleViewModel();
   Animation<double> animation;
@@ -31,7 +31,7 @@ class MainScreenState extends State<MainScreen>
   bool listened = false;
 
   void _initViewModel() {
-    _mainNotifier = context.read<MainNotifier>();
+    _mainNotifier = context.read<MainStateNotifier>();
     _mainNotifier.initSize(MediaQuery.of(context).size);
     if (!listened) {
       _mainNotifier.getStreamAction.listen((data) {

@@ -8,7 +8,7 @@ import '../../helpers/dialog_support.dart';
 import '../../models/entities/schedule.dart';
 import '../../viewmodels/calendar_viewmodel.dart';
 import '../../viewmodels/schedule_viewmodel.dart';
-import '../screens/main/main_notifier.dart';
+import '../screens/main/main_state_notifier.dart';
 
 class ListSchedule extends StatefulWidget {
   @override
@@ -17,14 +17,14 @@ class ListSchedule extends StatefulWidget {
 
 class _ListScheduleState extends State<ListSchedule> with DialogSupport {
   DateSupport dateSupport = DateSupport();
-  MainNotifier _mainViewModel;
+  MainStateNotifier _mainViewModel;
   ScheduleViewModel _listScheduleViewModel;
   CalendarViewModel _calendarViewModel;
   TextEditingController _titleController;
   TextEditingController _contentController;
 
   void _initViewModel() {
-    _mainViewModel = Provider.of<MainNotifier>(context);
+    _mainViewModel = Provider.of<MainStateNotifier>(context);
     _calendarViewModel = Provider.of<CalendarViewModel>(context);
     _listScheduleViewModel = Provider.of<ScheduleViewModel>(context);
     _listScheduleViewModel.addCalendarViewModel(_calendarViewModel);

@@ -15,6 +15,9 @@ import '../../../models/local/repository/profile_repository.dart';
 import '../../../models/local/repository/schedule_repository.dart';
 import '../../../models/local/shared_prefs.dart';
 import 'main_model.dart';
+import 'package:state_notifier/state_notifier.dart';
+
+import 'main_state.dart';
 
 enum MainAction {
   alert_with_message,
@@ -24,8 +27,8 @@ enum MainAction {
   reverse
 }
 
-class MainNotifier with ChangeNotifier {
-  MainNotifier(MyDatabase database) {
+class MainStateNotifier extends StateNotifier<MainState> {
+  MainStateNotifier(MyDatabase database) : super(const MainState()) {
     _profileRepository = ProfileRepository(database);
     _scheduleRepository = ScheduleRepository(database);
     _mainModel = MainModel();

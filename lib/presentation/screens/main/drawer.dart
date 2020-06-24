@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lazy_code/lazy_code.dart';
-import 'package:provider/provider.dart';
 
 import '../../../models/entities/profile.dart';
 import '../../../models/local/database/database.dart';
@@ -12,7 +11,7 @@ import '../mark/mark_notifier.dart';
 import '../qr/qrcode_view.dart';
 import '../settings.dart';
 import '../time_table.dart';
-import 'main_notifier.dart';
+import 'main_state_notifier.dart';
 
 class DrawerWidget extends StatefulWidget {
   @override
@@ -20,7 +19,7 @@ class DrawerWidget extends StatefulWidget {
 }
 
 class _DrawerWidgetState extends State<DrawerWidget> {
-  MainNotifier _mainNotifier;
+  MainStateNotifier _mainNotifier;
 
   Widget _loginTile() {
     return ListTile(
@@ -408,7 +407,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _mainNotifier = context.read<MainNotifier>();
+    _mainNotifier = context.read<MainStateNotifier>();
   }
 
   @override
