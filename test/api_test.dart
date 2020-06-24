@@ -6,7 +6,7 @@ void main() {
   test('test api', () async {
     final RestClient client = RestClient.create();
     final LoginResult loginResult =
-        await client.login('DTC16HD4802010001', 'Kh0ngc0dauem;');
-    expect(loginResult.isSuccess(), true);
+        await client.login('DTC16HD4802010001', ';');
+    expect(loginResult.isSuccess(), false);
   });
 }

@@ -14,11 +14,9 @@ class LoginModel {
   ScheduleResult lichHoc;
   ScheduleResult lichThi;
   final RestClient _client = RestClient.create();
-  final TextEditingController controllerEmail =
-      TextEditingController(text: 'DTC165D4801030252');
+  final TextEditingController controllerEmail = TextEditingController();
 
-  final TextEditingController controllerPassword =
-      TextEditingController(text: 'tbm01031998');
+  final TextEditingController controllerPassword = TextEditingController();
 
   bool get dataIsInvalid =>
       controllerEmail.text.trim().isEmpty ||
