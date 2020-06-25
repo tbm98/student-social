@@ -7,42 +7,29 @@ import '../../../models/entities/schedule.dart';
 
 class MainModel {
   double width = 0;
-  Size size;
-  double itemHeight = 0;
   double itemWidth = 0;
+  double itemHeight = 250 / 6;
   double drawerHeaderHeight = 300;
-  List<Schedule> schedules;
+  // title = 25, titleday = 25, tableheight = 250 , 16 margin
+  double tableHeight = 316;
   String title = 'Student Social';
   String name = 'Tên sinh viên';
   String className = 'Lớp';
-
-  Map<String, List<Schedule>> entriesOfDay;
-
-  double tableHeight =
-      316; // title = 25, titleday = 25, tableheight = 250 , 16 margin
-
-  final DateTime currentDate = DateTime.now();
-  DateTime stateDate;
-
-  bool coLichThiLai = false;
-  int clickDay = DateTime.now().day;
-  int clickMonth = DateTime.now().month;
-  int clickYear = DateTime.now().year;
-  int currentDay = DateTime.now().day;
-  int currentMonth = DateTime.now().month;
-  int currentYear = DateTime.now().year;
-
-  String msv =
-      'guest'; // mặc định msv là khách để khách có thể dùng bình thường
+  // mặc định msv là khách để khách có thể dùng bình thường
+  String msv = 'guest';
 
   Profile profile;
-
   List<Profile> allProfile;
+  List<Schedule> schedules;
+  Map<String, List<Schedule>> entriesOfDay;
 
+  DateTime clickDate = DateTime.now();
+  DateTime currentDate = DateTime.now();
   bool hideButtonCurrent = true;
 
-  String get keyOfCurrentEntries =>
-      '${getNum(clickYear)}-${getNum(clickMonth)}-${getNum(clickDay)}';
+  String get keyOfCurrentEntries {
+    return '${getNum(clickDate.year)}-${getNum(clickDate.month)}-${getNum(clickDate.day)}';
+  }
 
   String getNum(int n) {
     if (n < 10) {
@@ -51,7 +38,7 @@ class MainModel {
     return '$n';
   }
 
-  List<Color> colors = [
+  static const List<Color> colors = [
     Colors.blue,
     Colors.red,
     Colors.green,
@@ -62,11 +49,8 @@ class MainModel {
   bool get entriesOfDayNotEmpty =>
       entriesOfDay != null && entriesOfDay.isNotEmpty;
 
-  void initSize(Size s) {
-    size = s;
+  void initSize(Size size) {
     width = size.width;
-//    this._height = this._size.height;
-    itemHeight = 250 / 6;
     itemWidth = width / 7;
   }
 
@@ -89,8 +73,6 @@ class MainModel {
   void addScheduleToEntriesOfDay(Schedule lich) {
     entriesOfDay[lich.getNgay].add(lich);
   }
-
-  DateTime get getDateCurrentClick => DateTime(clickYear, clickMonth, clickDay);
 
   void resetData() {
     msv = '';
