@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:connectivity/connectivity.dart';
@@ -58,8 +57,7 @@ class MainStateNotifier extends StateNotifier<MainState> {
 
   List<Profile> get getAllProfile => _mainModel.allProfile;
 
-  DateTime get getClickedDay => DateTime(
-      _mainModel.clickYear, _mainModel.clickMonth, _mainModel.clickDay);
+  DateTime get getClickedDay => _mainModel.clickDate;
 
   @override
   void dispose() {
@@ -98,19 +96,19 @@ class MainStateNotifier extends StateNotifier<MainState> {
 
   double get getTableHeight => _mainModel.tableHeight;
 
-  int get getClickMonth => _mainModel.clickMonth;
+  int get getClickMonth => _mainModel.clickDate.month;
 
-  DateTime get getDateCurrentClick => _mainModel.getDateCurrentClick;
+  DateTime get getDateCurrentClick => _mainModel.clickDate;
 
   String get getKeyOfCurrentEntries => _mainModel.keyOfCurrentEntries;
 
-  int get getCurrentDay => _mainModel.currentDay;
+  int get getCurrentDay => _mainModel.currentDate.day;
 
-  int get getCurrentMonth => _mainModel.currentMonth;
+  int get getCurrentMonth => _mainModel.currentDate.month;
 
-  int get getCurrentYear => _mainModel.currentYear;
+  int get getCurrentYear => _mainModel.currentDate.year;
 
-  int get getClickDay => _mainModel.clickDay;
+  int get getClickDay => _mainModel.clickDate.day;
 
   String get getMSV => _mainModel.msv;
 
@@ -236,9 +234,7 @@ class MainStateNotifier extends StateNotifier<MainState> {
   void clickedOnCurrentDay() {
     logs(
         'clickedOnDay ${getStringForKey(getCurrentDay)},${getStringForKey(getCurrentMonth)},$getCurrentYear from calendar_widget');
-    _mainModel.clickYear = getCurrentYear;
-    _mainModel.clickMonth = getCurrentMonth;
-    _mainModel.clickDay = getCurrentDay;
+    _mainModel.clickDate = _mainModel.currentDate;
     notifyListeners();
     if (!_mainModel.hideButtonCurrent) {
       //nếu đang hiện thì mới ẩn
@@ -250,9 +246,7 @@ class MainStateNotifier extends StateNotifier<MainState> {
   void clickedOnDay(int day, int month, int year) {
     logs(
         'clickedOnDay ${getStringForKey(day)},${getStringForKey(month)},$year from calendar_widget');
-    _mainModel.clickYear = year;
-    _mainModel.clickMonth = month;
-    _mainModel.clickDay = day;
+    _mainModel.clickDate = DateTime(year, month, day);
     notifyListeners();
     if (_isCurrentDay(day, month, year)) {
       if (!_mainModel.hideButtonCurrent) {
@@ -273,11 +267,13 @@ class MainStateNotifier extends StateNotifier<MainState> {
   }
 
   void setClickDay(int clickDay) {
-    _mainModel.clickDay = clickDay;
+    _mainModel.clickDate = DateTime(
+        _mainModel.clickDate.year, _mainModel.clickDate.month, clickDay);
   }
 
   void setClickMonth(int month) {
-    _mainModel.clickMonth = month;
+    _mainModel.clickDate =
+        DateTime(_mainModel.clickDate.year, month, _mainModel.clickDate.day);
   }
 
   Future<void> logOut() async {
