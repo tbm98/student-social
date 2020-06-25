@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/logging.dart';
@@ -27,6 +28,10 @@ enum MainAction {
   reverse
 }
 
+final mainStateNotifier = StateNotifierProvider<MainStateNotifier>((ref) {
+  return MainStateNotifier(ref.read(myDatabase).value);
+});
+
 class MainStateNotifier extends StateNotifier<MainState> {
   MainStateNotifier(MyDatabase database) : super(const MainState()) {
     _profileRepository = ProfileRepository(database);
@@ -36,6 +41,7 @@ class MainStateNotifier extends StateNotifier<MainState> {
     _sharedPrefs = SharedPrefs();
     _initLoad();
   }
+
   MainModel _mainModel;
   final StreamController _streamController = StreamController();
   Notification _notification;

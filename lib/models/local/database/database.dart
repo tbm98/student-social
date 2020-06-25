@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -8,6 +9,8 @@ import '../../entities/db_parseable.dart';
 import '../../entities/mark.dart';
 import '../../entities/profile.dart';
 import '../../entities/schedule.dart';
+
+final myDatabase = Provider<MyDatabase>((ref) => MyDatabase.instance);
 
 ///******************** MyDatabase *****************///
 

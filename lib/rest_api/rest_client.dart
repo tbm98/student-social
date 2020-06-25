@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retrofit/http.dart';
 import 'package:studentsocial/helpers/logging.dart';
 
@@ -7,6 +8,8 @@ import '../models/entities/schedule.dart';
 import '../models/entities/semester.dart';
 
 part 'rest_client.g.dart';
+
+final restClient = Provider<RestClient>((ref) => RestClient.create());
 
 @RestApi(baseUrl: 'http://171.244.38.52/api/')
 abstract class RestClient {

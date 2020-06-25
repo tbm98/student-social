@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:studentsocial/helpers/logging.dart';
 
 import '../../helpers/date.dart';

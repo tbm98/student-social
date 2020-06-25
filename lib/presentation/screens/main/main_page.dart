@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:lazy_code/lazy_code.dart';
-import 'package:provider/provider.dart';
 
 import '../../../helpers/dialog_support.dart';
 import '../../../models/entities/calendar_day.dart';

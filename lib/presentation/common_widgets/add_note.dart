@@ -3,7 +3,6 @@
  */
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 import '../../helpers/dialog_support.dart';
 import '../../helpers/logging.dart';

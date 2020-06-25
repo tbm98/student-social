@@ -24,7 +24,6 @@ class MainModel {
   final DateTime currentDate = DateTime.now();
   DateTime stateDate;
 
-  bool coLichThiLai = false;
   int clickDay = DateTime.now().day;
   int clickMonth = DateTime.now().month;
   int clickYear = DateTime.now().year;
