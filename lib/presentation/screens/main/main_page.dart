@@ -2,11 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:lazy_code/lazy_code.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../helpers/dialog_support.dart';
 import '../../../models/entities/calendar_day.dart';
-import '../../../viewmodels/calendar_viewmodel.dart';
-import '../../../viewmodels/schedule_viewmodel.dart';
+import '../../../viewmodels/calendar_state_notifier.dart';
+import '../../../viewmodels/schedule_state_notifier.dart';
 import '../../common_widgets/add_note.dart';
 import '../../common_widgets/calendar_page.dart';
 import '../../common_widgets/list_schedule.dart';
@@ -22,18 +23,14 @@ class MainScreen extends StatefulWidget {
 
 class MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin, DialogSupport {
-  MainStateNotifier _mainNotifier;
-  final CalendarViewModel _calendarViewModel = CalendarViewModel();
-  final ScheduleViewModel _scheduleViewModel = ScheduleViewModel();
   Animation<double> animation;
   AnimationController animationController;
   bool listened = false;
 
   void _initViewModel() {
-    _mainNotifier = context.read<MainStateNotifier>();
-    _mainNotifier.initSize(MediaQuery.of(context).size);
+    mainStateNotifier.read(context).initSize(MediaQuery.of(context).size);
     if (!listened) {
-      _mainNotifier.getStreamAction.listen((data) {
+      mainStateNotifier.read(context).getStreamAction.listen((data) {
         if (data['type'] == MainAction.alert_with_message) {
           showAlertMessage(context, data['data']);
         } else if (data['type'] == MainAction.alert_update_schedule) {
@@ -82,14 +79,24 @@ class MainScreenState extends State<MainScreen>
       appBar: AppBar(
         title: const Text('Student Social'),
         actions: <Widget>[
-          ButtonCurrentDay(
-            animation: animation,
-            onTap: () {
-              _calendarViewModel.onClickedCurrentDay(CalendarDay.now());
-              _scheduleViewModel.onClickedCurrentDay(CalendarDay.now());
-            },
-            currentDay: _calendarViewModel.currentDay.day.toString(),
-          ),
+          Consumer((context, read) {
+            return ButtonCurrentDay(
+              animation: animation,
+              onTap: () {
+                calendarStateNotifier
+                    .read(context)
+                    .onClickedCurrentDay(CalendarDay.now());
+                scheduleStateNotifier
+                    .read(context)
+                    .onClickedCurrentDay(CalendarDay.now());
+              },
+              currentDay: read(calendarStateNotifier)
+                  .state
+                  .getCurrentDay
+                  .day
+                  .toString(),
+            );
+          }),
           _layoutRefesh,
         ],
       ),
@@ -97,7 +104,7 @@ class MainScreenState extends State<MainScreen>
       drawer: DrawerWidget(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _showDialogAddGhiChu();
+          _showDialogAddGhiChu(mainStateNotifier.read(context).clickDate);
         },
         child: const Icon(Icons.add),
       ),
@@ -105,24 +112,26 @@ class MainScreenState extends State<MainScreen>
   }
 
   Widget get _layoutRefesh {
-    if (_mainNotifier.getMSV != null && _mainNotifier.getMSV != 'guest') {
-      return IconButton(
-          icon: const Icon(Icons.refresh),
-          onPressed: _mainNotifier.updateSchedule);
-    } else {
-      return const SizedBox();
-    }
+    return Consumer((context, read) {
+      final mainState = read(mainStateNotifier);
+      if (mainState.msv != null && mainState.msv != 'guest') {
+        return IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: mainState.updateSchedule);
+      } else {
+        return const SizedBox();
+      }
+    });
   }
 
-  Future<void> _showDialogAddGhiChu() async {
+  Future<void> _showDialogAddGhiChu(DateTime clickDate) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
+      builder: (_) {
         return AddNote(
-          date: _mainNotifier.getClickedDay,
-          context: this.context,
-        ); //magic ^_^
+          date: clickDate,
+        );
       },
     );
   }
@@ -175,32 +184,18 @@ class MainScreenState extends State<MainScreen>
   }
 
   Widget calendarView() {
-    return Container(
+    return Consumer((context, read) {
+      return Container(
         width: double.infinity,
-        height: _mainNotifier.getTableHeight,
-        child: MultiProvider(
-          providers: [
-//            ChangeNotifierProvider<MainViewModel>.value(value: _mainViewModel),
-            ChangeNotifierProvider<ScheduleViewModel>.value(
-                value: _scheduleViewModel),
-            ChangeNotifierProvider<CalendarViewModel>.value(
-                value: _calendarViewModel)
-          ],
-          child: Calendar(),
-        ));
+        height: read(mainStateNotifier).tableHeight,
+        child: Calendar(),
+      );
+    });
   }
 
   Widget listSchedule() {
     return Expanded(
-        child: MultiProvider(
-      providers: [
-//        ChangeNotifierProvider<MainViewModel>.value(value: _mainViewModel),
-        ChangeNotifierProvider<ScheduleViewModel>.value(
-            value: _scheduleViewModel),
-        ChangeNotifierProvider<CalendarViewModel>.value(
-            value: _calendarViewModel)
-      ],
       child: ListSchedule(),
-    ));
+    );
   }
 }

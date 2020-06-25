@@ -1,45 +1,97 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/foundation.dart';
+import 'package:studentsocial/models/entities/profile.dart';
 import 'package:studentsocial/models/entities/schedule.dart';
 
 part 'main_state.freezed.dart';
 
 @freezed
-abstract class MainState with _$MainState {
-  const factory MainState(
-  {
-  @Default(0) double width,
-  Size size,
-  @Default(0) double itemHeight,
-  @Default(0) double itemWidth,
-  @Default(300) double drawerHeaderHeight,
-  List<Schedule> schedules,
-  @Default('Student Social') String title,
-  @Default('Tên sinh viên') String name ,
-  @Default('Lớp') String className ,
+abstract class MainState implements _$MainState {
+  const MainState._();
 
-  Map<String, List<Schedule>> entriesOfDay,
+  const factory MainState({
+    double width,
+    double itemWidth,
+    @Default(250 / 6) double itemHeight,
+    @Default(300) double drawerHeaderHeight,
+    // title = 25, titleday = 25, tableheight = 250 , 16 margin
+    @Default(316) double tableHeight,
+    @Default('Student Social') String title,
+    @Default('Tên sinh viên') String name,
+    @Default('Lớp') String className,
+    // mặc định msv là khách để khách có thể dùng bình thường
+    @Default('guest') String msv,
+    Profile profile,
+    List<Profile> allProfile,
+    List<Schedule> schedules,
+    @Default(<String, List<Schedule>>{})
+        Map<String, List<Schedule>> entriesOfDay,
+    DateTime clickDate,
+    DateTime currentDate,
+    @Default(true) bool hideButtonCurrent,
+  }) = _MainState;
 
-  @Default(316) double tableHeight,// title = 25, titleday = 25, tableheight = 250 , 16 margin
+  DateTime get getClickDate => clickDate ?? DateTime.now();
 
-  @Default(DateTime.now()) DateTime currentDate = DateTime.now();
-  DateTime stateDate;
+  DateTime get getCurrentDate => currentDate ?? DateTime.now();
 
-  int clickDay = DateTime.now().day;
-  int clickMonth = DateTime.now().month;
-  int clickYear = DateTime.now().year;
-  int currentDay = DateTime.now().day;
-  int currentMonth = DateTime.now().month;
-  int currentYear = DateTime.now().year;
+  String get getName {
+    if (msv == 'guest') {
+      return 'Khách';
+    }
+    return profile?.HoTen ?? 'Họ Tên';
+  }
 
-  String msv =
-      'guest'; // mặc định msv là khách để khách có thể dùng bình thường
+  String get getClass => profile?.Lop ?? '';
 
-  Profile profile;
+  String get getToken => profile?.Token ?? '';
 
-  List<Profile> allProfile;
+  bool get isGuest =>
+      msv == null || msv == 'guest' || getName == null || getName == 'Họ Tên';
 
-  @De bool hideButtonCurrent = true;}
-      ) = _MainState;
+  String get getAvatarName {
+    final String name = getName;
+    final List<String> splitName = name.split(' ');
+    return splitName.last[0];
+  }
+
+  String get keyOfCurrentEntries {
+    return '${getNum(getClickDate.year)}-${getNum(getClickDate.month)}-${getNum(getClickDate.day)}';
+  }
+
+  String getNum(int n) {
+    if (n < 10) {
+      return '0$n';
+    }
+    return '$n';
+  }
+
+  static const List<Color> colors = [
+    Colors.blue,
+    Colors.red,
+    Colors.green,
+    Colors.yellow,
+    Colors.purple
+  ];
+
+  bool get entriesOfDayNotEmpty =>
+      entriesOfDay != null && entriesOfDay.isNotEmpty;
+
+  MainState initSize(Size size) {
+    final width = size.width;
+    final itemWidth = width / 7;
+    return this.copyWith(width: width, itemWidth: itemWidth);
+  }
+
+  void clearEntriesOfDay() {
+    entriesOfDay.clear();
+  }
+
+  MainState resetData() {
+    final msv = '';
+    final profile = null;
+    entriesOfDay?.clear();
+    return this.copyWith(msv: msv, profile: profile);
+  }
 }

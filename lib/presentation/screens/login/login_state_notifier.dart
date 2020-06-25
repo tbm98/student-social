@@ -1,19 +1,20 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:connectivity/connectivity.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/src/widgets/editable_text.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:state_notifier/state_notifier.dart';
 import 'package:studentsocial/models/entities/semester.dart';
+import 'package:studentsocial/rest_api/rest_client.dart';
+
 import '../../../helpers/logging.dart';
 import '../../../models/entities/login.dart';
 import '../../../models/entities/profile.dart';
+import '../../../models/entities/schedule.dart';
 import '../../../models/local/database/database.dart';
 import '../../../models/local/repository/profile_repository.dart';
 import '../../../models/local/repository/schedule_repository.dart';
 import '../../../models/local/shared_prefs.dart';
-import 'login_model.dart';
-import '../../../models/entities/schedule.dart';
+import 'login_state.dart';
 
 enum LoginAction {
   alert_with_message,
@@ -23,20 +24,37 @@ enum LoginAction {
   save_success
 }
 
-class LoginNotifier with ChangeNotifier {
-  LoginNotifier(MyDatabase database) {
-    _sharedPrefs = SharedPrefs();
-    _profileRepository = ProfileRepository(database);
-    _scheduleRepository = ScheduleRepository(database);
-    _loginModel = LoginModel();
+final loginStateNotifier = StateNotifierProvider((ref) {
+  final database = ref.read(myDatabase).value;
+  final shared = ref.read(sharedPrefs).value;
+  final client = ref.read(restClient).value;
+
+  return LoginStateNotifier(ProfileRepository(database),
+      ScheduleRepository(database), shared, client);
+});
+
+class LoginStateNotifier extends StateNotifier<LoginState> {
+  LoginStateNotifier(
+      ProfileRepository profileRepository,
+      ScheduleRepository scheduleRepository,
+      SharedPrefs sharedPrefs,
+      RestClient client)
+      : super(const LoginState()) {
+    _sharedPrefs = sharedPrefs;
+    _profileRepository = profileRepository;
+    _scheduleRepository = scheduleRepository;
+    _client = client;
     _streamController = StreamController();
   }
-  LoginModel _loginModel;
+
   StreamController _streamController;
   ProfileRepository _profileRepository;
   ScheduleRepository _scheduleRepository;
-
+  RestClient _client;
   SharedPrefs _sharedPrefs;
+
+  bool dataIsInvalid(String email, String password) =>
+      email.trim().isEmpty || password.trim().isEmpty;
 
   @override
   void dispose() {
@@ -44,10 +62,35 @@ class LoginNotifier with ChangeNotifier {
     super.dispose();
   }
 
-  TextEditingController get getControllerMSV => _loginModel.controllerEmail;
+  Future<LoginResult> login(String msv, String password) async {
+    final LoginResult result = await _client.login(msv, password);
+    if (result.isSuccess()) {
+      state = state.copyWith(
+          msv: (result as LoginSuccess).message.Profile.MaSinhVien);
+    }
+    return result;
+  }
 
-  TextEditingController get getControllerPassword =>
-      _loginModel.controllerPassword;
+  Future<SemesterResult> getSemester(String token) async {
+    return await _client.getSemester(token);
+  }
+
+  Future<void> getLichHoc(String semester) async {
+    final lichHoc = await _client.getLichHoc(state.token, semester);
+    state = state.copyWith(lichHoc: lichHoc);
+  }
+
+  Future<void> getLichThi(String semester) async {
+    final lichThi = await _client.getLichThi(state.token, semester);
+    state = state.copyWith(lichThi: lichThi);
+  }
+
+  Future<void> saveMarkToDB() async {
+    //TODO: save mark to db
+//    var res = await PlatformChannel().saveMarkToDB(
+//        mark, json.encode(subjectsName), json.encode(subjectsSoTinChi), msv);
+//    print('saveMarkToDB: $res');
+  }
 
   Sink _inputAction() {
     return _streamController.sink;
@@ -65,12 +108,12 @@ class LoginNotifier with ChangeNotifier {
     _inputAction().add({'type': LoginAction.loading, 'data': msg});
   }
 
-  Future<void> submit() async {
+  Future<void> submit(String email, String password) async {
     final bool isOnline = await _checkInternetConnectivity();
     if (!isOnline) {
       return;
     }
-    _actionLogin();
+    _actionLogin(email, password);
   }
 
   Future<bool> _checkInternetConnectivity() async {
@@ -88,30 +131,29 @@ class LoginNotifier with ChangeNotifier {
     return false;
   }
 
-  void _actionLogin() {
-    if (_loginModel.dataIsInvalid) {
+  void _actionLogin(String email, String password) {
+    if (dataIsInvalid(email, password)) {
       _inputAction().add({
         'type': LoginAction.alert_with_message,
         'data': 'Bạn không được để trống tài khoản mật khẩu'
       });
     } else {
       _loading('Đang đăng nhập...');
-      final String tk = _loginModel.getMSV;
-      final String mk = _loginModel.getPassword;
-      _login(tk, mk);
+      _login(email, password);
     }
   }
 
   Future<void> _login(String msv, String password) async {
-    final LoginResult result = await _loginModel.login(msv, password);
-    _loginModel.msv = msv;
+    final LoginResult result = await login(msv, password);
+    state = state.copyWith(msv: msv);
     if (result.isSuccess()) {
-      _loginModel.profile =
+      final profile =
           Profile.fromJson((result as LoginSuccess).message.Profile.toJson());
-      _loginModel.token = (result as LoginSuccess).message.Token;
+      final token = (result as LoginSuccess).message.Token;
+      state = state.copyWith(profile: profile, token: token);
       _pop();
       _loading('Đang tải kỳ học');
-      _getSemester(_loginModel.token);
+      _getSemester(state.token);
     } else {
       _pop();
       _inputAction().add({
@@ -123,7 +165,7 @@ class LoginNotifier with ChangeNotifier {
 
   Future<void> _getSemester(String token) async {
     logs('token is $token');
-    final SemesterResult semesterResult = await _loginModel.getSemester(token);
+    final SemesterResult semesterResult = await getSemester(token);
     logs('semesterResult is ${semesterResult.toJson()}');
     _pop();
     _inputAction()
@@ -133,16 +175,16 @@ class LoginNotifier with ChangeNotifier {
   void semesterClicked(String data) {
     logs('data is $data');
     _pop();
-    _loginModel.semester = data;
-    _loadData(_loginModel.semester);
+    state = state.copyWith(semester: data);
+    _loadData(data);
   }
 
   Future<void> _loadData(String semester) async {
     _loading('Đang lấy lịch học');
-    await _loginModel.getLichHoc(semester);
+    await getLichHoc(semester);
     _pop();
     _loading('Đang lấy lịch thi');
-    await _loginModel.getLichThi(semester);
+    await getLichThi(semester);
     _pop();
     _saveInfo();
   }
@@ -151,23 +193,22 @@ class LoginNotifier with ChangeNotifier {
     //TODO: add later
     _loading('Đang lưu thông tin người dùng');
     final int resProfile =
-        await _profileRepository.insertOnlyUser(_loginModel.profile);
+        await _profileRepository.insertOnlyUser(state.profile);
     _pop();
     logs('saveProfileToDB: $resProfile');
-    final bool resCurrentMSV =
-        await _sharedPrefs.setCurrentMSV(_loginModel.msv);
+    final bool resCurrentMSV = await _sharedPrefs.setCurrentMSV(state.msv);
     logs('saveCurrentMSV:$resCurrentMSV');
     _loading('Đang lưu điểm và lịch cá nhân');
-    await _loginModel.saveMarkToDB();
-    if (_loginModel.lichHoc.isSuccess()) {
-      (_loginModel.lichHoc as ScheduleSuccess).message.addMSV(_loginModel.msv);
+    await saveMarkToDB();
+    if (state.lichHoc.isSuccess()) {
+      (state.lichHoc as ScheduleSuccess).message.addMSV(state.msv);
       await _scheduleRepository.insertListSchedules(
-          (_loginModel.lichHoc as ScheduleSuccess).message.Entries);
+          (state.lichHoc as ScheduleSuccess).message.Entries);
     }
-    if (_loginModel.lichThi.isSuccess()) {
-      (_loginModel.lichThi as ScheduleSuccess).message.addMSV(_loginModel.msv);
+    if (state.lichThi.isSuccess()) {
+      (state.lichThi as ScheduleSuccess).message.addMSV(state.msv);
       await _scheduleRepository.insertListSchedules(
-          (_loginModel.lichThi as ScheduleSuccess).message.Entries);
+          (state.lichThi as ScheduleSuccess).message.Entries);
     }
     _pop();
     _inputAction().add({'type': LoginAction.save_success});

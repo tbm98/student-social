@@ -3,6 +3,7 @@
  */
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../helpers/dialog_support.dart';
 import '../../helpers/logging.dart';
@@ -10,11 +11,9 @@ import '../../models/entities/schedule.dart';
 import '../screens/main/main_state_notifier.dart';
 
 class AddNote extends StatefulWidget {
-  const AddNote({this.date, this.context});
+  const AddNote({this.date});
 
   final DateTime date;
-
-  final BuildContext context;
 
   @override
   _AddNoteState createState() => _AddNoteState();
@@ -30,12 +29,6 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
   //khai bao bien cho phan ghi chu
   String _title = '', _content = '';
 
-  MainStateNotifier _mainViewModel;
-
-  void _initViewModel() {
-    _mainViewModel = Provider.of<MainStateNotifier>(widget.context);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -49,7 +42,7 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
       final Schedule note = Schedule.forNote(
-          _mainViewModel.getMSV,
+          mainStateNotifier.read(context).msv,
           _title == '' ? 'Tiêu đề' : _title,
           _content == '' ? 'Nội dung' : _content,
           dateFormat.format(_date));
@@ -58,7 +51,7 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
 //        String value = await PlatformChannel.database.invokeMethod(
 //            PlatformChannel.addNote, <String, String>{'note': schedule});
 //        print('add note :$value');
-        _mainViewModel.loadCurrentMSV();
+        mainStateNotifier.read(context).loadCurrentMSV();
       } catch (e) {
         logs('add note: $e');
       }
@@ -146,8 +139,6 @@ class _AddNoteState extends State<AddNote> with DialogSupport {
 
   @override
   Widget build(BuildContext context) {
-    _initViewModel();
-
     return AlertDialog(
       title: const Text('Thêm lịch cá nhân'),
       content: Form(

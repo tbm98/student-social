@@ -27,7 +27,8 @@ class _MarkScreenState extends State<MarkScreen> with DialogSupport {
   }
 
   void _initViewModel() {
-    _markViewModel = Provider.of<MarkNotifier>(context);
+    //TODO: init mark view model
+//    _markViewModel = Provider.of<MarkNotifier>(context);
   }
 
   @override

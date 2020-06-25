@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../helpers/dialog_support.dart';
 import '../../../models/entities/semester.dart';
-import 'login_notifier.dart';
+import 'login_state_notifier.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -11,14 +12,16 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> with DialogSupport {
-  LoginNotifier _loginViewModel;
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   FocusNode textSecondFocusNode = FocusNode();
   bool listened = false;
 
-  void _initViewModel() {
-    _loginViewModel = Provider.of<LoginNotifier>(context);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     if (!listened) {
-      _loginViewModel.getActionStream().listen((value) async {
+      loginStateNotifier.read(context).getActionStream().listen((value) async {
         if (value['type'] == LoginAction.pop) {
           pop(context);
         } else if (value['type'] == LoginAction.loading) {
@@ -42,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
       );
 
   Widget email() => TextField(
-        controller: _loginViewModel.getControllerMSV,
+        controller: emailController,
         autofocus: true,
         textCapitalization: TextCapitalization.characters,
         onSubmitted: (String value) {
@@ -65,10 +68,12 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
   Widget password() {
     return TextField(
       focusNode: textSecondFocusNode,
-      controller: _loginViewModel.getControllerPassword,
+      controller: passwordController,
       obscureText: true,
       onSubmitted: (String value) {
-        _loginViewModel.submit();
+        loginStateNotifier
+            .read(context)
+            .submit(emailController.text, passwordController.text);
       },
       decoration: InputDecoration(
         hintText: 'Mật khẩu',
@@ -77,7 +82,9 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
         suffixIcon: IconButton(
             icon: const Icon(Icons.check),
             onPressed: () {
-              _loginViewModel.submit();
+              loginStateNotifier
+                  .read(context)
+                  .submit(emailController.text, passwordController.text);
             }),
         contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -92,7 +99,9 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
       padding: const EdgeInsets.all(0),
       child: RaisedButton(
         onPressed: () {
-          _loginViewModel.submit();
+          loginStateNotifier
+              .read(context)
+              .submit(emailController.text, passwordController.text);
         },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         color: Colors.green,
@@ -103,8 +112,6 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
 
   @override
   Widget build(BuildContext context) {
-    _initViewModel();
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(24),
@@ -144,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
               ),
               trailing: const Icon(Icons.arrow_forward),
               onTap: () {
-                _loginViewModel.semesterClicked(data.MaKy);
+                loginStateNotifier.read(context).semesterClicked(data.MaKy);
               },
               contentPadding: const EdgeInsets.all(0),
             ),

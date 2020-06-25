@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:studentsocial/helpers/logging.dart';
+import 'package:studentsocial/viewmodels/calendar_state_notifier.dart';
+import 'package:studentsocial/viewmodels/schedule_state_notifier.dart';
 
 import '../../helpers/date.dart';
 import '../../helpers/dialog_support.dart';
 import '../../models/entities/schedule.dart';
-import '../../viewmodels/calendar_viewmodel.dart';
-import '../../viewmodels/schedule_viewmodel.dart';
 import '../screens/main/main_state_notifier.dart';
 
 class ListSchedule extends StatefulWidget {
@@ -16,21 +17,14 @@ class ListSchedule extends StatefulWidget {
 
 class _ListScheduleState extends State<ListSchedule> with DialogSupport {
   DateSupport dateSupport = DateSupport();
-  MainStateNotifier _mainViewModel;
-  ScheduleViewModel _listScheduleViewModel;
-  CalendarViewModel _calendarViewModel;
+//  MainStateNotifier _mainStateNotifier;
+//  ScheduleStateNotifier _listScheduleStateNotifier;
+//  CalendarStateNotifier _calendarStateNotifier;
   TextEditingController _titleController;
   TextEditingController _contentController;
 
-  void _initViewModel() {
-    _mainViewModel = Provider.of<MainStateNotifier>(context);
-    _calendarViewModel = Provider.of<CalendarViewModel>(context);
-    _listScheduleViewModel = Provider.of<ScheduleViewModel>(context);
-    _listScheduleViewModel.addCalendarViewModel(_calendarViewModel);
-  }
-
   String _tiet() {
-    return dateSupport.getTiet(_mainViewModel.getMSV).toString();
+    return dateSupport.getTiet(mainStateNotifier.read(context).msv).toString();
   }
 
   Widget layoutLichHoc(Schedule entri) {
@@ -72,11 +66,13 @@ class _ListScheduleState extends State<ListSchedule> with DialogSupport {
                     fontWeight: FontWeight.bold, color: Colors.white),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
-              child: Text(
-                  '• Thời gian: ${entri.TietHoc} ${dateSupport.getThoiGian(entri.TietHoc, _mainViewModel.getMSV)}'),
-            ),
+            Consumer((context, read) {
+              return Padding(
+                padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
+                child: Text(
+                    '• Thời gian: ${entri.TietHoc} ${dateSupport.getThoiGian(entri.TietHoc, read(mainStateNotifier).msv)}'),
+              );
+            }),
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
               child: Text(
@@ -107,11 +103,13 @@ class _ListScheduleState extends State<ListSchedule> with DialogSupport {
                   fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
-            child: Text(
-                '• Thời gian: ${entri.TietHoc} ${this.dateSupport.getThoiGian(entri.TietHoc, _mainViewModel.getMSV)}'),
-          ),
+          Consumer((context, read) {
+            return Padding(
+              padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
+              child: Text(
+                  '• Thời gian: ${entri.TietHoc} ${this.dateSupport.getThoiGian(entri.TietHoc, read(mainStateNotifier).msv)}'),
+            );
+          }),
           Padding(
             padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
             child: Text(
@@ -261,7 +259,7 @@ class _ListScheduleState extends State<ListSchedule> with DialogSupport {
 //                    } else {
 //                      await showSuccess(context,'Xoá ghi chú thành công !');
 //                    }
-                    await _mainViewModel.loadCurrentMSV();
+                    await mainStateNotifier.read(context).loadCurrentMSV();
                   },
                   child: const Text('OK'))
             ],
@@ -344,7 +342,7 @@ class _ListScheduleState extends State<ListSchedule> with DialogSupport {
 //                showSuccess(context,'Sửa ghi chú bị lỗi: $value');
 //              } else {
 //                showSuccess(context,'Sửa ghi chú thành công !');
-//                _mainViewModel.loadCurrentMSV();
+//                _mainStateNotifier.loadCurrentMSV();
 //              }
           },
           child: const Text('Sửa'),
@@ -425,49 +423,53 @@ class _ListScheduleState extends State<ListSchedule> with DialogSupport {
   }
 
   Widget _layoutPageViewSchedule() {
-    return PageView.builder(
-      itemBuilder: (BuildContext context, int index) {
-        return _layoutItemPage(index);
-      },
-      controller: _listScheduleViewModel.getPageController,
-      onPageChanged: (int value) {
-        _listScheduleViewModel.onPageChanged(value);
-      },
-    );
+    return Consumer((context, read) {
+      return PageView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          return _layoutItemPage(index);
+        },
+        controller: read(scheduleStateNotifier).pageController,
+        onPageChanged: (int value) {
+          scheduleStateNotifier.read(context).onPageChanged(value);
+        },
+      );
+    });
   }
 
   Widget _layoutItemPage(int index) {
-    if (_mainViewModel.getEntriesOfDay == null) {
-      return listSchedule(<Schedule>[]);
-    }
-    //tính toán lấy ra lịch của page hiện tại
-    //công thức sẽ là lấy ngày hiện tại +- đi biên độ lệch của currentPage so với 5000
-    final int delta = index - 5000;
-    final DateTime dateTime = delta < 0
-        ? DateTime.now().subtract(Duration(days: -delta))
-        : DateTime.now().add(Duration(days: delta));
-    final String key = DateFormat('dd/MM/yyyy').format(dateTime);
-    final List<Schedule> entries = _mainViewModel.getEntriesOfDay[key];
+    return Consumer((context, read) {
+      if (read(mainStateNotifier).entriesOfDay == null) {
+        return listSchedule(<Schedule>[]);
+      }
+      //tính toán lấy ra lịch của page hiện tại
+      //công thức sẽ là lấy ngày hiện tại +- đi biên độ lệch của currentPage so với 5000
+      final int delta = index - 5000;
+      final DateTime dateTime = delta < 0
+          ? DateTime.now().subtract(Duration(days: -delta))
+          : DateTime.now().add(Duration(days: delta));
+      final String key = DateFormat('dd/MM/yyyy').format(dateTime);
+      final List<Schedule> entries = read(mainStateNotifier).entriesOfDay[key];
 
-    if (entries == null) {
-      return listSchedule(<Schedule>[]);
-    }
-    //lọc những tiết bị trùng
-    for (int i = 0; i < entries.length - 1; i++) {
-      for (int j = i + 1; j < entries.length; j++) {
-        if (entries[j].equals(entries[i])) {
-          entries.removeAt(j);
-          j--;
+      if (entries == null) {
+        return listSchedule(<Schedule>[]);
+      }
+      //lọc những tiết bị trùng
+      for (int i = 0; i < entries.length - 1; i++) {
+        for (int j = i + 1; j < entries.length; j++) {
+          if (entries[j].equals(entries[i])) {
+            entries.removeAt(j);
+            j--;
+          }
         }
       }
-    }
-    entries.sort((Schedule a, Schedule b) => a.ThoiGian.compareTo(b.ThoiGian));
-    return listSchedule(entries);
+      entries
+          .sort((Schedule a, Schedule b) => a.ThoiGian.compareTo(b.ThoiGian));
+      return listSchedule(entries);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    _initViewModel();
     return _layoutPageViewSchedule();
   }
 }

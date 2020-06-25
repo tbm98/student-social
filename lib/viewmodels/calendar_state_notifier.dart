@@ -2,55 +2,54 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:state_notifier/state_notifier.dart';
+import 'package:studentsocial/main.dart';
+import 'package:studentsocial/presentation/screens/main/main_state_notifier.dart';
+import 'package:studentsocial/viewmodels/calendar_state.dart';
+import 'package:studentsocial/viewmodels/schedule_state_notifier.dart';
 
 import '../models/calendar_model.dart';
 import '../models/entities/calendar_day.dart';
 import '../models/entities/schedule.dart';
 import '../presentation/screens/main/main_state_notifier.dart';
 
-class CalendarViewModel with ChangeNotifier {
-  CalendarViewModel() {
-    _calendarModels = <int, CalendarModel>{};
-  }
-  MainStateNotifier _mainViewModel;
-  Map<int, CalendarModel> _calendarModels;
-  PageController pageViewController =
-      PageController(initialPage: 12, viewportFraction: 0.99);
-  final double tableHeight = 250;
+final calendarStateNotifier = StateNotifierProvider((ref) {
+  return CalendarStateNotifier(ref.read(mainStateNotifier).value);
+});
 
-  int currentPage = 12;
-
-  double get getTableHeight => tableHeight;
-
-  PageController get getPageViewController => pageViewController;
-
-  void addMainViewModel(MainStateNotifier mainViewModel) {
-    _mainViewModel = mainViewModel;
+class CalendarStateNotifier extends StateNotifier<CalendarState> {
+  CalendarStateNotifier(MainStateNotifier mainStateNotifier)
+      : super(const CalendarState()) {
+    _mainStateNotifier = mainStateNotifier;
+    pageController = PageController(initialPage: 12, viewportFraction: 0.99);
   }
 
-  CalendarDay currentDay = CalendarDay.now();
+  PageController pageController;
 
-  CalendarDay clickDay = CalendarDay.now();
+  MainStateNotifier _mainStateNotifier;
 
-  int indexPageByClickDay = 12;
+  CalendarDay get clickDay => state.clickDay;
+
+  CalendarDay get currentDay => state.currentDay;
 
   int getNumberOfMonth(CalendarDay calendar) {
     return calendar.year * 12 + calendar.month;
   }
 
   void onClickDay(CalendarDay day) {
-    indexPageByClickDay =
-        currentPage; // nếu click vào ngày ở trên calendarview thì cập nhật lại indexpage = current page, coi như reset trạng thái của indexpage
-    clickDay = day;
-    notifyListeners();
-    _mainViewModel.clickedOnDay(day.day, day.month, day.year);
+    final indexPageByClickDay = state
+        .currentPage; // nếu click vào ngày ở trên calendarview thì cập nhật lại indexpage = current page, coi như reset trạng thái của indexpage
+    final clickDay = day;
+    state = state.copyWith(
+        indexPageByClickDay: indexPageByClickDay, clickDay: clickDay);
+    _mainStateNotifier.clickedOnDay(day.day, day.month, day.year);
   }
-
-  void listSchedulePageFinish(CalendarDay calendarDay) {}
 
   void listSchedulePageChange(CalendarDay day) {
     final int numberDay = getNumberOfMonth(day);
-    final int numberClickDay = getNumberOfMonth(clickDay);
+    final int numberClickDay = getNumberOfMonth(state.getClickDay);
+    int indexPageByClickDay = state.indexPageByClickDay;
     //nếu là vuốt thì cự li thay đổi của tháng chỉ là 1 nên chỉ cần check tháng và tăng hoặc giảm 1 là dc
     if (numberDay > numberClickDay) {
       //nhảy sang tháng tiếp theo
@@ -59,29 +58,32 @@ class CalendarViewModel with ChangeNotifier {
       //nhảy sang tháng trước
       indexPageByClickDay--;
     }
-    pageViewController.jumpToPage(indexPageByClickDay);
-    clickDay = day;
-    notifyListeners();
-    _mainViewModel.clickedOnDay(day.day, day.month, day.year);
+    pageController.jumpToPage(indexPageByClickDay);
+    final clickDay = day;
+    state = state.copyWith(
+        indexPageByClickDay: indexPageByClickDay, clickDay: clickDay);
+    _mainStateNotifier.clickedOnDay(day.day, day.month, day.year);
   }
 
   int getDay(int index, int indexPage) {
-    return (_calendarModels[indexPage].maxDay -
-        ((_calendarModels[indexPage].indexDayOfWeek -
+    return (state.calendarModels[indexPage].maxDay -
+        ((state.calendarModels[indexPage].indexDayOfWeek -
                 1 -
                 1 +
-                _calendarModels[indexPage].maxDay) -
+                state.calendarModels[indexPage].maxDay) -
             (index)));
   }
 
   void setIndexPage(int indexPage) {
-    _calendarModels[indexPage] = CalendarModel();
-    _calendarModels[indexPage].setIndexPage(indexPage);
+    final calendarModels = <int, CalendarModel>{}..addAll(state.calendarModels);
+    calendarModels[indexPage] = CalendarModel();
+    calendarModels[indexPage].setIndexPage(indexPage);
+    state = state.copyWith(calendarModels: calendarModels);
   }
 
   String getKeyOfEntri(int month, int day, int indexPage) {
     // return with format dd/mm/yyyy
-    return '${getStringForKey(day)}/${getStringForKey(month)}/${_calendarModels[indexPage].year}';
+    return '${getStringForKey(day)}/${getStringForKey(month)}/${state.calendarModels[indexPage].year}';
   }
 
   String getStringForKey(int i) {
@@ -92,21 +94,21 @@ class CalendarViewModel with ChangeNotifier {
   }
 
   void setIndexPageByChanged(int index) {
-    currentPage = index;
+    state = state.copyWith(currentPage: index);
     //người dùng vuốt sang trang khác => hiện thị nút hiện tại cho người ta quay về
-    _mainViewModel.calendarPageChanged(index);
+    _mainStateNotifier.calendarPageChanged(index);
   }
 
   String getTitleCalendar(int indexPage) {
-    return _calendarModels[indexPage].titleCalendar;
+    return state.calendarModels[indexPage].titleCalendar;
   }
 
   void jumpToCurrentPage() {
-    pageViewController.jumpToPage(currentPage);
+    pageController.jumpToPage(state.currentPage);
   }
 
   List<CalendarDay> getListCalendarDay(int indexPage) {
-    return _calendarModels[indexPage].listCalendarDays;
+    return state.calendarModels[indexPage].listCalendarDays;
   }
 
   String getLichAmCurrentDay(List<int> lichAm) {
@@ -164,8 +166,12 @@ class CalendarViewModel with ChangeNotifier {
   }
 
   void onClickedCurrentDay(CalendarDay calendarDay) {
-    currentPage = 12;
+    state = state.copyWith(currentPage: 12);
     onClickDay(calendarDay);
     jumpToCurrentPage();
+  }
+
+  void addMainStateNotifier(MainStateNotifier mainStateNotifier) {
+    _mainStateNotifier = mainStateNotifier;
   }
 }

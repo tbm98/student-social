@@ -14,7 +14,6 @@ import '../../../models/local/database/database.dart';
 import '../../../models/local/repository/profile_repository.dart';
 import '../../../models/local/repository/schedule_repository.dart';
 import '../../../models/local/shared_prefs.dart';
-import 'main_model.dart';
 import 'package:state_notifier/state_notifier.dart';
 
 import 'main_state.dart';
@@ -28,20 +27,23 @@ enum MainAction {
 }
 
 final mainStateNotifier = StateNotifierProvider<MainStateNotifier>((ref) {
-  return MainStateNotifier(ref.read(myDatabase).value);
+  final database = ref.read(myDatabase).value;
+  final shared = ref.read(sharedPrefs).value;
+  return MainStateNotifier(
+      ProfileRepository(database), ScheduleRepository(database), shared);
 });
 
 class MainStateNotifier extends StateNotifier<MainState> {
-  MainStateNotifier(MyDatabase database) : super(const MainState()) {
-    _profileRepository = ProfileRepository(database);
-    _scheduleRepository = ScheduleRepository(database);
-    _mainModel = MainModel();
+  MainStateNotifier(ProfileRepository profileRepository,
+      ScheduleRepository scheduleRepository, SharedPrefs sharedPrefs)
+      : super(const MainState()) {
+    _profileRepository = profileRepository;
+    _scheduleRepository = scheduleRepository;
+    _sharedPrefs = sharedPrefs;
     _notification = Notification();
-    _sharedPrefs = SharedPrefs();
     _initLoad();
   }
 
-  MainModel _mainModel;
   final StreamController _streamController = StreamController();
   Notification _notification;
   ProfileRepository _profileRepository;
@@ -49,15 +51,35 @@ class MainStateNotifier extends StateNotifier<MainState> {
 
   SharedPrefs _sharedPrefs;
 
+  get width => state.width;
+
+  get tableHeight => state.tableHeight;
+
+  get itemWidth => state.itemWidth;
+
+  get itemHeight => state.itemHeight;
+
+  get entriesOfDay => state.entriesOfDay;
+
+  String get msv => state.msv;
+
+  get clickDate => state.getClickDate;
+
+  get getClass => state.getClass;
+
+  bool get isGuest => state.isGuest;
+
+  String get getAvatarName => state.getAvatarName;
+
+  String get getName => state.getName;
+
+  get allProfile => state.allProfile;
+
   Future<void> _initLoad() async {
     await insertProfileGuest();
     await loadCurrentMSV();
     await loadAllProfile();
   }
-
-  List<Profile> get getAllProfile => _mainModel.allProfile;
-
-  DateTime get getClickedDay => _mainModel.clickDate;
 
   @override
   void dispose() {
@@ -68,61 +90,6 @@ class MainStateNotifier extends StateNotifier<MainState> {
   Stream get getStreamAction => _streamController.stream;
 
   Sink get inputAction => _streamController.sink;
-
-  String get getTitle => _mainModel.title;
-
-  List<Schedule> get getSchedules => _mainModel.schedules;
-
-  double get getWidth => _mainModel.width;
-
-  double get getItemWidth => _mainModel.itemWidth;
-
-  double get getItemHeight => _mainModel.itemHeight;
-
-  double get getDrawerHeaderHeight => _mainModel.drawerHeaderHeight;
-
-  String get getName {
-    if (_mainModel.msv == 'guest') {
-      return 'Khách';
-    }
-    return _mainModel?.profile?.HoTen ?? 'Họ Tên';
-  }
-
-  String get getClass => _mainModel?.profile?.Lop ?? '';
-
-  String get getToken => _mainModel?.profile?.Token ?? '';
-
-  Map<String, List<Schedule>> get getEntriesOfDay => _mainModel.entriesOfDay;
-
-  double get getTableHeight => _mainModel.tableHeight;
-
-  int get getClickMonth => _mainModel.clickDate.month;
-
-  DateTime get getDateCurrentClick => _mainModel.clickDate;
-
-  String get getKeyOfCurrentEntries => _mainModel.keyOfCurrentEntries;
-
-  int get getCurrentDay => _mainModel.currentDate.day;
-
-  int get getCurrentMonth => _mainModel.currentDate.month;
-
-  int get getCurrentYear => _mainModel.currentDate.year;
-
-  int get getClickDay => _mainModel.clickDate.day;
-
-  String get getMSV => _mainModel.msv;
-
-  bool get isGuest =>
-      getMSV == null ||
-      getMSV == 'guest' ||
-      getName == null ||
-      getName == 'Họ Tên';
-
-  String get getAvatarName {
-    final String name = getName;
-    final List<String> splitName = name.split(' ');
-    return splitName.last[0];
-  }
 
   Future<int> insertProfileGuest() async {
     return await _profileRepository.insertOnlyUser(Profile.guest());
@@ -135,7 +102,7 @@ class MainStateNotifier extends StateNotifier<MainState> {
       return;
     }
     if (value.isNotEmpty) {
-      _mainModel.msv = value;
+      state = state.copyWith(msv: value);
     }
     loadProfile();
     loadSchedules();
@@ -143,24 +110,21 @@ class MainStateNotifier extends StateNotifier<MainState> {
   }
 
   Future<void> loadProfile() async {
-    final Profile profile =
-        await _profileRepository.getUserByMaSV(_mainModel.msv);
-    _mainModel.profile = profile;
-    notifyListeners();
+    final Profile profile = await _profileRepository.getUserByMaSV(state.msv);
+    state = state.copyWith(profile: profile);
   }
 
   Future<void> loadAllProfile() async {
     final List<Profile> profiles = await _profileRepository.getAllUsers();
-    _mainModel.allProfile = profiles;
-    notifyListeners();
+    state = state.copyWith(allProfile: profiles);
   }
 
   Future<void> loadSchedules() async {
     final List<Schedule> schedule =
-        await _scheduleRepository.getListSchedules(_mainModel.msv);
-    _mainModel.schedules = schedule;
+        await _scheduleRepository.getListSchedules(state.msv);
+    state = state.copyWith(schedules: schedule);
     logs('schedule is ${schedule.length}');
-    logs('msv is ${_mainModel.msv}');
+    logs('msv is ${state.msv}');
     _initEntries(schedule);
   }
 
@@ -170,28 +134,33 @@ class MainStateNotifier extends StateNotifier<MainState> {
     } //neu gia tri ban dau rong thi se khong can initentries nua , return luon
 
     //clear entries map truoc khi init lan thu 2 tro di
-    if (_mainModel.entriesOfDayNotEmpty) {
-      _mainModel.clearEntriesOfDay();
+    if (state.entriesOfDayNotEmpty) {
+      state.clearEntriesOfDay();
     }
     _initEntriesBySchedule(schedules);
   }
 
   void _initEntriesBySchedule(List<Schedule> schedules) {
-    //khoi tao entriesOfDay, neu khoi tao roi thi dung tiep
-    _mainModel.initEntriesOfDayIfNeed();
-
     final int len = schedules.length;
     Schedule schedule;
+    Map<String, List<Schedule>> entriesOfDay = Map<String, List<Schedule>>()
+      ..addAll(state.entriesOfDay);
+
     for (int i = 0; i < len; i++) {
       schedule = schedules[i];
-      _mainModel.initEntriesIfNeed(schedule.getNgay);
-      _mainModel.addScheduleToEntriesOfDay(schedule);
+
+      if (entriesOfDay[schedule.getNgay] == null) {
+        entriesOfDay[schedule.getNgay] = <Schedule>[];
+        // neu ngay cua entri nay chua co lich thi phai khoi tao trong map 1 list de luu lai duoc,
+        //neu co roi thi thoi dung tiep
+      }
+      entriesOfDay[schedule.getNgay].add(schedule);
     }
 
+    state = state.copyWith(entriesOfDay: entriesOfDay);
+
     //sau khi đã lấy được toàn bộ lịch rồi thì sẽ tiến hành đặt thông báo lịch hàng ngày.
-    _notification.initSchedulesNotification(
-        _mainModel.entriesOfDay, _mainModel.msv);
-    notifyListeners();
+    _notification.initSchedulesNotification(state.entriesOfDay, state.msv);
   }
 
   void updateSchedule() {
@@ -212,7 +181,7 @@ class MainStateNotifier extends StateNotifier<MainState> {
   }
 
   void initSize(Size size) {
-    _mainModel.initSize(size);
+    state = state.initSize(size);
   }
 
   Future<void> launchURL() async {
@@ -233,47 +202,49 @@ class MainStateNotifier extends StateNotifier<MainState> {
 
   void clickedOnCurrentDay() {
     logs(
-        'clickedOnDay ${getStringForKey(getCurrentDay)},${getStringForKey(getCurrentMonth)},$getCurrentYear from calendar_widget');
-    _mainModel.clickDate = _mainModel.currentDate;
-    notifyListeners();
-    if (!_mainModel.hideButtonCurrent) {
+        'clickedOnDay ${getStringForKey(state.currentDate.day)},${getStringForKey(state.currentDate.month)},${state.currentDate.year} from calendar_widget');
+    state = state.copyWith(clickDate: state.currentDate);
+    if (!state.hideButtonCurrent) {
       //nếu đang hiện thì mới ẩn
       inputAction.add({'type': MainAction.reverse});
-      _mainModel.hideButtonCurrent = true;
+      state = state.copyWith(hideButtonCurrent: true);
     }
   }
 
   void clickedOnDay(int day, int month, int year) {
     logs(
         'clickedOnDay ${getStringForKey(day)},${getStringForKey(month)},$year from calendar_widget');
-    _mainModel.clickDate = DateTime(year, month, day);
-    notifyListeners();
+    state = state.copyWith(clickDate: DateTime(year, month, day));
     if (_isCurrentDay(day, month, year)) {
-      if (!_mainModel.hideButtonCurrent) {
+      if (!state.hideButtonCurrent) {
         //nếu đang hiện thì mới ẩn
         inputAction.add({'type': MainAction.reverse});
-        _mainModel.hideButtonCurrent = true;
+        state = state.copyWith(hideButtonCurrent: true);
       }
     } else {
-      if (_mainModel.hideButtonCurrent) {
+      if (state.hideButtonCurrent) {
         inputAction.add({'type': MainAction.forward});
-        _mainModel.hideButtonCurrent = false;
+        state = state.copyWith(hideButtonCurrent: false);
       }
     }
   }
 
   bool _isCurrentDay(int d, int m, int y) {
-    return d == getCurrentDay && m == getCurrentMonth && y == getCurrentYear;
+    return d == state.getCurrentDate.day &&
+        m == state.getCurrentDate.month &&
+        y == state.getCurrentDate.year;
   }
 
   void setClickDay(int clickDay) {
-    _mainModel.clickDate = DateTime(
-        _mainModel.clickDate.year, _mainModel.clickDate.month, clickDay);
+    state = state.copyWith(
+        clickDate: DateTime(
+            state.getClickDate.year, state.getClickDate.month, clickDay));
   }
 
   void setClickMonth(int month) {
-    _mainModel.clickDate =
-        DateTime(_mainModel.clickDate.year, month, _mainModel.clickDate.day);
+    state = state.copyWith(
+        clickDate:
+            DateTime(state.getClickDate.year, month, state.getClickDate.day));
   }
 
   Future<void> logOut() async {
@@ -287,7 +258,7 @@ class MainStateNotifier extends StateNotifier<MainState> {
       //lấy ra toàn bộ user có trong máy
       profiles.removeWhere((profile) =>
           profile.MaSinhVien ==
-          _mainModel.msv); // xoá đi user hiện tại muốn đăng xuất
+          state.msv); // xoá đi user hiện tại muốn đăng xuất
       //kiểm tra nếu list vẫn còn user thì gán vào shared msv của thằng đầu tiên luôn
       //nếu không còn thằng nào thì gán vào shared '' (empty)
       if (profiles.isNotEmpty) {
@@ -297,17 +268,16 @@ class MainStateNotifier extends StateNotifier<MainState> {
         await _sharedPrefs.setCurrentMSV('');
       }
       //Xoá profile
-      await _profileRepository.deleteUserByMSV(_mainModel.msv);
+      await _profileRepository.deleteUserByMSV(state.msv);
       //Xoá điểm
       //TODO: Xoa diem
 //      await PlatformChannel.database.invokeMethod(
 //          PlatformChannel.removeMarkByMSV,
 //          <String, String>{'msv': _mainModel.msv});
       //Xoá lịch
-      await _scheduleRepository.deleteScheduleByMSV(_mainModel.msv);
+      await _scheduleRepository.deleteScheduleByMSV(state.msv);
       //reset data
-      _mainModel.resetData();
-      notifyListeners();
+      state = state.resetData();
       loadCurrentMSV();
       inputAction.add({
         'type': MainAction.alert_with_message,
@@ -315,8 +285,7 @@ class MainStateNotifier extends StateNotifier<MainState> {
       });
     } catch (e) {
       logs('error is:$e');
-      _mainModel.resetData();
-      notifyListeners();
+      state = state.resetData();
       loadCurrentMSV();
       inputAction.add({
         'type': MainAction.alert_with_message,
@@ -329,8 +298,7 @@ class MainStateNotifier extends StateNotifier<MainState> {
     // đặt lại currentmsv trong shared
     await _sharedPrefs.setCurrentMSV(profile.MaSinhVien);
 //    reset data
-    _mainModel.resetData();
-    notifyListeners();
+    state = state.resetData();
     loadCurrentMSV();
   }
 
