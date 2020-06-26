@@ -1,43 +1,18 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import 'profile.dart';
+
 part 'login.g.dart';
 
 @JsonSerializable()
-class ProfileInfor {
-  ProfileInfor(
-      {this.Id,
-      this.MaSinhVien,
-      this.HoTen,
-      this.Lop,
-      this.Nganh,
-      this.NienKhoa,
-      this.HeDaoTao,
-      this.Truong});
-  factory ProfileInfor.fromJson(Map<String, dynamic> json) =>
-      _$ProfileInforFromJson(json);
-  String Id;
-  String MaSinhVien;
-  String HoTen;
-  String Lop;
-  String Nganh;
-  String NienKhoa;
-
-  String HeDaoTao;
-
-  String Truong;
-
-  Map<String, dynamic> toJson() => _$ProfileInforToJson(this);
-}
-
-@JsonSerializable()
 class MessageResult {
-  MessageResult({this.Token, this.Profile});
+  MessageResult({this.Token, this.profile});
   factory MessageResult.fromJson(Map<String, dynamic> json) =>
       _$MessageResultFromJson(json);
 
   String Token;
-
-  ProfileInfor Profile;
+  @JsonKey(name: 'Profile')
+  Profile profile;
 
   Map<String, dynamic> toJson() => _$MessageResultToJson(this);
 }

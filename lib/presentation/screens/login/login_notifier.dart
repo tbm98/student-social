@@ -5,6 +5,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/src/widgets/editable_text.dart';
 import 'package:studentsocial/models/entities/semester.dart';
+import 'package:studentsocial/rest_api/rest_client.dart';
 import '../../../helpers/logging.dart';
 import '../../../models/entities/login.dart';
 import '../../../models/entities/profile.dart';
@@ -12,7 +13,7 @@ import '../../../models/local/database/database.dart';
 import '../../../models/local/repository/profile_repository.dart';
 import '../../../models/local/repository/schedule_repository.dart';
 import '../../../models/local/shared_prefs.dart';
-import 'login_model.dart';
+import 'login_state.dart';
 import '../../../models/entities/schedule.dart';
 
 enum LoginAction {
@@ -28,13 +29,15 @@ class LoginNotifier with ChangeNotifier {
     _sharedPrefs = SharedPrefs();
     _profileRepository = ProfileRepository(database);
     _scheduleRepository = ScheduleRepository(database);
-    _loginModel = LoginModel();
+    _loginModel = LoginState();
     _streamController = StreamController();
   }
-  LoginModel _loginModel;
+
+  LoginState _loginModel;
   StreamController _streamController;
   ProfileRepository _profileRepository;
   ScheduleRepository _scheduleRepository;
+  final RestClient _client = RestClient.create();
 
   SharedPrefs _sharedPrefs;
 
@@ -44,10 +47,8 @@ class LoginNotifier with ChangeNotifier {
     super.dispose();
   }
 
-  TextEditingController get getControllerMSV => _loginModel.controllerEmail;
-
-  TextEditingController get getControllerPassword =>
-      _loginModel.controllerPassword;
+  bool dataIsInvalid(String email, String password) =>
+      email.trim().isEmpty || password.trim().isEmpty;
 
   Sink _inputAction() {
     return _streamController.sink;
@@ -65,12 +66,32 @@ class LoginNotifier with ChangeNotifier {
     _inputAction().add({'type': LoginAction.loading, 'data': msg});
   }
 
-  Future<void> submit() async {
+  Future<void> submit(String email, String password) async {
     final bool isOnline = await _checkInternetConnectivity();
     if (!isOnline) {
       return;
     }
-    _actionLogin();
+    if (dataIsInvalid(email, password)) {
+      _inputAction().add({
+        'type': LoginAction.alert_with_message,
+        'data': 'Bạn không được để trống Mã sinh viên hoặc mật khẩu'
+      });
+      return;
+    }
+    if (await isExists(email)) {
+      _inputAction().add({
+        'type': LoginAction.alert_with_message,
+        'data': 'Mã sinh viên này đã được thêm rồi'
+      });
+      return;
+    }
+    _loading('Đang đăng nhập...');
+    _actionLogin(email, password);
+  }
+
+  Future<bool> isExists(String email) async {
+    final Profile allProfile = await _profileRepository.getUserByMaSV(email);
+    return allProfile != null;
   }
 
   Future<bool> _checkInternetConnectivity() async {
@@ -88,26 +109,11 @@ class LoginNotifier with ChangeNotifier {
     return false;
   }
 
-  void _actionLogin() {
-    if (_loginModel.dataIsInvalid) {
-      _inputAction().add({
-        'type': LoginAction.alert_with_message,
-        'data': 'Bạn không được để trống tài khoản mật khẩu'
-      });
-    } else {
-      _loading('Đang đăng nhập...');
-      final String tk = _loginModel.getMSV;
-      final String mk = _loginModel.getPassword;
-      _login(tk, mk);
-    }
-  }
-
-  Future<void> _login(String msv, String password) async {
-    final LoginResult result = await _loginModel.login(msv, password);
+  Future<void> _actionLogin(String msv, String password) async {
+    final LoginResult result = await _client.login(msv, password);
     _loginModel.msv = msv;
     if (result.isSuccess()) {
-      _loginModel.profile =
-          Profile.fromJson((result as LoginSuccess).message.Profile.toJson());
+      _loginModel.profile = (result as LoginSuccess).message.profile;
       _loginModel.token = (result as LoginSuccess).message.Token;
       _pop();
       _loading('Đang tải kỳ học');
@@ -116,14 +122,14 @@ class LoginNotifier with ChangeNotifier {
       _pop();
       _inputAction().add({
         'type': LoginAction.alert_with_message,
-        'data': 'Tài khoản hoặc mật khẩu đăng nhập sai, vui lòng thử lại'
+        'data': 'Mã sinh viên hoặc mật khẩu đăng nhập sai !'
       });
     }
   }
 
   Future<void> _getSemester(String token) async {
     logs('token is $token');
-    final SemesterResult semesterResult = await _loginModel.getSemester(token);
+    final SemesterResult semesterResult = await _client.getSemester(token);
     logs('semesterResult is ${semesterResult.toJson()}');
     _pop();
     _inputAction()
@@ -134,15 +140,15 @@ class LoginNotifier with ChangeNotifier {
     logs('data is $data');
     _pop();
     _loginModel.semester = data;
-    _loadData(_loginModel.semester);
+    _loadData(data);
   }
 
   Future<void> _loadData(String semester) async {
     _loading('Đang lấy lịch học');
-    await _loginModel.getLichHoc(semester);
+    _loginModel.lichHoc = await _client.getLichHoc(_loginModel.token, semester);
     _pop();
     _loading('Đang lấy lịch thi');
-    await _loginModel.getLichThi(semester);
+    _loginModel.lichThi = await _client.getLichThi(_loginModel.token, semester);
     _pop();
     _saveInfo();
   }
@@ -157,8 +163,8 @@ class LoginNotifier with ChangeNotifier {
     final bool resCurrentMSV =
         await _sharedPrefs.setCurrentMSV(_loginModel.msv);
     logs('saveCurrentMSV:$resCurrentMSV');
-    _loading('Đang lưu điểm và lịch cá nhân');
-    await _loginModel.saveMarkToDB();
+    _loading('Đang lưu lịch cá nhân');
+    await saveMarkToDB();
     if (_loginModel.lichHoc.isSuccess()) {
       (_loginModel.lichHoc as ScheduleSuccess).message.addMSV(_loginModel.msv);
       await _scheduleRepository.insertListSchedules(
@@ -173,5 +179,12 @@ class LoginNotifier with ChangeNotifier {
     _inputAction().add({'type': LoginAction.save_success});
     await Future.delayed(Duration(milliseconds: 800));
     _pop();
+  }
+
+  Future<void> saveMarkToDB() async {
+    //TODO: save mark to db
+//    var res = await PlatformChannel().saveMarkToDB(
+//        mark, json.encode(subjectsName), json.encode(subjectsSoTinChi), msv);
+//    print('saveMarkToDB: $res');
   }
 }

@@ -15,6 +15,9 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
   LoginNotifier _loginViewModel;
   FocusNode textSecondFocusNode = FocusNode();
   bool listened = false;
+  final TextEditingController controllerEmail = TextEditingController();
+
+  final TextEditingController controllerPassword = TextEditingController();
 
   void _initViewModel() {
     _loginViewModel = Provider.of<LoginNotifier>(context);
@@ -29,11 +32,15 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
         } else if (value['type'] == LoginAction.alert_chon_kyhoc) {
           _showAlertChonKyHoc(value['data']);
         } else if (value['type'] == LoginAction.save_success) {
-          showSuccess(context, 'Đăng nhập hoàn tất');
+          saveSuccess();
         }
       });
       listened = true;
     }
+  }
+
+  Future<void> saveSuccess() async {
+    await showSuccess(context, 'Đăng nhập hoàn tất');
   }
 
   Widget get logo => const CircleAvatar(
@@ -42,43 +49,46 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
         backgroundImage: AssetImage('image/Logo.png'),
       );
 
-  Widget email() => TextField(
-        controller: _loginViewModel.getControllerMSV,
-        autofocus: true,
-        textCapitalization: TextCapitalization.characters,
-        onSubmitted: (String value) {
-          FocusScope.of(context).requestFocus(textSecondFocusNode);
-        },
-        decoration: InputDecoration(
-          hintText: 'Mã sinh viên',
-          labelText: 'Mã sinh viên',
-          prefixIcon: const Icon(Icons.account_circle),
-          suffixIcon: IconButton(
-              icon: const Icon(Icons.arrow_forward),
-              onPressed: () {
-                FocusScope.of(context).requestFocus(textSecondFocusNode);
-              }),
-          contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-      );
+  Widget email() {
+    return TextField(
+      controller: controllerEmail,
+      autofocus: true,
+      textCapitalization: TextCapitalization.characters,
+      onSubmitted: (String value) {
+        FocusScope.of(context).requestFocus(textSecondFocusNode);
+      },
+      decoration: InputDecoration(
+        hintText: 'Mã sinh viên',
+        labelText: 'Mã sinh viên',
+        prefixIcon: const Icon(Icons.account_circle),
+        suffixIcon: IconButton(
+            icon: const Icon(Icons.check_circle),
+            onPressed: () {
+              FocusScope.of(context).requestFocus(textSecondFocusNode);
+            }),
+        contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
 
   Widget password() {
     return TextField(
       focusNode: textSecondFocusNode,
-      controller: _loginViewModel.getControllerPassword,
+      controller: controllerPassword,
       obscureText: true,
       onSubmitted: (String value) {
-        _loginViewModel.submit();
+        _loginViewModel.submit(controllerEmail.text, controllerPassword.text);
       },
       decoration: InputDecoration(
         hintText: 'Mật khẩu',
         labelText: 'Mật khẩu',
         prefixIcon: const Icon(Icons.lock),
         suffixIcon: IconButton(
-            icon: const Icon(Icons.check),
+            icon: const Icon(Icons.check_circle),
             onPressed: () {
-              _loginViewModel.submit();
+              _loginViewModel.submit(
+                  controllerEmail.text, controllerPassword.text);
             }),
         contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -87,18 +97,35 @@ class _LoginScreenState extends State<LoginScreen> with DialogSupport {
   }
 
   Widget loginButton() {
-    return Container(
-      width: double.infinity,
-      height: 44,
-      padding: const EdgeInsets.all(0),
-      child: RaisedButton(
-        onPressed: () {
-          _loginViewModel.submit();
-        },
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        color: Colors.green,
-        child: const Text('ĐĂNG NHẬP', style: TextStyle(color: Colors.white)),
-      ),
+    return Row(
+      children: [
+        FlatButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text(
+            'Xong',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+          ),
+        ),
+        const Spacer(),
+        Container(
+          padding: const EdgeInsets.all(0),
+          alignment: Alignment.topRight,
+          child: RaisedButton(
+            onPressed: () {
+              _loginViewModel.submit(
+                  controllerEmail.text, controllerPassword.text);
+            },
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            color: Colors.green,
+            child: const Text('Thêm',
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ),
+      ],
     );
   }
 
