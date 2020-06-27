@@ -22,11 +22,17 @@ class MainModel {
 
   Profile profile;
   List<Profile> allProfile;
-  List<Schedule> schedules = [];
+  List<Schedule> _schedules = [];
   Map<String, List<Schedule>> entriesOfDay;
 
   DateTime clickDate = DateTime.now();
   DateTime currentDate = DateTime.now();
+
+  List<Schedule> get schedules => _schedules;
+
+  set schedules(List<Schedule> schedules) {
+    _schedules = schedules..sort((a, b) => a.startTime.compareTo(b.startTime));
+  }
 
   String get keyOfCurrentEntries {
     return '${getNum(clickDate.year)}-${getNum(clickDate.month)}-${getNum(clickDate.day)}';
@@ -78,7 +84,7 @@ class MainModel {
   void resetData() {
     msv = '';
     profile = null;
-    schedules = List.from(schedules..clear());
+    _schedules = List.from(_schedules..clear());
     entriesOfDay?.clear();
   }
 }

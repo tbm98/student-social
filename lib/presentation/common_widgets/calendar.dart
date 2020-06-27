@@ -5,7 +5,7 @@ import 'package:studentsocial/models/entities/schedule.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class CalendarWidget extends StatefulWidget {
-  CalendarWidget({this.schedules, this.onTap});
+  const CalendarWidget({this.schedules, this.onTap});
 
   final List<Schedule> schedules;
   final Function(CalendarTapDetails) onTap;
@@ -16,24 +16,11 @@ class CalendarWidget extends StatefulWidget {
 
 class _CalendarWidgetState extends State<CalendarWidget> {
   DateTime _date = DateTime.now();
-  List<Schedule> _appointments = [];
   CalendarController calendarController = CalendarController();
 
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _appointments = List.from(widget.schedules);
-    logs('widget.schedules before is $_appointments');
-
-    logs('_appointments before is $_appointments');
-
-    _appointments.removeWhere((element) => !element.equalsDate(DateTime.now()));
-    logs('_appointments is $_appointments');
   }
 
   CalendarHeaderStyle calendarHeaderStyle = CalendarHeaderStyle(
@@ -52,8 +39,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    logs('widget.schedules before is $_appointments');
-
     return Column(
       children: [
         SizedBox(
@@ -75,26 +60,27 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 }
                 setState(() {
                   _date = details.date;
-                  _appointments = List.from(widget.schedules);
-                  _appointments
-                      .removeWhere((element) => !element.equalsDate(_date));
                 });
               }
             },
           ),
         ),
         Expanded(
-            child: ListScheduleWidget(date: _date, appointments: _appointments))
+            child: ListScheduleWidget(date: _date, schedules: widget.schedules))
       ],
     );
   }
 }
 
 class ListScheduleWidget extends StatelessWidget {
-  const ListScheduleWidget({this.date, this.appointments});
+  ListScheduleWidget({this.date, this.schedules}) {
+    _appointments = List.from(schedules);
+    _appointments.removeWhere((element) => !element.equalsDate(date));
+  }
 
   final DateTime date;
-  final List<Schedule> appointments;
+  final List<Schedule> schedules;
+  List<Schedule> _appointments = [];
 
   String titleDay(BuildContext context) {
     final DateFormat format =
@@ -103,10 +89,10 @@ class ListScheduleWidget extends StatelessWidget {
   }
 
   Widget itemSchedule(int index) {
-    if (appointments[index].LoaiLich == 'LichHoc') {
-      return itemLichHoc(appointments[index]);
+    if (_appointments[index].LoaiLich == 'LichHoc') {
+      return itemLichHoc(_appointments[index]);
     } else {
-      return itemLichThi(appointments[index]);
+      return itemLichThi(_appointments[index]);
     }
   }
 
@@ -227,7 +213,7 @@ class ListScheduleWidget extends StatelessWidget {
         Expanded(
           child: ListView.separated(
             padding: const EdgeInsets.only(top: 8, right: 10, bottom: 10),
-            itemCount: appointments.length,
+            itemCount: _appointments.length,
             itemBuilder: (_, index) {
               return itemSchedule(index);
             },
