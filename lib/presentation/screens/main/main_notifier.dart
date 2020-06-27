@@ -19,8 +19,6 @@ enum MainAction {
   alert_with_message,
   alert_update_schedule,
   pop,
-  forward,
-  reverse
 }
 
 class MainNotifier with ChangeNotifier {
@@ -32,6 +30,7 @@ class MainNotifier with ChangeNotifier {
     _sharedPrefs = SharedPrefs();
     _initLoad();
   }
+
   MainModel _mainModel;
   final StreamController _streamController = StreamController();
   Notification _notification;
@@ -45,6 +44,8 @@ class MainNotifier with ChangeNotifier {
     await loadCurrentMSV();
     await loadAllProfile();
   }
+
+  List<Schedule> get getSchedules => _mainModel.schedules;
 
   List<Profile> get getAllProfile => _mainModel.allProfile;
 
@@ -61,8 +62,6 @@ class MainNotifier with ChangeNotifier {
   Sink get inputAction => _streamController.sink;
 
   String get getTitle => _mainModel.title;
-
-  List<Schedule> get getSchedules => _mainModel.schedules;
 
   double get getWidth => _mainModel.width;
 
@@ -150,6 +149,7 @@ class MainNotifier with ChangeNotifier {
     final List<Schedule> schedule =
         await _scheduleRepository.getListSchedules(_mainModel.msv);
     _mainModel.schedules = schedule;
+    notifyListeners();
     logs('schedule is ${schedule.length}');
     logs('msv is ${_mainModel.msv}');
     _initEntries(schedule);
@@ -182,7 +182,6 @@ class MainNotifier with ChangeNotifier {
     //sau khi đã lấy được toàn bộ lịch rồi thì sẽ tiến hành đặt thông báo lịch hàng ngày.
     _notification.initSchedulesNotification(
         _mainModel.entriesOfDay, _mainModel.msv);
-    notifyListeners();
   }
 
   void updateSchedule() {
@@ -227,11 +226,6 @@ class MainNotifier with ChangeNotifier {
         'clickedOnDay ${getStringForKey(getCurrentDay)},${getStringForKey(getCurrentMonth)},$getCurrentYear from calendar_widget');
     _mainModel.clickDate = _mainModel.currentDate;
     notifyListeners();
-    if (!_mainModel.hideButtonCurrent) {
-      //nếu đang hiện thì mới ẩn
-      inputAction.add({'type': MainAction.reverse});
-      _mainModel.hideButtonCurrent = true;
-    }
   }
 
   void clickedOnDay(int day, int month, int year) {
@@ -239,18 +233,6 @@ class MainNotifier with ChangeNotifier {
         'clickedOnDay ${getStringForKey(day)},${getStringForKey(month)},$year from calendar_widget');
     _mainModel.clickDate = DateTime(year, month, day);
     notifyListeners();
-    if (_isCurrentDay(day, month, year)) {
-      if (!_mainModel.hideButtonCurrent) {
-        //nếu đang hiện thì mới ẩn
-        inputAction.add({'type': MainAction.reverse});
-        _mainModel.hideButtonCurrent = true;
-      }
-    } else {
-      if (_mainModel.hideButtonCurrent) {
-        inputAction.add({'type': MainAction.forward});
-        _mainModel.hideButtonCurrent = false;
-      }
-    }
   }
 
   bool _isCurrentDay(int d, int m, int y) {
@@ -298,21 +280,21 @@ class MainNotifier with ChangeNotifier {
       await _scheduleRepository.deleteScheduleByMSV(_mainModel.msv);
       //reset data
       _mainModel.resetData();
-      notifyListeners();
       loadCurrentMSV();
       inputAction.add({
         'type': MainAction.alert_with_message,
         'data': 'Đăng xuất thành công'
       });
+      notifyListeners();
     } catch (e) {
       logs('error is:$e');
       _mainModel.resetData();
-      notifyListeners();
       loadCurrentMSV();
       inputAction.add({
         'type': MainAction.alert_with_message,
         'data': 'Đăng xuất bị lỗi: $e'
       });
+      notifyListeners();
     }
   }
 

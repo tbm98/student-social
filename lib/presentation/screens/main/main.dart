@@ -1,33 +1,25 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:lazy_code/lazy_code.dart';
 import 'package:provider/provider.dart';
+import 'package:studentsocial/models/entities/schedule.dart';
 
 import '../../../helpers/dialog_support.dart';
-import '../../../models/entities/calendar_day.dart';
-import '../../../viewmodels/calendar_viewmodel.dart';
-import '../../../viewmodels/schedule_viewmodel.dart';
 import '../../common_widgets/add_note.dart';
-import '../../common_widgets/calendar_page.dart';
-import '../../common_widgets/list_schedule.dart';
+import '../../common_widgets/calendar.dart';
 import '../../common_widgets/update_lich.dart';
-import 'button_current_day.dart';
 import 'drawer.dart';
 import 'main_notifier.dart';
 
 class MainScreen extends StatefulWidget {
   @override
-  State createState() => new MainScreenState();
+  State createState() => MainScreenState();
 }
 
-class MainScreenState extends State<MainScreen>
-    with SingleTickerProviderStateMixin, DialogSupport {
+class MainScreenState extends State<MainScreen> with DialogSupport {
   MainNotifier _mainNotifier;
-  final CalendarViewModel _calendarViewModel = CalendarViewModel();
-  final ScheduleViewModel _scheduleViewModel = ScheduleViewModel();
-  Animation<double> animation;
-  AnimationController animationController;
   bool listened = false;
 
   void _initViewModel() {
@@ -37,32 +29,15 @@ class MainScreenState extends State<MainScreen>
       _mainNotifier.getStreamAction.listen((data) {
         if (data['type'] == MainAction.alert_with_message) {
           showAlertMessage(context, data['data']);
+          setState(() {});
         } else if (data['type'] == MainAction.alert_update_schedule) {
           _showDialogUpdateLich();
         } else if (data['type'] == MainAction.pop) {
           context.pop();
-        } else if (data['type'] == MainAction.forward) {
-          animationController.forward();
-        } else if (data['type'] == MainAction.reverse) {
-          animationController.reverse();
         }
       });
       listened = true;
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 700),
-    );
-    animation = CurvedAnimation(
-      parent: animationController,
-      curve: Curves.elasticOut,
-    );
-    animationController.reverse();
   }
 
   @override
@@ -72,29 +47,27 @@ class MainScreenState extends State<MainScreen>
   }
 
   @override
-  void dispose() {
-    animationController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Student Social'),
         actions: <Widget>[
-          ButtonCurrentDay(
-            animation: animation,
-            onTap: () {
-              _calendarViewModel.onClickedCurrentDay(CalendarDay.now());
-              _scheduleViewModel.onClickedCurrentDay(CalendarDay.now());
-            },
-            currentDay: _calendarViewModel.currentDay.day.toString(),
-          ),
           _layoutRefesh,
         ],
       ),
-      body: _mainLayout(),
+      body: Selector<MainNotifier, List<Schedule>>(
+        selector: (_, mainNotifier) => mainNotifier.getSchedules,
+        builder: (_, schedules, __) {
+          if (schedules == null) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return CalendarWidget(
+            schedules: schedules,
+          );
+        },
+      ),
       drawer: DrawerWidget(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -106,13 +79,37 @@ class MainScreenState extends State<MainScreen>
   }
 
   Widget get _layoutRefesh {
-    if (_mainNotifier.getMSV != null && _mainNotifier.getMSV != 'guest') {
-      return IconButton(
-          icon: const Icon(Icons.refresh),
-          onPressed: _mainNotifier.updateSchedule);
-    } else {
-      return const SizedBox();
-    }
+    return Selector<MainNotifier, bool>(
+      selector: (_, mainNotifier) => mainNotifier.isGuest,
+      builder: (_, isGuest, __) {
+        if (isGuest) {
+          return const SizedBox();
+        } else {
+          return IconButton(
+            icon: const Icon(Icons.refresh),
+//            onPressed: _mainNotifier.updateSchedule,
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (ct) {
+                    return AlertDialog(
+                      title: Text(':('),
+                      content: Text('Tính năng đang được bảo trì'),
+                      actions: [
+                        FlatButton(
+                          onPressed: () {
+                            Navigator.of(ct).pop();
+                          },
+                          child: Text('ok'),
+                        )
+                      ],
+                    );
+                  });
+            },
+          );
+        }
+      },
+    );
   }
 
   Future<void> _showDialogAddGhiChu() async {
@@ -158,50 +155,5 @@ class MainScreenState extends State<MainScreen>
             ); //magic ^_^
       },
     );
-  }
-
-  Widget _mainLayout() {
-    return Container(
-      color: Colors.black12,
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: calendarView(),
-          ),
-          listSchedule()
-        ],
-      ),
-    );
-  }
-
-  Widget calendarView() {
-    return Container(
-        width: double.infinity,
-        height: _mainNotifier.getTableHeight,
-        child: MultiProvider(
-          providers: [
-//            ChangeNotifierProvider<MainViewModel>.value(value: _mainViewModel),
-            ChangeNotifierProvider<ScheduleViewModel>.value(
-                value: _scheduleViewModel),
-            ChangeNotifierProvider<CalendarViewModel>.value(
-                value: _calendarViewModel)
-          ],
-          child: Calendar(),
-        ));
-  }
-
-  Widget listSchedule() {
-    return Expanded(
-        child: MultiProvider(
-      providers: [
-//        ChangeNotifierProvider<MainViewModel>.value(value: _mainViewModel),
-        ChangeNotifierProvider<ScheduleViewModel>.value(
-            value: _scheduleViewModel),
-        ChangeNotifierProvider<CalendarViewModel>.value(
-            value: _calendarViewModel)
-      ],
-      child: ListSchedule(),
-    ));
   }
 }

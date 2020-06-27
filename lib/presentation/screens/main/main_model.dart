@@ -10,11 +10,13 @@ class MainModel {
   double itemWidth = 0;
   double itemHeight = 250 / 6;
   double drawerHeaderHeight = 300;
+
   // title = 25, titleday = 25, tableheight = 250 , 16 margin
   double tableHeight = 316;
   String title = 'Student Social';
   String name = 'Tên sinh viên';
   String className = 'Lớp';
+
   // mặc định msv là khách để khách có thể dùng bình thường
   String msv = 'guest';
 
@@ -25,7 +27,6 @@ class MainModel {
 
   DateTime clickDate = DateTime.now();
   DateTime currentDate = DateTime.now();
-  bool hideButtonCurrent = true;
 
   String get keyOfCurrentEntries {
     return '${getNum(clickDate.year)}-${getNum(clickDate.month)}-${getNum(clickDate.day)}';
@@ -77,6 +78,7 @@ class MainModel {
   void resetData() {
     msv = '';
     profile = null;
+    schedules = List.from(schedules..clear());
     entriesOfDay?.clear();
   }
 }

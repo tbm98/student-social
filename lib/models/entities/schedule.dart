@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:studentsocial/helpers/date.dart';
 import 'package:studentsocial/helpers/logging.dart';
 import 'db_parseable.dart';
 
@@ -70,7 +71,56 @@ class Schedule extends DBParseable {
       _$ScheduleFromJson(json);
 
   Map<String, dynamic> toJson() => _$ScheduleToJson(this);
+
   Map<String, dynamic> toMap() => _$ScheduleToJson(this);
+
+  bool equalsDate(DateTime date) {
+    final List<int> varsDate =
+        getNgay.split('/').map((e) => int.parse(e)).toList();
+    return date.year == varsDate[2] &&
+        date.month == varsDate[1] &&
+        date.day == varsDate[0];
+  }
+
+  String get diaDiemClean {
+    if (!DiaDiem.contains('_')) {
+      return DiaDiem;
+    }
+    return DiaDiem.split('_')[0];
+  }
+
+  String get hocPhanClean {
+    if (!HocPhan.contains('-')) {
+      return HocPhan;
+    }
+    return HocPhan.split('-')[0];
+  }
+
+  DateTime get startTime {
+    final varsDate = getNgay.split('/');
+    if (LoaiLich == 'LichThi') {
+      return DateTime(int.parse(varsDate[2]), int.parse(varsDate[1]),
+          int.parse(varsDate[0]));
+    } else {
+      final varsTiet = thoiGian.split('-');
+      final start = varsTiet[0].trim().split(':');
+      return DateTime(int.parse(varsDate[2]), int.parse(varsDate[1]),
+          int.parse(varsDate[0]), int.parse(start[0]), int.parse(start[1]));
+    }
+  }
+
+  DateTime get endTime {
+    final varsDate = getNgay.split('/');
+    if (LoaiLich == 'LichThi') {
+      return DateTime(int.parse(varsDate[2]), int.parse(varsDate[1]),
+          int.parse(varsDate[0]));
+    } else {
+      final varsTiet = thoiGian.split('-');
+      final end = varsTiet[1].trim().split(':');
+      return DateTime(int.parse(varsDate[2]), int.parse(varsDate[1]),
+          int.parse(varsDate[0]), int.parse(end[0]), int.parse(end[1]));
+    }
+  }
 
   String get getNgay {
     // ket qua cuoi cung mong muon = dd/mm/yyyy
@@ -84,6 +134,14 @@ class Schedule extends DBParseable {
 //      logs('getNgay is ${varsDate[2]}/${varsDate[1]}/${varsDate[0]}');
       return '${varsDate[2]}/${varsDate[1]}/${varsDate[0]}';
     }
+  }
+
+  String get thoiGian {
+    if (LoaiLich == 'LichThi') {
+      return TietHoc;
+    }
+    DateSupport dateSupport = DateSupport();
+    return dateSupport.getThoiGian(TietHoc, MaSinhVien);
   }
 
   factory Schedule.forNote(
@@ -127,6 +185,7 @@ class Schedule extends DBParseable {
 @JsonSerializable()
 class ScheduleMessage {
   ScheduleMessage({this.Entries});
+
   List<Schedule> Entries;
 
   factory ScheduleMessage.fromJson(Map<String, dynamic> json) =>
@@ -168,7 +227,9 @@ class ScheduleFail implements ScheduleResult {
       _$ScheduleFailFromJson(json);
 
   Map<String, dynamic> toJson() => _$ScheduleFailToJson(this);
+
   ScheduleFail({this.status, this.message});
+
   String status;
   String message;
 
@@ -186,5 +247,6 @@ abstract class ScheduleResult {
       return ScheduleFail.fromJson(json);
     }
   }
+
   bool isSuccess();
 }

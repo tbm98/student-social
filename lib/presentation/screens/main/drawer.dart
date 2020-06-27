@@ -184,8 +184,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             ),
             FlatButton(
               onPressed: () {
-                _mainNotifier.logOut();
                 Navigator.of(context).pop();
+                _mainNotifier.logOut();
               },
               child: const Text('Đồng ý'),
             )
