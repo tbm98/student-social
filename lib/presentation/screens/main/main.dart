@@ -52,6 +52,11 @@ class MainScreenState extends State<MainScreen> with DialogSupport {
       appBar: AppBar(
         title: const Text('Student Social'),
         actions: <Widget>[
+          IconButton(
+              onPressed: () {
+                //TODO: add action upload schedule to google calendar
+              },
+              icon: const Icon(Icons.cloud_upload)),
           _layoutRefesh,
         ],
       ),

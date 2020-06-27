@@ -17,7 +17,7 @@ class Notification {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   AndroidInitializationSettings initializationSettingsAndroid =
-      const AndroidInitializationSettings('@mipmap/ic_logo');
+      const AndroidInitializationSettings('@mipmap/ic_launcher');
   IOSInitializationSettings initializationSettingsIOS =
       const IOSInitializationSettings();
   InitializationSettings initializationSettings;
@@ -82,7 +82,7 @@ class Notification {
       priority: Priority.High,
       autoCancel: false,
       styleInformation: BigTextStyleInformation(body),
-      icon: '@mipmap/ic_logo',
+      icon: '@mipmap/ic_launcher',
     );
 
     const IOSNotificationDetails iOSPlatformChannelSpecifics =

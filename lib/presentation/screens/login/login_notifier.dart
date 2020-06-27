@@ -78,7 +78,7 @@ class LoginNotifier with ChangeNotifier {
       });
       return;
     }
-    if (await isExists(email)) {
+    if (await isExists(email.toUpperCase())) {
       _inputAction().add({
         'type': LoginAction.alert_with_message,
         'data': 'Mã sinh viên này đã được thêm rồi'
@@ -86,7 +86,7 @@ class LoginNotifier with ChangeNotifier {
       return;
     }
     _loading('Đang đăng nhập...');
-    _actionLogin(email, password);
+    _actionLogin(email.toUpperCase(), password);
   }
 
   Future<bool> isExists(String email) async {

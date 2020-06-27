@@ -16,14 +16,24 @@ class CalendarWidget extends StatefulWidget {
 
 class _CalendarWidgetState extends State<CalendarWidget> {
   DateTime _date = DateTime.now();
-  List<dynamic> _appointments = [];
+  List<Schedule> _appointments = [];
   CalendarController calendarController = CalendarController();
 
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _appointments = List.from(widget.schedules);
+    logs('widget.schedules before is $_appointments');
+
+    logs('_appointments before is $_appointments');
+
     _appointments.removeWhere((element) => !element.equalsDate(DateTime.now()));
+    logs('_appointments is $_appointments');
   }
 
   CalendarHeaderStyle calendarHeaderStyle = CalendarHeaderStyle(
@@ -42,6 +52,8 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
   @override
   Widget build(BuildContext context) {
+    logs('widget.schedules before is $_appointments');
+
     return Column(
       children: [
         SizedBox(
@@ -63,7 +75,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 }
                 setState(() {
                   _date = details.date;
-                  _appointments = details.appointments;
+                  _appointments = List.from(widget.schedules);
+                  _appointments
+                      .removeWhere((element) => !element.equalsDate(_date));
                 });
               }
             },
@@ -80,7 +94,7 @@ class ListScheduleWidget extends StatelessWidget {
   const ListScheduleWidget({this.date, this.appointments});
 
   final DateTime date;
-  final List<dynamic> appointments;
+  final List<Schedule> appointments;
 
   String titleDay(BuildContext context) {
     final DateFormat format =
@@ -120,7 +134,7 @@ class ListScheduleWidget extends StatelessWidget {
     );
   }
 
-  Widget itemLichThi(Schedule schedule) {
+  Widget itemLichThi(dynamic schedule) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.red,
@@ -258,7 +272,7 @@ class ScheduleDataSource extends CalendarDataSource {
 
   @override
   String getNotes(int index) {
-    return appointments[index].GiaoVien;
+    return appointments[index].LoaiLich;
   }
 
   @override

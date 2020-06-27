@@ -22,7 +22,7 @@ class MainModel {
 
   Profile profile;
   List<Profile> allProfile;
-  List<Schedule> schedules;
+  List<Schedule> schedules = [];
   Map<String, List<Schedule>> entriesOfDay;
 
   DateTime clickDate = DateTime.now();

@@ -62,7 +62,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     return ListTile(
       title: const Text('Tra cứu điểm'),
       leading: const Icon(
-        Icons.print,
+        Icons.assessment,
         size: 30,
         color: Colors.green,
       ),
@@ -81,9 +81,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     return ListTile(
       title: const Text('Tra cứu điểm ngoại khóa'),
       leading: const Icon(
-        Icons.score,
+        Icons.assistant_photo,
         size: 30,
-        color: Colors.pink,
+        color: Colors.green,
       ),
       onTap: () {
         context
@@ -153,10 +153,13 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   Widget _logoutTile() {
     return ListTile(
       title: const Text('Đăng xuất'),
-      leading: const Icon(
-        Icons.exit_to_app,
-        size: 30,
-        color: Colors.red,
+      leading: const RotatedBox(
+        quarterTurns: 2,
+        child: Icon(
+          Icons.exit_to_app,
+          size: 30,
+          color: Colors.grey,
+        ),
       ),
       onTap: () {
         Navigator.of(context).pop();

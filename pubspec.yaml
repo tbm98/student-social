@@ -70,6 +70,11 @@ dependencies:
   syncfusion_flutter_calendar: ^18.1.59-beta
   syncfusion_flutter_core: ^18.1.59
 
+  # for google services
+  google_sign_in: ^4.5.1
+  googleapis: ^0.55.0
+  firebase_auth: ^0.16.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
