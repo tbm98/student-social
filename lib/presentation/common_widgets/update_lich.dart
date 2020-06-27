@@ -20,7 +20,7 @@ class _UpdateLichState extends State<UpdateLich> with DialogSupport {
   MainNotifier _mainViewModel;
 
 //  NetWorking _netWorking;
-  String lichHoc, lichThi, lichThiLai;
+  String lichHoc, lichThi;
 
   Map<String, String> subjectsName = <String, String>{};
   Map<String, String> subjectsSoTinChi = <String, String>{};
@@ -73,13 +73,10 @@ class _UpdateLichState extends State<UpdateLich> with DialogSupport {
     //tách và lấy ra tất cả tên và số tín chỉ của từng môn học
     addSubjects(lichHoc);
     addSubjects(lichThi);
-    addSubjects(lichThiLai);
     //validate lich hoc
     validateLichHoc();
     //validate lich thi
     validateLichThi();
-    //validate lich thi lai
-    validateLichThiLai();
     //Xoá lịch cũ và lưu lịch mới :))
     await removeScheduleOld();
     await saveScheduleToDB();
@@ -106,11 +103,6 @@ class _UpdateLichState extends State<UpdateLich> with DialogSupport {
   void validateLichThi() {
     lichThi = lichThi.substring(lichThi.indexOf('['));
     lichThi = lichThi.substring(0, lichThi.indexOf(']') + 1);
-  }
-
-  void validateLichThiLai() {
-    lichThiLai = lichThiLai.substring(lichThiLai.indexOf('['));
-    lichThiLai = lichThiLai.substring(0, lichThiLai.indexOf(']') + 1);
   }
 
   void addSubjects(value) {

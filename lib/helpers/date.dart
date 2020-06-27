@@ -350,18 +350,18 @@ class DateSupport {
 
       if (mua == 1) {
         //mua he lay lich _time1
-        return '(${_time1[first - 1].split('-')[0]} - ${_time1[last - 1].split('-')[1]})';
+        return '${_time1[first - 1].split('-')[0]}-${_time1[last - 1].split('-')[1]}';
       } else {
-        return '(${_time2[first - 1].split('-')[0]} - ${_time2[last - 1].split('-')[1]})';
+        return '${_time2[first - 1].split('-')[0]}-${_time2[last - 1].split('-')[1]}';
       }
     } else {
       //chi co 1 tiet :v
       final tiet = int.parse(thoiGian);
       if (mua == 1) {
         //mua he lay lich _time1
-        return '(${_time1[tiet - 1].split('-')[0]} - ${_time1[tiet - 1].split('-')[1]})';
+        return '${_time1[tiet - 1].split('-')[0]}-${_time1[tiet - 1].split('-')[1]}';
       } else {
-        return '(${_time2[tiet - 1].split('-')[0]} - ${_time2[tiet - 1].split('-')[1]})';
+        return '${_time2[tiet - 1].split('-')[0]}-${_time2[tiet - 1].split('-')[1]}';
       }
     }
   }
