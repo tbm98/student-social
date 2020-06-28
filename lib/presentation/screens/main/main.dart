@@ -25,6 +25,54 @@ class MainScreenState extends State<MainScreen> with DialogSupport {
   MainNotifier _mainNotifier;
   bool listened = false;
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Student Social'),
+        actions: <Widget>[
+          _uploadScheduleButton,
+          _updateScheduleButton,
+        ],
+      ),
+      body: Selector<MainNotifier, List<Schedule>>(
+        selector: (_, mainNotifier) => mainNotifier.getSchedules,
+        builder: (_, schedules, __) {
+          if (schedules == null) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return CalendarWidget(
+            schedules: schedules,
+          );
+        },
+      ),
+      drawer: DrawerWidget(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showDialogAddGhiChu();
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget get _uploadScheduleButton {
+    return Selector<MainNotifier, bool>(
+      selector: (_, mainNotifier) => mainNotifier.isGuest,
+      builder: (_, isGuest, __) {
+        if (isGuest) {
+          return const SizedBox();
+        } else {
+          return IconButton(
+              onPressed: uploadScheduleClicked,
+              icon: const Icon(Icons.cloud_upload));
+        }
+      },
+    );
+  }
+
   void _initViewModel() {
     _mainNotifier = context.read<MainNotifier>();
     _mainNotifier.initSize(MediaQuery.of(context).size);
@@ -178,42 +226,7 @@ class MainScreenState extends State<MainScreen> with DialogSupport {
         });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Student Social'),
-        actions: <Widget>[
-          IconButton(
-              onPressed: uploadScheduleClicked,
-              icon: const Icon(Icons.cloud_upload)),
-          _layoutRefesh,
-        ],
-      ),
-      body: Selector<MainNotifier, List<Schedule>>(
-        selector: (_, mainNotifier) => mainNotifier.getSchedules,
-        builder: (_, schedules, __) {
-          if (schedules == null) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return CalendarWidget(
-            schedules: schedules,
-          );
-        },
-      ),
-      drawer: DrawerWidget(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showDialogAddGhiChu();
-        },
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-
-  Widget get _layoutRefesh {
+  Widget get _updateScheduleButton {
     return Selector<MainNotifier, bool>(
       selector: (_, mainNotifier) => mainNotifier.isGuest,
       builder: (_, isGuest, __) {

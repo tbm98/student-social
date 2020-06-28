@@ -12,7 +12,7 @@ class EventStudentSocial {
           : 'SBD ${schedule.SoBaoDanh}: ${schedule.hocPhanClean} ',
       'location': schedule.diaDiemClean,
       'description':
-          schedule.LoaiLich == 'LichHoc' ? schedule.GiaoVien : schedule.HocPhan,
+          schedule.LoaiLich == 'LichHoc' ? schedule.GiaoVien : schedule.TietHoc,
       'start': {
         'dateTime': schedule.startTime.toIso8601String(),
         'timeZone': 'Asia/Ho_Chi_Minh'
