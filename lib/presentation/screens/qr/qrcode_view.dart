@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:qr/qr.dart';
-
-import 'qr_painter.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class QRCodeScreen extends StatefulWidget {
   const QRCodeScreen({
@@ -10,15 +8,11 @@ class QRCodeScreen extends StatefulWidget {
     this.size,
     this.padding = const EdgeInsets.all(70),
     this.backgroundColor,
-    this.onError,
-    this.gapless = false,
   });
 
   final Color backgroundColor;
   final EdgeInsets padding;
   final double size;
-  final QrError onError;
-  final bool gapless;
   final String data;
 
   @override
@@ -46,27 +40,19 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
           children: <Widget>[
             LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
-                double widgetSize =
-                    widget.size ?? constraints.biggest.shortestSide;
                 double w = MediaQuery.of(context).size.width;
                 return Hero(
                   tag: 'button_current_day',
-                  child: Container(
+                  child: SizedBox(
                     width: w,
                     height: w,
-                    color: const Color(0xFFFFFFFF),
                     child: Padding(
-                      padding: widget.padding,
-                      child: CustomPaint(
-                        painter: QrPainter(
-                            data: _data,
-                            color: const Color(0xFF000000),
-                            version: 4,
-                            errorCorrectionLevel: QrErrorCorrectLevel.L,
-                            gapless: widget.gapless,
-                            onError: widget.onError),
-                      ),
-                    ),
+                        padding: widget.padding,
+                        child: QrImage(
+                          data: _data,
+                          version: QrVersions.auto,
+                          size: 200.0,
+                        )),
                   ),
                 );
               },
