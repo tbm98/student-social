@@ -99,8 +99,10 @@ class Schedule extends DBParseable {
   DateTime get startTime {
     final varsDate = getNgay.split('/');
     if (LoaiLich == 'LichThi') {
+      final varsTiet = TietHoc.replaceAll(')', '').split('(')[1].split('-');
+      final start = varsTiet[0].trim().split(':');
       return DateTime(int.parse(varsDate[2]), int.parse(varsDate[1]),
-          int.parse(varsDate[0]));
+          int.parse(varsDate[0]), int.parse(start[0]), int.parse(start[1]));
     } else {
       final varsTiet = thoiGian.split('-');
       final start = varsTiet[0].trim().split(':');
@@ -112,8 +114,10 @@ class Schedule extends DBParseable {
   DateTime get endTime {
     final varsDate = getNgay.split('/');
     if (LoaiLich == 'LichThi') {
+      final varsTiet = TietHoc.replaceAll(')', '').split('(')[1].split('-');
+      final end = varsTiet[1].trim().split(':');
       return DateTime(int.parse(varsDate[2]), int.parse(varsDate[1]),
-          int.parse(varsDate[0]));
+          int.parse(varsDate[0]), int.parse(end[0]), int.parse(end[1]));
     } else {
       final varsTiet = thoiGian.split('-');
       final end = varsTiet[1].trim().split(':');

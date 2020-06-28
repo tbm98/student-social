@@ -3,6 +3,11 @@ import 'dart:ui';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:studentsocial/models/entities/event.dart';
+import 'package:studentsocial/models/entities/login_result.dart';
+import 'package:studentsocial/services/calendar_service_communicate.dart';
+import 'package:studentsocial/services/calendar_service_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/logging.dart';
@@ -28,6 +33,7 @@ class MainNotifier with ChangeNotifier {
     _mainModel = MainModel();
     _notification = Notification();
     _sharedPrefs = SharedPrefs();
+    _calendarServiceModel = CalendarServiceModel();
     _initLoad();
   }
 
@@ -36,6 +42,8 @@ class MainNotifier with ChangeNotifier {
   Notification _notification;
   ProfileRepository _profileRepository;
   ScheduleRepository _scheduleRepository;
+  CalendarServiceModel _calendarServiceModel;
+  final StreamController _streamResultUpload = StreamController();
 
   SharedPrefs _sharedPrefs;
 
@@ -54,8 +62,13 @@ class MainNotifier with ChangeNotifier {
   @override
   void dispose() {
     _streamController.close();
+    _streamResultUpload.close();
     super.dispose();
   }
+
+  Stream get getStreamUpload => _streamResultUpload.stream;
+
+  Sink get inputStreamUpload => _streamResultUpload.sink;
 
   Stream get getStreamAction => _streamController.stream;
 
@@ -112,6 +125,24 @@ class MainNotifier with ChangeNotifier {
     final String name = getName;
     final List<String> splitName = name.split(' ');
     return splitName.last[0];
+  }
+
+  Future<LoginResult> googleLogin() async {
+    return _calendarServiceModel.loginAction();
+  }
+
+  Future<GoogleSignInAccount> googleLogout() async {
+    return _calendarServiceModel.googleLogout();
+  }
+
+  Future<List<EventStudentSocial>> getEventStudentSocials() async {
+    logs('upload schedules');
+    return await _calendarServiceModel
+        .getEventStudentSocials(_mainModel.schedules);
+  }
+
+  CalendarServiceCommunicate get calendarServiceCommunicate {
+    return _calendarServiceModel.calendarServiceCommunicate;
   }
 
   Future<int> insertProfileGuest() async {

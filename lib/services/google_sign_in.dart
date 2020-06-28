@@ -43,8 +43,7 @@ class GoogleSignInHelper {
     return LoginResult(user, headers);
   }
 
-  void signOutGoogle() async {
-    await googleSignIn.signOut();
-    logs('User Sign Out');
+  Future<GoogleSignInAccount> signOutGoogle() async {
+    return await googleSignIn.signOut();
   }
 }

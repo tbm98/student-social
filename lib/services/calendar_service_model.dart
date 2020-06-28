@@ -1,6 +1,9 @@
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:studentsocial/helpers/logging.dart';
 import 'package:studentsocial/models/entities/calendar.dart';
 import 'package:studentsocial/models/entities/event.dart';
 import 'package:studentsocial/models/entities/login_result.dart';
+import 'package:studentsocial/models/entities/schedule.dart';
 
 import 'calendar_service_communicate.dart';
 import 'google_http_client.dart';
@@ -9,45 +12,34 @@ import 'google_sign_in.dart';
 class CalendarServiceModel {
   GoogleSignInHelper googleSignInHelper = GoogleSignInHelper();
   CalendarServiceCommunicate calendarServiceCommunicate;
-  bool loading = false;
-  double loadingValue;
-  String avatarUrl = '';
   LoginResult loginResult;
-  List<EventStudentSocial> events = [];
 
-  void loginAction() async {
-    loading = true;
-//    notifyListeners();
+  Future<LoginResult> loginAction() async {
     final result = await googleSignInHelper.signInWithGoogle();
-
-    loading = false;
-//    loginDone(result);
-    if (avatarUrl.isNotEmpty) {
-//      stateAction = StateAction.logined;
-    }
-//    notifyListeners();
+    loginResult = result;
+    return result;
   }
 
-  void uploadAction() async {
-    loading = true;
-//    notifyListeners();
+  Future<GoogleSignInAccount> googleLogout() async {
+    return await googleSignInHelper.signOutGoogle();
+  }
 
+  Future<List<EventStudentSocial>> getEventStudentSocials(
+      List<Schedule> schedules) async {
+    final List<EventStudentSocial> events =
+        schedules.map((e) => EventStudentSocial(e)).toList();
+
+    logs('events is $events');
     calendarServiceCommunicate =
         CalendarServiceCommunicate(GoogleHttpClient(loginResult.headers));
     await calendarServiceCommunicate.deleteOldCalendars();
     final calendar = await calendarServiceCommunicate.insertNewCalendars();
+    logs(calendar.summary);
+    logs(CalendarStudentSocial.summary);
     if (calendar.summary != CalendarStudentSocial.summary) {
-      return;
+      return [];
     }
-
-    calendarServiceCommunicate.addEvents(events).listen((value) {
-      loadingValue = value;
-      if (loadingValue == 1) {
-        loadingValue = null;
-        loading = false;
-//        stateAction = StateAction.uploaded;
-      }
-//      notifyListeners();
-    });
+    logs('addEvents');
+    return events;
   }
 }

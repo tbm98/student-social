@@ -1,4 +1,5 @@
 import 'package:googleapis/calendar/v3.dart';
+import 'package:studentsocial/helpers/logging.dart';
 import 'package:studentsocial/models/entities/calendar.dart';
 import 'package:studentsocial/models/entities/event.dart';
 import 'google_http_client.dart';
@@ -37,6 +38,7 @@ class CalendarServiceCommunicate {
   }
 
   Stream<double> addEvents(List<EventStudentSocial> events) async* {
+    logs('events is $events');
     // search and remove old calendars
     await deleteOldCalendars();
     // insert new calendars
@@ -46,7 +48,7 @@ class CalendarServiceCommunicate {
     for (int i = 0; i < len; i++) {
       await calendarApi.events
           .insert(Event.fromJson(events[i].toJson()), currentCalendar.id);
-
+      logs('yield ${(i + 1) / len}');
       yield (i + 1) / len;
     }
   }

@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lazy_code/lazy_code.dart';
 import 'package:provider/provider.dart';
+import 'package:studentsocial/helpers/logging.dart';
+import 'package:studentsocial/models/entities/login_result.dart';
 import 'package:studentsocial/models/entities/schedule.dart';
 
 import '../../../helpers/dialog_support.dart';
@@ -46,6 +49,135 @@ class MainScreenState extends State<MainScreen> with DialogSupport {
     _initViewModel();
   }
 
+  Future<void> uploadScheduleClicked() async {
+    final loginResult = await _mainNotifier.googleLogin();
+    logs(loginResult.firebaseUser.photoUrl);
+    showGoogleInfo(loginResult);
+  }
+
+  void showUploadProcessing() async {
+    final events = await _mainNotifier.getEventStudentSocials();
+    showDialog(
+        context: context,
+        barrierDismissible: false, // Khong duoc an dialog
+        builder: (ct) {
+          return Dialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: StreamBuilder(
+                  stream: _mainNotifier.calendarServiceCommunicate
+                      .addEvents(events),
+                  builder: (context, snapshot) {
+                    logs('data is ${snapshot.data}');
+                    if (snapshot.hasData) {
+                      if (snapshot.data < 1.0) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Center(
+                                child: CircularProgressIndicator(
+                              value: snapshot.data,
+                            )),
+                            Text(
+                                'Đang tải lên ${((snapshot.data as double) * 100).toInt()}%')
+                          ],
+                        );
+                      } else {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Center(
+                                child: Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: 50,
+                            )),
+                            Text('Tải lên hoàn tất!'),
+                            OutlineButton(
+                              onPressed: () {
+                                Navigator.of(ct).pop();
+                              },
+                              child: const Text('Xong'),
+                            )
+                          ],
+                        );
+                      }
+                    } else {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Center(child: CircularProgressIndicator()),
+                        ],
+                      );
+                    }
+                  }),
+            ),
+          );
+        });
+  }
+
+  void showGoogleInfo(LoginResult loginResult) {
+    showDialog(
+        context: context,
+        builder: (ct) {
+          return Dialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                        MediaQuery.of(context).size.width * 0.2),
+                    child: CachedNetworkImage(
+                      imageUrl: loginResult.firebaseUser.photoUrl,
+                      width: MediaQuery.of(context).size.width * 0.2,
+                      height: MediaQuery.of(context).size.width * 0.2,
+                      placeholder: (_, __) {
+                        return SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.2,
+                            height: MediaQuery.of(context).size.width * 0.2,
+                            child: const Center(
+                                child: CircularProgressIndicator()));
+                      },
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        loginResult.firebaseUser.displayName,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                        onPressed: () async {
+                          _mainNotifier.googleLogout();
+                          Navigator.of(ct).pop();
+                          uploadScheduleClicked();
+                        },
+                        icon: const Icon(Icons.refresh),
+                      )
+                    ],
+                  ),
+                  OutlineButton(
+                    onPressed: () {
+                      Navigator.of(ct).pop();
+                      showUploadProcessing();
+                    },
+                    child: const Text('Tải lên Google Calendar'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,9 +185,7 @@ class MainScreenState extends State<MainScreen> with DialogSupport {
         title: const Text('Student Social'),
         actions: <Widget>[
           IconButton(
-              onPressed: () {
-                //TODO: add action upload schedule to google calendar
-              },
+              onPressed: uploadScheduleClicked,
               icon: const Icon(Icons.cloud_upload)),
           _layoutRefesh,
         ],
