@@ -5,9 +5,10 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:studentsocial/models/entities/event.dart';
+import 'package:studentsocial/models/entities/event_student_social.dart';
 import 'package:studentsocial/models/entities/login_result.dart';
-import 'package:studentsocial/services/calendar_service_communicate.dart';
-import 'package:studentsocial/services/calendar_service_model.dart';
+import 'package:studentsocial/services/google_calendar/calendar_service_communicate.dart';
+import 'package:studentsocial/services/google_calendar/calendar_service_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/logging.dart';
@@ -19,12 +20,6 @@ import '../../../models/local/repository/profile_repository.dart';
 import '../../../models/local/repository/schedule_repository.dart';
 import '../../../models/local/shared_prefs.dart';
 import 'main_model.dart';
-
-enum MainAction {
-  alert_with_message,
-  alert_update_schedule,
-  pop,
-}
 
 class MainNotifier with ChangeNotifier {
   MainNotifier(MyDatabase database) {
@@ -38,7 +33,7 @@ class MainNotifier with ChangeNotifier {
   }
 
   MainModel _mainModel;
-  final StreamController _streamController = StreamController();
+  final StreamController<Events> _streamController = StreamController<Events>();
   Notification _notification;
   ProfileRepository _profileRepository;
   ScheduleRepository _scheduleRepository;
@@ -70,9 +65,9 @@ class MainNotifier with ChangeNotifier {
 
   Sink get inputStreamUpload => _streamResultUpload.sink;
 
-  Stream get getStreamAction => _streamController.stream;
+  Stream<Events> get getStreamAction => _streamController.stream;
 
-  Sink get inputAction => _streamController.sink;
+  Sink<Events> get inputAction => _streamController.sink;
 
   String get getTitle => _mainModel.title;
 
@@ -222,13 +217,11 @@ class MainNotifier with ChangeNotifier {
   Future<void> _checkInternetConnectivity() async {
     final ConnectivityResult result = await Connectivity().checkConnectivity();
     if (result == ConnectivityResult.none) {
-      inputAction.add({
-        'type': MainAction.alert_with_message,
-        'data': 'Không có kết nối mạng :('
-      });
+      inputAction.add(
+          const Events(EventType.alertMessage, 'Không có kết nối mạng :('));
     } else if (result == ConnectivityResult.mobile ||
         result == ConnectivityResult.wifi) {
-      inputAction.add({'type': MainAction.alert_update_schedule});
+      inputAction.add(const Events(EventType.alertUpdateSchedule));
     }
   }
 
@@ -312,19 +305,14 @@ class MainNotifier with ChangeNotifier {
       //reset data
       _mainModel.resetData();
       loadCurrentMSV();
-      inputAction.add({
-        'type': MainAction.alert_with_message,
-        'data': 'Đăng xuất thành công'
-      });
+      inputAction
+          .add(const Events(EventType.alertMessage, 'Đăng xuất thành công'));
       notifyListeners();
     } catch (e) {
       logs('error is:$e');
       _mainModel.resetData();
       loadCurrentMSV();
-      inputAction.add({
-        'type': MainAction.alert_with_message,
-        'data': 'Đăng xuất bị lỗi: $e'
-      });
+      inputAction.add(Events(EventType.alertMessage, 'Đăng xuất bị lỗi: $e'));
       notifyListeners();
     }
   }

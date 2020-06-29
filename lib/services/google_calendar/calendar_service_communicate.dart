@@ -1,8 +1,8 @@
 import 'package:googleapis/calendar/v3.dart';
 import 'package:studentsocial/helpers/logging.dart';
 import 'package:studentsocial/models/entities/calendar.dart';
-import 'package:studentsocial/models/entities/event.dart';
-import 'google_http_client.dart';
+import 'package:studentsocial/models/entities/event_student_social.dart';
+import '../google_signin/google_http_client.dart';
 
 class CalendarServiceCommunicate {
   CalendarServiceCommunicate(GoogleHttpClient client) {

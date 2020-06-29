@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lazy_code/lazy_code.dart';
 import 'package:provider/provider.dart';
 import 'package:studentsocial/helpers/logging.dart';
+import 'package:studentsocial/models/entities/event.dart';
 import 'package:studentsocial/models/entities/login_result.dart';
 import 'package:studentsocial/models/entities/schedule.dart';
 
@@ -78,12 +78,12 @@ class MainScreenState extends State<MainScreen> with DialogSupport {
     _mainNotifier.initSize(MediaQuery.of(context).size);
     if (!listened) {
       _mainNotifier.getStreamAction.listen((data) {
-        if (data['type'] == MainAction.alert_with_message) {
-          showAlertMessage(context, data['data']);
+        if (data.type == EventType.alertMessage) {
+          showAlertMessage(context, data.data);
           setState(() {});
-        } else if (data['type'] == MainAction.alert_update_schedule) {
+        } else if (data.type == EventType.alertUpdateSchedule) {
           _showDialogUpdateLich();
-        } else if (data['type'] == MainAction.pop) {
+        } else if (data.type == EventType.pop) {
           context.pop();
         }
       });
@@ -136,13 +136,13 @@ class MainScreenState extends State<MainScreen> with DialogSupport {
                         return Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Center(
+                            const Center(
                                 child: Icon(
                               Icons.check_circle,
                               color: Colors.green,
                               size: 50,
                             )),
-                            Text('Tải lên hoàn tất!'),
+                            const Text('Tải lên hoàn tất!'),
                             OutlineButton(
                               onPressed: () {
                                 Navigator.of(ct).pop();
@@ -241,14 +241,14 @@ class MainScreenState extends State<MainScreen> with DialogSupport {
                   context: context,
                   builder: (ct) {
                     return AlertDialog(
-                      title: Text(':('),
-                      content: Text('Tính năng đang được bảo trì'),
+                      title: const Text(':('),
+                      content: const Text('Tính năng đang được bảo trì'),
                       actions: [
                         FlatButton(
                           onPressed: () {
                             Navigator.of(ct).pop();
                           },
-                          child: Text('ok'),
+                          child: const Text('ok'),
                         )
                       ],
                     );
