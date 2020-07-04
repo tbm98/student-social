@@ -7,7 +7,7 @@ import 'config/strings.dart';
 import 'models/local/database/database.dart';
 import 'presentation/screens/main/main.dart';
 import 'presentation/screens/main/main_notifier.dart';
-import 'rest_api/rest_client.dart';
+import 'services/http/rest_client.dart';
 
 void main() {
   //Register your license here

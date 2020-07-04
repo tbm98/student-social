@@ -5,7 +5,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/src/widgets/editable_text.dart';
 import 'package:studentsocial/models/entities/semester.dart';
-import 'package:studentsocial/rest_api/rest_client.dart';
+import 'package:studentsocial/services/http/rest_client.dart';
 import '../../../helpers/logging.dart';
 import '../../../models/entities/login.dart';
 import '../../../models/entities/profile.dart';

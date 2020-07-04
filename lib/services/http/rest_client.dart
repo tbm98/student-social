@@ -1,14 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/http.dart';
-import 'package:studentsocial/helpers/logging.dart';
 
-import '../models/entities/login.dart';
-import '../models/entities/schedule.dart';
-import '../models/entities/semester.dart';
+import '../../config/url.dart';
+import '../../models/entities/login.dart';
+import '../../models/entities/schedule.dart';
+import '../../models/entities/semester.dart';
 
 part 'rest_client.g.dart';
 
-@RestApi(baseUrl: 'http://171.244.38.52/api/')
+@RestApi(baseUrl: URL.server)
 abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 
@@ -23,10 +23,10 @@ abstract class RestClient {
     return RestClient(dio);
   }
 
-  @POST('login')
+  @POST(URL.login)
   Future<LoginResult> login(@Field() String username, @Field() String password);
 
-  @POST('semester')
+  @POST(URL.semester)
   Future<SemesterResult> getSemester(@Header('token') String token);
 
 //  Future<String> getProfile(String token) async {
@@ -48,12 +48,12 @@ abstract class RestClient {
 //    }
 //  }
 
-  @POST('time-table')
+  @POST(URL.timeTable)
   Future<ScheduleResult> getLichHoc(
       @Header('token') String token, @Field() String semester);
 
   //hàm này dùng cho cả get lichthilai vì đều là lịch thi (chỉ khác semester)
-  @POST('exam-table')
+  @POST(URL.examTable)
   Future<ScheduleResult> getLichThi(
       @Header('token') String token, @Field() String semester);
 }
