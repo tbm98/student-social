@@ -8,6 +8,10 @@ void main() {
   runApp(MyApp());
 }
 
+void minh() {
+  // hàm này sẽ fix được tính năng xem điểm :D
+}
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
